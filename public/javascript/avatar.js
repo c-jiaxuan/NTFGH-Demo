@@ -39,7 +39,7 @@ let botMessages = {};   // Dictionary to store all preset bot messages
 botMessages["start_msg"] = [new AI_Message("Welcome to Ng Teng Fong General Hospital! As your personalized concierge, I'm here to enhance your experience. Whether you have questions about the hospital or would like to find a particular place on our map, I'm ready to help.", "G05"),
                                 new AI_Message("Just select from the menu on the right, and let me know how I can assist you.", "G02")
                                 ];
-botMessages["greeting_msg"] = new AI_Message("Hi! Let me know if you have any questions, you can input your questions into the input box, or by using the \"Speak to AI\" button");
+botMessages["greeting_msg"] = new AI_Message("Hi! Let me know if you have any questions, you can input your questions into the input box, or by using the \"Speak to AI\" button", "G02");
 botMessages["default_msgs"] = new AI_Message("I am not sure what you have sent, please try again.");
 botMessages["processing_msg"] = new AI_Message("Thank you! Please wait while I'm processing your question and I will reply to you shortly.");
   
@@ -149,6 +149,7 @@ function initAIPlayerEvent() {
         }
 
         preloadMessages();
+        loadChat();
     }
     };
 
@@ -205,8 +206,9 @@ function initAIPlayerEvent() {
             preloadCount++;
             if(isPreloadingFinished()) {
                 speak(botMessages["start_msg"][0].message, botMessages["start_msg"][0].gesture, false);
-                loadChat();
+                beginChat();
             }
+            
             break;
         case AIEventType.AICLIPSET_PLAY_STARTED:
             typeName = 'AICLIPSET_PLAY_STARTED';

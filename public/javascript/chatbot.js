@@ -33,18 +33,14 @@ const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digi
 
 // Showing loading chat bubble before beginChat
 function loadChat() {
-    if (!isPreloadingFinished()) {
-        createTempBubble(BOT_BUBBLE, "Loading AI, please wait", 0);
-    } else if (!startChat) {
-        beginChat();
-    }
+    createTempBubble(BOT_BUBBLE, "Loading AI, please wait", 0);
 }
 
 function beginChat() {
-    if (isPreloadingFinished()) {
-        startChat = true;
+    if (isPreloadingFinished() && !startChat && !document.getElementById('chat-container').classList.contains('hidden')) {
         deleteTempBubble();
         botMessage(botMessages["greeting_msg"].message, botMessages["greeting_msg"].gesture, false);
+        startChat = true;
     }
 }
 
