@@ -1,8 +1,8 @@
 const wrapper = document.getElementById('AIPlayerWrapper');
 const authServer = 'https://account.aistudios.com';
 const AI_PLAYER = new AIPlayer(wrapper);
-const appId = 'conciergewebdemo.onrender.com';
-const userKey = '8e7123a9-7b87-4dfc-a520-df0a812cf535';
+const appId = 'c-jiaxuan.github.io';
+const userKey = '5979244e-7071-444a-a9fe-81217af1cbef';
 
 AI_PLAYER.setConfig({
     authServer: authServer,
