@@ -53,6 +53,7 @@ async function initSample() {
     initAIPlayerEvent();
     await generateClientToken();
     await generateVerifiedToken();
+    countPreloadMessages();
   
     await AI_PLAYER.init({
         aiName: "M000320746_BG00007441H_light",
@@ -147,7 +148,6 @@ function initAIPlayerEvent() {
         console.log("custom voice is not set");
         }
 
-        countPreloadMessages();
         preloadMessages();
     }
     };
@@ -393,6 +393,7 @@ function countPreloadMessages(){
             }
         }
     }
+    console.log("Finished counting number of preload messages");
 }
 
 // Check if preload finished
