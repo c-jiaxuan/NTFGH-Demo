@@ -22,6 +22,8 @@ const userInput = document.getElementById('input');
 const USER_BUBBLE = 'message user';
 const BOT_BUBBLE = 'message bot';
 
+const keywords = ['hotline', 'eligibility'];
+
 let startChat = false;
 
 // Store interval reference
@@ -66,10 +68,6 @@ function processUserMessage(msg){
 // Takes in response from user input and replies based on input
 // Takes in a bool 'prompt' for whether to prompt the user for more input
 function botResponse(response) {
-    var prompt = true;
-    prompt = false;
-
-    showProcessingBtn();
     // Display processing status
     createTempBubble(BOT_BUBBLE, "Retrieving Answer", 0);
     //Clear user input box
@@ -77,7 +75,22 @@ function botResponse(response) {
     // Scroll to the bottom
     chatBody.scrollTop = chatBody.scrollHeight;
 
-    sendToLLMs(response);
+    preload_msg = checkForPreloadedResponse(response);
+
+    if (preload_msg == null) {
+        sendToLLMs(response);
+    } else {
+        botMessage(preload_msg.message, preload_msg.gesture, false);
+    }
+}
+
+function checkForPreloadedResponse(message) {
+    for (var i = 0; i < keywords.length; i++) {
+        if (message.toLowerCase().includes(keywords[i].toLowerCase())) {
+            return botMessages['preloaded_msgs'][i];
+        }
+    }
+    return null;
 }
 
 // Received input from chatbox
@@ -157,7 +170,7 @@ function sendToLLMs(message) {
 // Process the message from LLMs to display to user
 function processBotMessage(answer, followUpQns){
     //LLMs doesn't reply anything => didn't understand the question
-    if (answer == "")
+    if (answer == "" || answer == undefined)
     {
         //Change this => using external variables
         answer = getRandomElement(botMessages['default_msgs']).message;
@@ -174,6 +187,8 @@ function processBotMessage(answer, followUpQns){
             deleteTempBubble();
             //Display bot message to user
             createMsgBubble(BOT_BUBBLE, answer);
+
+            showRecordBtn();
 
             //Store follow up questions for future usage
             follow_up_questions = followUpQns;
@@ -280,9 +295,13 @@ function botMessage(setMessage, gesture, delay) {
     }
     else
     {
+        console.log("show answer without delay");
+
         speak(setMessage.toString(), gesture);
-        showRecordBtn();
+        
         createMsgBubble(BOT_BUBBLE, setMessage);
+
+        showRecordBtn();
 
         deleteTempBubble();
 
