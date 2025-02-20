@@ -208,10 +208,8 @@ function initAIPlayerEvent() {
             document.dispatchEvent(new Event('AICLIPSET_PRELOAD_COMPLETED'));
             preloadCount++;
             if(isPreloadingFinished()) {
-                speak(botMessages["start_msg"][0].message, botMessages["start_msg"][0].gesture, false);
                 beginChat();
             }
-            
             break;
         case AIEventType.AICLIPSET_PLAY_STARTED:
             typeName = 'AICLIPSET_PLAY_STARTED';
