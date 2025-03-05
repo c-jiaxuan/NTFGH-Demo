@@ -50,8 +50,12 @@ botMessages["processing_msg"] = new AI_Message("Thank you! Please wait while I'm
 var preloadCount = 0;
 var totalMessages = 0;
 
+const maleVoice = 'google/en-US/MALE_en-US-Standard-D';
+const femaleVoice = 'amazon/en-US/Female_Danielle';
+const female_Avatar = true;
+
 initSample();
-  
+
 async function initSample() {
     initAIPlayerEvent();
     await generateClientToken();
@@ -60,6 +64,7 @@ async function initSample() {
   
     await AI_PLAYER.init({
         aiName: "M000320746_BG00007441H_light",
+        //aiName: "M000015844_BG00001112_light",
         size: 1.0,
         left: 0,
         top: 0,
@@ -140,10 +145,11 @@ function initAIPlayerEvent() {
     if (state === 'playerLoadComplete') {
         // To set custom voice
         //const customVoice = AI_PLAYER.findCustomVoice("google/en-US/FEMALE_en-US-Neural2-C");
-        const customVoice = AI_PLAYER.findCustomVoice("amazon/en-US/Female_Danielle");
+        const customVoicePackMale = AI_PLAYER.findCustomVoice(maleVoice);
+        const customVoice = AI_PLAYER.findCustomVoice(femaleVoice);
 
         // Set custom voice will cause issues with the AI speaking
-        const isSuccess = AI_PLAYER.setCustomVoice(customVoice); 
+        const isSuccess = female_Avatar ? AI_PLAYER.setCustomVoice(customVoice) : AI_PLAYER.setCustomVoice(customVoicePackMale); 
         console.log(isSuccess ? "Successfully set custom voice" : "Unsuccessful in setting custom voice");
         
         const customVoice_check = AI_PLAYER.getCustomVoice();
@@ -401,6 +407,7 @@ function countPreloadMessages(){
 
 // Check if preload finished
 function isPreloadingFinished() {
+    console.log("Preloaded " + preloadCount + " number of messages...");
     console.log("Checking if preloaded finish against " + totalMessages + " items ...");
     return preloadCount >= totalMessages;
 }
