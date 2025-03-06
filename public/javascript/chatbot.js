@@ -60,36 +60,12 @@ function processUserMessage(msg){
     }
     createMsgBubble(USER_BUBBLE, msg);
 
-    // Create temp bubble to show status message
-    createTempBubble(USER_BUBBLE, "Retrieving Answer", 0);
-
     userInput.value = '';
 
     // Scroll to the bottom
     chatBody.scrollTop = chatBody.scrollHeight;
-
-    // /botResponse(msg);
 
     sendToLLM(msg);
-}
-
-// Takes in response from user input and replies based on input
-// Takes in a bool 'prompt' for whether to prompt the user for more input
-function botResponse(response) {
-    // Display processing status
-    createTempBubble(BOT_BUBBLE, "Retrieving Answer", 0);
-    //Clear user input box
-    userInput.value = '';
-    // Scroll to the bottom
-    chatBody.scrollTop = chatBody.scrollHeight;
-
-    preload_msg = checkForPreloadedResponse(response);
-
-    if (preload_msg == null) {
-        sendToLLMs(response);
-    } else {
-        botMessage(preload_msg.message, preload_msg.gesture, false);
-    }
 }
 
 function checkForPreloadedResponse(message) {
