@@ -18,7 +18,20 @@
             <button id="start-button">Meet the AI Concierge</button>
         </div>
     </div>
-    <button id="main-menu-button" onclick="goToMainMenu(); showVideo('AI-idle-video')" class="hidden">Main Menu</button>
+    <div class="languageSelectorDiv">
+        <select id="langSelector" class="languageSelector">
+            <option value="en">English</option>
+            <option value="zh">Chinese</option>
+            <option value="ms">Malay</option>
+            <option value="ta">Tamil</option>
+        </select>
+    </div>
+    <button id="main-menu-button" onclick="goToMainMenu(); showVideo('AI-idle-video')" class="hidden">
+        <p class="lang lang-en">Main Menu</p>
+        <p class="lang lang-zh">主菜单</p>
+        <p class="lang lang-ms">Menu Utama</p>
+        <p class="lang lang-ta">முதன்மை மெனு</p>
+    </button>
     <div id="AIPlayerWrapper"></div>
         <!-- <video id="AI-intro-video" class="premadeVideo" src="./videos/intro.mp4"></video>
         <video id="AI-visited-video" class="premadeVideo" src="./videos/visited.mp4"></video>
@@ -34,10 +47,15 @@
                     allow="clipboard-write 'self' https://app.mappedin.com; web-share 'self' https://app.mappedin.com" 
                     scrolling="no" width="100%" height="1300" frameborder="0" style="border:0">
             </iframe>
-            <button class="close-button" onclick="closeWayfinding()">Close</button>
+            <button class="close-button" onclick="closeWayfinding()">
+                <p class="lang lang-en">Close</p>
+                <p class="lang lang-zh">关闭</p>
+                <p class="lang lang-ms">Tutup</p>
+                <p class="lang lang-ta">மூடு</p>
+            </button>
         </div>
     </div>
-    <div class="user_options">
+    <div id="user-options" class="user_options">
         <div id="chat-container" class="chat-container hidden">
             <div id="chat-history-container" class="chat-history-container">
             <!-- Messages appear here -->
@@ -50,27 +68,52 @@
             </div>
             <div id="speak-button-container" class="speak-button-container" onclick="startRecognize()">
                 <button class="button button1">
-                <img src="./Images/Control_Signs/Mic-Icon.png" alt="Snow">
-                Speak with AI</button>
+                    <img src="./Images/Control_Signs/Mic-Icon.png" alt="Snow">
+                    <p class="lang lang-en">Speak with AI</p>
+                    <p class="lang lang-zh">与人工智能对话</p>
+                    <p class="lang lang-ms">Bercakap dengan AI</p>
+                    <p class="lang lang-ta">AI உடன் பேசுங்கள்</p>
+                </button>
             </div>
             <div id="listening-button-container" class="speak-button-container" onclick="endRecognize(false)">
                 <button class="button button1">
-                <img src="./Images/Control_Signs/Mic-Icon.png" alt="Snow">
-                Listening...</button>
+                    <img src="./Images/Control_Signs/Mic-Icon.png" alt="Snow">
+                    <p class="lang lang-en">Listening...</p>
+                    <p class="lang lang-zh">听...</p>
+                    <p class="lang lang-ms">Mendengar...</p>
+                    <p class="lang lang-ta">கேட்கின்றேன்...</p>
+                </button>
             </div>
             <div id="processing-button-container" class="speak-button-container">
                 <button class="button button1">
-                <img src="./Images/Control_Signs/Mic-Icon.png" alt="Snow">
-                Processing...</button>
+                    <img src="./Images/Control_Signs/Mic-Icon.png" alt="Snow">
+                    <p class="lang lang-en">Processing...</p>
+                    <p class="lang lang-zh">处理...s</p>
+                    <p class="lang lang-ms">Pemprosesan...</p>
+                    <p class="lang lang-ta">செயலாக்கம்...</p>
+                </button>
             </div>
         </div>
         <div id="container" class="container">
             <!-- Landing Screen -->
             <div id="landing-screen">
-                <p class="question">Welcome to Ng Teng Fong General Hospital! What can I do for you today?</p>
+                <p class="question lang lang-en">Welcome to Ng Teng Fong General Hospital! What can I do for you today?</p>
+                <p class="question lang lang-zh">欢迎来到黄廷方综合医院！今天我能为您做些什么？</p>
+                <p class="question lang lang-ms">Selamat datang ke Hospital Besar Ng Teng Fong! Apa yang boleh saya lakukan untuk anda hari ini?</p>
+                <p class="question lang lang-ta">இங் டெங் ஃபோங் பொது மருத்துவமனைக்கு உங்களை வரவேற்கிறோம்! இன்று நான் உங்களுக்காக என்ன செய்ய முடியும்?</p>
                 <!-- <button onclick="startGuidedTour(); showVideo('AI-visited-video')">Guided Tour Setup</button> -->
-                <button onclick="showChatInterface(); showAvatar(); beginChat()">Ask AI</button>
-                <button onclick="openWayfinding()">Wayfinding Page</button>
+                <button onclick="showChatInterface(); showAvatar(); beginChat()">
+                    <p class="lang lang-en">Ask AI</p>
+                    <p class="lang lang-zh">询问 AI</p>
+                    <p class="lang lang-ms">Tanya AI</p>
+                    <p class="lang lang-ta">ஏ.ஐ.யை கேளுங்கள்</p>
+                </button>
+                <button onclick="openWayfinding()">
+                    <p class="lang lang-en">Wayfinding Page</p>
+                    <p class="lang lang-zh">导航页面</p>
+                    <p class="lang lang-ms">Halaman Penunjuk Arah</p>
+                    <p class="lang lang-ta">வழிகாட்டும் பக்கம்</p>
+                </button>
             </div>
 
             <!-- Step 1: Have you been here before -->
@@ -122,7 +165,12 @@
             </div>
         </div>
         <div id="banner-image"  class="imageContainer">
-            <div class="text-overlay">Events</div>
+            <div class="text-overlay">
+                <p class="lang lang-en">Events</p>
+                <p class="lang lang-zh">活动</p>
+                <p class="lang lang-ms">Acara</p>
+                <p class="lang lang-ta">நிகழ்வுகள்</p>
+            </div>
             <img alt="banner-image" src="./Images/banner_3.png" width="100%">
         </div>
     </div>
@@ -131,9 +179,9 @@
     src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"
   ></script>
   <script
-type="text/javascript"
-src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
-></script>
+    type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+  ></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn-aihuman.deepbrainai.io/sdk/web/aiPlayer-1.5.3.min.js"></script>
     <script src="./javascript/script.js"></script>
@@ -143,6 +191,7 @@ src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
     <script src="./javascript/wayfinding_ntfgh.js"></script>
     <script src="./javascript/avatar-videos.js"></script>
     <script src="./javascript/start-screen-overlay.js"></script>
+    <script src="./javascript/language-change.js"></script>
     <script src="./javascript/./google-stt.js"></script>
 </body>
 </html>

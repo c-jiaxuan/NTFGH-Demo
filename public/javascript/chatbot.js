@@ -39,6 +39,18 @@ const now = new Date();
 const dateString = now.toLocaleDateString();
 const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+const aiLanguages = ['English', 'Chinese', 'Malay', 'Tamil'];
+
+// Change language according to language selector
+document.addEventListener('DOMContentLoaded', (event) => {
+    const langSelector = document.getElementById('langSelector');
+
+    langSelector.addEventListener('change', (event) => {
+        bot_language = aiLanguages[langSelector.selectedIndex];
+        console.log("aiLangauge = " + bot_language);
+    });
+});
+
 // Showing loading chat bubble before beginChat
 function loadChat() {
     createTempBubble(BOT_BUBBLE, "Loading AI, please wait", 0);
@@ -46,11 +58,14 @@ function loadChat() {
 
 function beginChat() {
     if (isPreloadingFinished() && !startChat && !document.getElementById('chat-container').classList.contains('hidden')) {
+        console.log("beginning chat");
         deleteTempBubble();
         botMessage(botMessages["greeting_msg"].message, botMessages["greeting_msg"].gesture, false);
         startChat = true;
     }
 }
+
+// Change language for LLM payload
 
 function processUserMessage(msg){
     if (msg == '') 
@@ -238,6 +253,9 @@ function processBotMessage(answer, followUpQns){
         // Show processing status
         createTempBubble(BOT_BUBBLE, "Processing the answer", 0);
 
+        // Remove asterisks from chinese text and use it as the one sent to TTS
+        var speakableText = removeAsterisks(answer);
+
         setTimeout(() => { 
             // Delete processing status after 2 seconds
             deleteTempBubble();
@@ -275,7 +293,11 @@ function processBotMessage(answer, followUpQns){
     chatBody.scrollTop = chatBody.scrollHeight;
 
     //Send to avatar to speak
-    speak(answer);
+    speak(speakableText);
+}
+
+function removeAsterisks(text) {
+    return text.replace(/\*/g, '');
 }
 
 let flagTriggered = false;

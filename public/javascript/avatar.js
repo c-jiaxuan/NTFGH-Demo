@@ -52,6 +52,21 @@ var totalMessages = 0;
 
 const maleVoice = 'google/en-US/MALE_en-US-Standard-D';
 const femaleVoice = 'amazon/en-US/Female_Danielle';
+
+const chineseFemaleVoice = 'google/cmn-CN/FEMALE_cmn-CN-Wavenet-A';
+
+
+var aiLangauge = document.getElementById('langSelector').value;
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    const colorSelector = document.getElementById('langSelector');
+
+    colorSelector.addEventListener('change', (event) => {
+        setAILanguage();
+    });
+});
+
+
 const female_Avatar = true;
 
 initSample();
@@ -130,6 +145,30 @@ async function refreshTokenIFExpired() {
     }
     }
 }
+
+function setAILanguage () {
+    findCustomVoice();
+    aiLangauge = document.getElementById('langSelector').value;
+    // console.log("aiLanguage = " + aiLangauge);
+    const customVoice = AI_PLAYER.findCustomVoice(femaleVoice);
+    const customChineseVoice = AI_PLAYER.findCustomVoice(chineseFemaleVoice);
+
+    // Set custom voice will cause issues with the AI speaking
+    const isSuccess = female_Avatar ? AI_PLAYER.setCustomVoice(customChineseVoice) : AI_PLAYER.setCustomVoice(customVoice); 
+    console.log(isSuccess ? "Successfully set custom voice" : "Unsuccessful in setting custom voice");
+    
+    const customVoice_check = AI_PLAYER.getCustomVoice();
+    if (customVoice_check == null) {
+        console.log("custom voice is not set");
+    }
+}
+
+function findCustomVoice() {
+    const languages = AI_PLAYER.getSpeakableLanguages(AI_PLAYER.getGender());
+    console.log("languages = " + languages);
+    const customVoices = AI_PLAYER.getCustomVoicesWith('cmn-CN', AI_PLAYER.getGender());
+    console.log("customVoices = " + JSON.stringify(customVoices));
+}
   
 // =========================== AIPlayer Callback ================================ //
 
@@ -142,24 +181,25 @@ function initAIPlayerEvent() {
 
     // TODO: AIPlayer Loading State Change Handling
     AI_PLAYER.onAIPlayerStateChanged = function (state) {
-    if (state === 'playerLoadComplete') {
-        // To set custom voice
-        //const customVoice = AI_PLAYER.findCustomVoice("google/en-US/FEMALE_en-US-Neural2-C");
-        const customVoicePackMale = AI_PLAYER.findCustomVoice(maleVoice);
-        const customVoice = AI_PLAYER.findCustomVoice(femaleVoice);
+        if (state === 'playerLoadComplete') {
+            // To set custom voice
+            //const customVoice = AI_PLAYER.findCustomVoice("google/en-US/FEMALE_en-US-Neural2-C");
+            const customVoicePackMale = AI_PLAYER.findCustomVoice(maleVoice);
+            const customVoice = AI_PLAYER.findCustomVoice(femaleVoice);
+            const customChineseVoice = AI_PLAYER.findCustomVoice(chineseFemaleVoice);
 
-        // Set custom voice will cause issues with the AI speaking
-        const isSuccess = female_Avatar ? AI_PLAYER.setCustomVoice(customVoice) : AI_PLAYER.setCustomVoice(customVoicePackMale); 
-        console.log(isSuccess ? "Successfully set custom voice" : "Unsuccessful in setting custom voice");
-        
-        const customVoice_check = AI_PLAYER.getCustomVoice();
-        if (customVoice_check == null) {
-        console.log("custom voice is not set");
+            // Set custom voice will cause issues with the AI speaking
+            const isSuccess = female_Avatar ? AI_PLAYER.setCustomVoice(customVoice) : AI_PLAYER.setCustomVoice(customVoicePackMale); 
+            console.log(isSuccess ? "Successfully set custom voice" : "Unsuccessful in setting custom voice");
+            
+            const customVoice_check = AI_PLAYER.getCustomVoice();
+            if (customVoice_check == null) {
+            console.log("custom voice is not set");
+            }
+
+            preloadMessages();
+            loadChat();
         }
-
-        preloadMessages();
-        loadChat();
-    }
     };
 
     //AIEvent & callback
