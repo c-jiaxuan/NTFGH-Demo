@@ -39,14 +39,14 @@ const now = new Date();
 const dateString = now.toLocaleDateString();
 const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-const aiLanguages = ['English', 'Chinese', 'Malay', 'Tamil'];
+const speakLanguages = ['English', 'Chinese', 'Malay', 'Tamil'];
 
 // Change language according to language selector
 document.addEventListener('DOMContentLoaded', (event) => {
     const langSelector = document.getElementById('langSelector');
 
     langSelector.addEventListener('change', (event) => {
-        bot_language = aiLanguages[langSelector.selectedIndex];
+        bot_language = speakLanguages[langSelector.selectedIndex];
         console.log("aiLangauge = " + bot_language);
     });
 });

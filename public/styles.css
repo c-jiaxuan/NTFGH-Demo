@@ -142,10 +142,10 @@ button:hover {
 
 #AIPlayerWrapper {
     position: fixed;
-    height: 1750px;
-    width: 1000px;
+    height: 2750px;
+    width: 1500px;
     top: 15%;
-    left: -10%;
+    left: -15%;
     pointer-events: none; 
     z-index: 2;
 }

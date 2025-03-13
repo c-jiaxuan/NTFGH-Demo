@@ -55,13 +55,17 @@ const femaleVoice = 'amazon/en-US/Female_Danielle';
 
 const chineseFemaleVoice = 'google/cmn-CN/FEMALE_cmn-CN-Wavenet-A';
 
+// en, zh, ms, ta
+let aiLanguages = new Map();
+aiLanguages.set('en', femaleVoice);
+aiLanguages.set('zh', chineseFemaleVoice);
 
-var aiLangauge = document.getElementById('langSelector').value;
+var docLangauge = document.getElementById('langSelector').value;
 
 document.addEventListener('DOMContentLoaded', (event) => {
-    const colorSelector = document.getElementById('langSelector');
+    const langSelector = document.getElementById('langSelector');
 
-    colorSelector.addEventListener('change', (event) => {
+    langSelector.addEventListener('change', (event) => {
         setAILanguage();
     });
 });
@@ -147,14 +151,22 @@ async function refreshTokenIFExpired() {
 }
 
 function setAILanguage () {
-    findCustomVoice();
-    aiLangauge = document.getElementById('langSelector').value;
-    // console.log("aiLanguage = " + aiLangauge);
-    const customVoice = AI_PLAYER.findCustomVoice(femaleVoice);
-    const customChineseVoice = AI_PLAYER.findCustomVoice(chineseFemaleVoice);
-
-    // Set custom voice will cause issues with the AI speaking
-    const isSuccess = female_Avatar ? AI_PLAYER.setCustomVoice(customChineseVoice) : AI_PLAYER.setCustomVoice(customVoice); 
+    showCustomVoice();
+    var customVoice = AI_PLAYER.findCustomVoice(femaleVoice);
+    docLangauge = document.getElementById('langSelector').value;
+    // console.log("docLangauge = " + docLangauge);
+    if (aiLanguages.has(docLangauge)) {
+        switch (docLangauge) {
+            case 'en':
+                customVoice = AI_PLAYER.findCustomVoice(femaleVoice);
+            break;
+            case 'zh':
+                customVoice = AI_PLAYER.findCustomVoice(chineseFemaleVoice);
+            break;
+        }
+    }
+    
+    const isSuccess = female_Avatar ? AI_PLAYER.setCustomVoice(customVoice) : AI_PLAYER.setCustomVoice(maleVoice); 
     console.log(isSuccess ? "Successfully set custom voice" : "Unsuccessful in setting custom voice");
     
     const customVoice_check = AI_PLAYER.getCustomVoice();
@@ -163,7 +175,7 @@ function setAILanguage () {
     }
 }
 
-function findCustomVoice() {
+function showCustomVoice() {
     const languages = AI_PLAYER.getSpeakableLanguages(AI_PLAYER.getGender());
     console.log("languages = " + languages);
     const customVoices = AI_PLAYER.getCustomVoicesWith('cmn-CN', AI_PLAYER.getGender());

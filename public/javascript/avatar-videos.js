@@ -104,32 +104,32 @@ function showAvatar() {
   pauseVideo(idleVideo_element);
 }
 
-init();
+// init();
 
-introVideo_element.addEventListener('ended', () => {
-  showVideo('AI-idle-video');
-})
+// introVideo_element.addEventListener('ended', () => {
+//   showVideo('AI-idle-video');
+// })
 
-visitedVideo_element.addEventListener('ended', () => {
-  showVideo('AI-idle-video');
-})
+// visitedVideo_element.addEventListener('ended', () => {
+//   showVideo('AI-idle-video');
+// })
 
-agegroupVideo_element.addEventListener('ended', () => {
-  showVideo('AI-idle-video');
-})
+// agegroupVideo_element.addEventListener('ended', () => {
+//   showVideo('AI-idle-video');
+// })
 
-interestsVideo_element.addEventListener('ended', () => {
-  showVideo('AI-idle-video');
-})
+// interestsVideo_element.addEventListener('ended', () => {
+//   showVideo('AI-idle-video');
+// })
 
-durationVideo_element.addEventListener('ended', () => {
-  showVideo('AI-idle-video');
-})
+// durationVideo_element.addEventListener('ended', () => {
+//   showVideo('AI-idle-video');
+// })
 
-resultsVideo_element.addEventListener('ended', () => {
-  showVideo('AI-idle-video');
-})
+// resultsVideo_element.addEventListener('ended', () => {
+//   showVideo('AI-idle-video');
+// })
 
-idleVideo_element.addEventListener('ended', () => {
-  showVideo('AI-idle-video');
-})
+// idleVideo_element.addEventListener('ended', () => {
+//   showVideo('AI-idle-video');
+// })
