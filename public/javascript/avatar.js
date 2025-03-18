@@ -64,12 +64,10 @@ var docLangauge = document.getElementById('langSelector').value;
 
 
 document.addEventListener('LANGUAGE_CHANGE', (event) => {
-    setAILanguage();
+    setAILanguage(event.detail.language);
 });
 
 const female_Avatar = true;
-
-initSample();
 
 async function initSample() {
     initAIPlayerEvent();
@@ -146,13 +144,13 @@ async function refreshTokenIFExpired() {
     }
 }
 
-function setAILanguage () {
+function setAILanguage (lang) {
     // showCustomVoice();
     var customVoice = AI_PLAYER.findCustomVoice(femaleVoice);
-    docLangauge = document.getElementById('langSelector').value;
-    console.log("docLangauge = " + docLangauge);
-    if (aiLanguages.has(docLangauge)) {
-        switch (docLangauge) {
+    // docLangauge = document.getElementById('langSelector').value;
+    console.log("lang = " + lang);
+    if (aiLanguages.has(lang)) {
+        switch (lang) {
             case 'en':
                 customVoice = AI_PLAYER.findCustomVoice(femaleVoice);
             break;
@@ -206,7 +204,9 @@ function initAIPlayerEvent() {
             }
 
             preloadMessages();
-            loadChat();
+
+            // Send out event for script.js
+            document.dispatchEvent(new Event('AIPLAYER_LOAD_COMPLETE'));
         }
     };
 
@@ -260,10 +260,6 @@ function initAIPlayerEvent() {
         case AIEventType.AICLIPSET_PRELOAD_COMPLETED:
             typeName = 'AICLIPSET_PRELOAD_COMPLETED';
             document.dispatchEvent(new Event('AICLIPSET_PRELOAD_COMPLETED'));
-            preloadCount++;
-            if(isPreloadingFinished()) {
-                beginChat();
-            }
             break;
         case AIEventType.AICLIPSET_PLAY_STARTED:
             typeName = 'AICLIPSET_PLAY_STARTED';
@@ -408,6 +404,7 @@ async function makeRequest(method, url, params) {
 }
 
 // Preload messages
+// To move botMessages into another script for editing
 function preloadMessages() {
     // Multi Gesture preload
     let preloadArr = []; // Initialize an empty array
@@ -454,6 +451,11 @@ function countPreloadMessages(){
 }
 
 const PRELOAD_FINISHED = new Event("PRELOAD_FINISHED");
+
+// Increment the number of messages that are preloaded
+function incrementPreloadCount() {
+    preloadCount++;
+}
 
 // Check if preload finished
 function isPreloadingFinished() {

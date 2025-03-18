@@ -17,7 +17,7 @@ function changeLanguage(languageCode) {
 }
 
 // select handler
-document.addEventListener(LANGUAGE_CHANGE, function (evt) {
+document.addEventListener('LANGUAGE_CHANGE', function (evt) {
     changeLanguage(evt.detail.language);
 });
 

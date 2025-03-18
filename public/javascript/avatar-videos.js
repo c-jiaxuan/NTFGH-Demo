@@ -1,3 +1,7 @@
+// Retrieve all video files from one folder
+// Dynamically create video elements using the name of the video files
+
+
 // Buffer to store and track which video element is being played
 var playingVideo = null;
 

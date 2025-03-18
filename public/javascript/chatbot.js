@@ -41,15 +41,29 @@ const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digi
 
 const speakLanguages = ['English', 'Chinese'];
 
-// Change language according to language selector
-document.addEventListener('DOMContentLoaded', (event) => {
-    const langSelector = document.getElementById('langSelector');
-
-    langSelector.addEventListener('change', (event) => {
-        bot_language = speakLanguages[langSelector.selectedIndex];
-        console.log("aiLangauge = " + bot_language);
-    });
+document.addEventListener('LANGUAGE_CHANGE', function (evt) {
+    setBotLanguage(evt.detail.index);
 });
+
+// Takes in the index of the selector
+// 0 = English
+// 1 = Chinese
+// WILL HAVE TO IMPROVE ON THIS
+function setBotLanguage(index) {
+    bot_language = speakLanguages[index];
+    console.log("aiLangauge = " + bot_language);
+}
+
+// Dispatches event signalling for the avatar to speak
+function dispatchSpeakEvent(_message, _gesture) {
+    const speakEvent = new CustomEvent('SPEAK_EVENT', {
+        detail: {
+            message: _message,
+            gesture: _gesture
+        }
+    });
+    document.dispatchEvent(speakEvent);
+}
 
 // Showing loading chat bubble before beginChat
 function loadChat() {
@@ -64,8 +78,6 @@ function beginChat() {
         startChat = true;
     }
 }
-
-// Change language for LLM payload
 
 function processUserMessage(msg){
     if (msg == '') 
@@ -116,9 +128,11 @@ async function sentToSimilarity(message) {
         console.log("No message detected, returning...");
         var res = getRandomElement(botMessages['default_msgs']);
         createMsgBubble(BOT_BUBBLE, res.message);
-        // Preloaded message has no LLM and Avatar speed
-        addMessageData(currMessage, 0, 0);
-        speak(res.message, res.gesture);
+
+        // Send out event with message contents in script.js
+        // script.js will tell avatar module to speak
+        dispatchSpeakEvent(res.message, res.gesture);
+
         return;
     }
 
@@ -248,7 +262,9 @@ function processBotMessage(answer, followUpQns){
     }
     else
     {
-        speak(botMessages["processing_msg"].message);
+        // Send out event with message contents in script.js
+        // script.js will tell avatar module to speak
+        dispatchSpeakEvent(botMessages["processing_msg"].message);
 
         // Show processing status
         createTempBubble(BOT_BUBBLE, "Processing the answer", 0);
@@ -292,8 +308,9 @@ function processBotMessage(answer, followUpQns){
     // Scroll to the bottom
     chatBody.scrollTop = chatBody.scrollHeight;
 
-    //Send to avatar to speak
-    speak(speakableText);
+    // Send out event with message contents in script.js
+    // script.js will tell avatar module to speak
+    dispatchSpeakEvent(speakableText);
 }
 
 function removeAsterisks(text) {
@@ -375,7 +392,9 @@ function botMessage(setMessage, gesture, delay) {
     {
         console.log("show answer without delay");
 
-        speak(setMessage.toString(), gesture);
+        // Send out event with message contents in script.js
+        // script.js will tell avatar module to speak
+        dispatchSpeakEvent(setMessage.toString(), gesture);
         
         createMsgBubble(BOT_BUBBLE, setMessage);
 

@@ -4,7 +4,7 @@
 // Transcribing
 // LLM responding
 // Avatar processing
-// LLM speaking
+// Avatar speaking
 
 //App states freeze is used to prevent mutations to the state's values
 const APP_STATE = Object.freeze({
@@ -28,16 +28,6 @@ class AppController {
         return this.state;
     }
 
-    onAIPlayerInit = () => {
-        this.aiPlayerInit = true;
-        this.checkAndUpdateInitState();
-      }
-
-    onTranscribeInit = () => {
-        this.transcribeInit = true;
-        this.checkAndUpdateInitState();
-    }
-
     updateAppState(newState, isForce) {
         if (isForce) {
             this.state = newState;
@@ -55,30 +45,59 @@ class AppController {
 
 const appController = new AppController();
 
-
-// initApp();
-
 // Initialize the app
 function initApp () {
     // Start loading chatbot, avatar
+    // send out the event to start loading chatbot
     initSample();
 
     // Set app state to loading
     appController.updateAppState(APP_STATE.LOADING, true);
-
-    // listen for preloading finished
-    // once finished preloading set state to idle
-
 }
 
 // Define events
+const LOADING_APP = new Event('LOADING_APP');
 const LANGUAGE_CHANGE = new Event('LANGUAGE_CHANGE');
+
+// *********************** Event Listeners *********************** //
+document.addEventListener('DOMContentLoaded', function (evt) {
+    initApp();
+});
 
 document.getElementById('langSelector').addEventListener('change', function (evt) {
     const selectedLanguage = evt.target.value; // Get selected language
+    const selectedIndex = evt.target.selectedIndex; // Get selected index
+    console.log("selectedIndex = " + selectedIndex);
     const languageChangeEvent = new CustomEvent('LANGUAGE_CHANGE', {
-        detail: { language: selectedLanguage }
+        detail: { 
+            language: selectedLanguage,
+            index: selectedIndex 
+        }
     });
     document.dispatchEvent(languageChangeEvent);
+});
+
+// AI Player has loaded, but has not preloaded finished
+document.addEventListener('AIPLAYER_LOAD_COMPLETE', function (evt) {
+    loadChat();
+    getFilesFromFolder('../videos');
+});
+
+// Preloading is finished
+document.addEventListener('AICLIPSET_PRELOAD_COMPLETED', function (evt) {
+    incrementPreloadCount();
+    if(isPreloadingFinished()) {
+        // Chatbot to begin chat
+        beginChat();
+        // App is now in its IDLE state after preloading has finished
+        appController.updateAppState(APP_STATE.IDLE);
+    }
+});
+
+// Listens for any SPEAK_EVENT
+document.addEventListener('SPEAK_EVENT', function (evt) {
+    console.log("Received SPEAK_EVENT with data: " + evt.detail.message + ", " + evt.detail.gesture);
+    speak(evt.detail.message, evt.detail.gesture);
+    appController.updateAppState(APP_STATE.AVATAR_PROCESSING);
 });
 

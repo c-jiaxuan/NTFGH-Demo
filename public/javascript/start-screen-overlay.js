@@ -31,6 +31,14 @@ document.addEventListener("DOMContentLoaded", function () {
     
     startButton.addEventListener("click", function () {
         document.getElementById("overlay").style.display = "none";
-        speak(botMessages["start_msg"][0].message, botMessages["start_msg"][0].gesture, false);
+
+        // Dispatch event for Avatar to speak
+        const speakEvent = new CustomEvent('SPEAK_EVENT', {
+            detail: {
+                message: botMessages["start_msg"][0].message,
+                gesture: botMessages["start_msg"][0].gesture
+            }
+        });
+        document.dispatchEvent(speakEvent);
     });
 });
