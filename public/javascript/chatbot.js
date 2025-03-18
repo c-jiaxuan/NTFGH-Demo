@@ -39,7 +39,7 @@ const now = new Date();
 const dateString = now.toLocaleDateString();
 const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-const speakLanguages = ['English', 'Chinese', 'Malay', 'Tamil'];
+const speakLanguages = ['English', 'Chinese'];
 
 // Change language according to language selector
 document.addEventListener('DOMContentLoaded', (event) => {

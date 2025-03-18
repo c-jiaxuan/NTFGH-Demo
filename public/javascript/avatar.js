@@ -62,14 +62,10 @@ aiLanguages.set('zh', chineseFemaleVoice);
 
 var docLangauge = document.getElementById('langSelector').value;
 
-document.addEventListener('DOMContentLoaded', (event) => {
-    const langSelector = document.getElementById('langSelector');
 
-    langSelector.addEventListener('change', (event) => {
-        setAILanguage();
-    });
+document.addEventListener('LANGUAGE_CHANGE', (event) => {
+    setAILanguage();
 });
-
 
 const female_Avatar = true;
 
@@ -151,10 +147,10 @@ async function refreshTokenIFExpired() {
 }
 
 function setAILanguage () {
-    showCustomVoice();
+    // showCustomVoice();
     var customVoice = AI_PLAYER.findCustomVoice(femaleVoice);
     docLangauge = document.getElementById('langSelector').value;
-    // console.log("docLangauge = " + docLangauge);
+    console.log("docLangauge = " + docLangauge);
     if (aiLanguages.has(docLangauge)) {
         switch (docLangauge) {
             case 'en':
@@ -457,11 +453,19 @@ function countPreloadMessages(){
     console.log("Finished counting number of preload messages");
 }
 
+const PRELOAD_FINISHED = new Event("PRELOAD_FINISHED");
+
 // Check if preload finished
 function isPreloadingFinished() {
     console.log("Preloaded " + preloadCount + " number of messages...");
     console.log("Checking if preloaded finish against " + totalMessages + " items ...");
-    return preloadCount >= totalMessages;
+    if (preloadCount >= totalMessages) {
+        console.log("Dispatching event PRELOAD_FINISHED");
+        document.dispatchEvent(PRELOAD_FINISHED);
+        return true;
+    } else {
+        return false;
+    }
 }
 
 function registerNextSpeak(speak){

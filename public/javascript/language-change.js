@@ -1,5 +1,7 @@
 var currentLanguage = 'en-EN';
 
+const selector = document.getElementById('langSelector');
+
 function changeLanguage(languageCode) {
     if (languageCode != null) {
         currentLanguage = languageCode;
@@ -15,9 +17,8 @@ function changeLanguage(languageCode) {
 }
 
 // select handler
-const selector = document.getElementById('langSelector');
-selector.addEventListener('change', function (evt) {
-    changeLanguage(this.value);
+document.addEventListener(LANGUAGE_CHANGE, function (evt) {
+    changeLanguage(evt.detail.language);
 });
 
 // detect initial browser language
