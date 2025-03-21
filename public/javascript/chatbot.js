@@ -68,6 +68,9 @@ function dispatchSpeakEvent(_message, _gesture) {
 // Showing loading chat bubble before beginChat
 function loadChat() {
     createTempBubble(BOT_BUBBLE, "Loading AI, please wait", 0);
+
+    // Do a check every 2-3 seconds to check if preloading is stuck
+    
 }
 
 function beginChat() {

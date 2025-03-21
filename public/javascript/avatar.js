@@ -10,7 +10,7 @@ AI_PLAYER.setConfig({
     // resourceServer: 'https://resource.deepbrainai.io',
     // backendServer: 'https://backend.deepbrainai.io',
 });
-  
+
 //Avatar constant
 const DATA = {
     appId: "",
@@ -50,6 +50,16 @@ botMessages["processing_msg"] = new AI_Message("Thank you! Please wait while I'm
 var preloadCount = 0;
 var totalMessages = 0;
 
+var preloadStartTime = 0;
+var preloadEndedTime = 0;
+var preloadTotalTime = 0;
+
+const LOADING_TIMEOUT = new Event('LOADING_TIMEOUT');
+const PRELOAD_TIMEOUT = new Event('PRELOAD_TIMEOUT');
+const VOICE_TIMEOUT = new Event('VOICE_TIMEOUT');
+
+var currTimeout = null;
+
 const maleVoice = 'google/en-US/MALE_en-US-Standard-D';
 const femaleVoice = 'amazon/en-US/Female_Danielle';
 
@@ -62,7 +72,7 @@ aiLanguages.set('zh', chineseFemaleVoice);
 
 var docLangauge = document.getElementById('langSelector').value;
 
-
+// Listen for LANGUAGE_CHANGE event signalling user wants a change of language
 document.addEventListener('LANGUAGE_CHANGE', (event) => {
     setAILanguage(event.detail.language);
 });
@@ -181,8 +191,22 @@ function showCustomVoice() {
 function initAIPlayerEvent() {
     // TODO: AIPlayer error handling
     AI_PLAYER.onAIPlayerError = function (err) {
-    // err => string || { succeed: false, errorCode: 1400, error: "...", description: "...", detail: "..." }
-    // console.log('on AIPlayer Error: ', err);
+
+        err => string || { succeed: false, errorCode: 1400, error: "...", description: "...", detail: "..." };
+        
+        const errorDetails = {
+            succeed: false,
+            errorCode: err?.errorCode || 1400,
+            error: err?.error || "Unknown Error",
+            description: err?.description || "No description provided",
+            detail: err?.detail || "No details available"
+        };
+
+        // Create a custom event with error details
+        const event = new CustomEvent("AIPLAYER_FAILED", { detail: errorDetails });
+
+        // Dispatch the event with details
+        document.dispatchEvent(event);
     };
 
     // TODO: AIPlayer Loading State Change Handling
@@ -256,10 +280,31 @@ function initAIPlayerEvent() {
         case AIEventType.AICLIPSET_PRELOAD_STARTED:
             typeName = 'AICLIPSET_PRELOAD_STARTED';
             dispatchEvent(new Event('AICLIPSET_PRELOAD_STARTED'));
+
+            // log start time
+            preloadStartTime = performance.now();
+
+            // Start timeout for 60 seconds (1 mins), if time out, dispatch an event
+            // Stop setting timeout at the last message
+            if (preloadCount != (totalMessages - 1)) {
+                checkTimeOut(PRELOAD_TIMEOUT, 60000, 'preloading timeout after 1 minute');
+            }
+
             break;
         case AIEventType.AICLIPSET_PRELOAD_COMPLETED:
             typeName = 'AICLIPSET_PRELOAD_COMPLETED';
+
+            // Clear the timeout when preload for a message is finished
+            clearTimeout(currTimeout);
+
+            incrementPreloadCount();
+
             document.dispatchEvent(new Event('AICLIPSET_PRELOAD_COMPLETED'));
+
+            // Stop logging time
+            preloadEndedTime = performance.now();
+            preloadTotalTime = preloadEndedTime - preloadStartTime;
+            console.log('Time taken to preload = ' + (preloadTotalTime / 1000) + ' seconds(s)');
             break;
         case AIEventType.AICLIPSET_PLAY_STARTED:
             typeName = 'AICLIPSET_PLAY_STARTED';
@@ -285,6 +330,9 @@ function initAIPlayerEvent() {
             break;
         case AIEventType.AICLIPSET_PLAY_FAILED:
             typeName = 'AICLIPSET_PLAY_FAILED';
+
+            document.dispatchEvent('AIPLAYER_PLAY_FAILED');
+
             break;
         case AIEventType.AICLIPSET_PLAY_BUFFERING:
             typeName = 'AICLIPSET_PLAY_BUFFERING';
@@ -362,7 +410,6 @@ async function speak(text, gst) {
         var msgToSpeak = breakdownSpeak(text);
         AI_PLAYER.send(msgToSpeak);
     }
-
 }
 
 async function preload(clipSet) {
@@ -494,4 +541,13 @@ function isPreloadMessage(msg){
         }
     }
     return false;
+}
+
+// Function to use when preload times out in milliseconds
+function checkTimeOut(EVENT, timeout, message) {
+    console.log('Setting timeout for ' + timeout + ' ms');
+    currTimeout = setTimeout( function() {
+        console.log("FUNCTION TIMEOUT : " + message);
+        document.dispatchEvent(EVENT);
+    }, timeout);
 }

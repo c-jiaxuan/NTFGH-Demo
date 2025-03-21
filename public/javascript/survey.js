@@ -1,43 +1,39 @@
 // Variables to store user inputs
-let userExperience = null;
-let userAgeGroup = null;
-let userInterests = [];
-let userTimeSlot = [];
+let patient_maritalStatus = null;
+let patient_religion = null;
+let patient_language = null;
+let patient_education = null;
+// let patient_userTimeSlot = [];
 
 // Handle the first question
-function handleExperience(response) {
-    userExperience = response;
+function handleMaritalStatus(response) {
+    patient_maritalStatus = response;
 
     // Hide step 1 and show step 2
     document.getElementById('step-1').classList.add('hidden');
     document.getElementById('step-2').classList.remove('hidden');
 }
 
-// Handle the age group selection
-function handleAgeGroup(ageGroup) {
-    userAgeGroup = ageGroup;
+function handleReligion(religion) {
+    patient_religion = religion;
 
     // Hide step 2 and show step 3
     document.getElementById('step-2').classList.add('hidden');
     document.getElementById('step-3').classList.remove('hidden');
 }
 
-// Handle interests selection
-function handleInterests() {
-    const checkboxes = document.querySelectorAll('.interests:checked');
-    userInterests = Array.from(checkboxes).map(checkbox => checkbox.value);
+function handleLanguage(language) {
+    patient_language = language;
 
     // Hide step 3 and show step 4
     document.getElementById('step-3').classList.add('hidden');
     document.getElementById('step-4').classList.remove('hidden');
 }
 
-// Handle time slot selection
-function handleTimeSlot() {
-    const checkboxes = document.querySelectorAll('.time-slot:checked');
-    userTimeSlot = Array.from(checkboxes).map(checkbox => checkbox.value);
+function handleEducation(education) {
+    patient_education = education;
 
-    // Hide step 4 and show result
+    // Hide step 4 and show step 5
     document.getElementById('step-4').classList.add('hidden');
     document.getElementById('result').classList.remove('hidden');
 
@@ -46,38 +42,59 @@ function handleTimeSlot() {
     document.getElementById('output-message').innerText = message;
 }
 
+// // Handle time slot selection
+// function handleTimeSlot() {
+//     const checkboxes = document.querySelectorAll('.time-slot:checked');
+//     userTimeSlot = Array.from(checkboxes).map(checkbox => checkbox.value);
+
+//     // Hide step 4 and show result
+//     document.getElementById('step-4').classList.add('hidden');
+//     document.getElementById('result').classList.remove('hidden');
+
+//     // Generate a personalized message
+//     const message = generateMessage();
+//     document.getElementById('output-message').innerText = message;
+// }
+
 // Generate a personalized message based on user inputs
 function generateMessage() {
-    const interests = userInterests.join(', ') || 'no specific interests';
-    const timeSlot = userTimeSlot.join(', ') || 'no specific time slot';
-
-    return `Hello! 
-    You have ${userExperience === 'yes' ? 'visited us before' : 'not visited us before'}. 
-    As a ${userAgeGroup}, your interests include: \n ${interests}. \n Preferred tour durations: ${timeSlot}. 
-    We hope you have a great experience!`;
+    let report = "Medical Report:\n";
+    
+    report += `Marital Status: ${patient_maritalStatus ?? "Not provided"}\n`;
+    report += `Religion: ${patient_religion ?? "Not provided"}\n`;
+    report += `Preferred Language: ${patient_language ?? "Not provided"}\n`;
+    report += `Education Level: ${patient_education ?? "Not provided"}\n`;
+    
+    return report;
 }
 
 // Back Navigation Functions
-function goBackToExperience() {
+function goBackToMaritalStatus() {
     document.getElementById('step-2').classList.add('hidden');
     document.getElementById('step-1').classList.remove('hidden');
 }
-function goBackToAgeGroup() {
+function goBackToReligion() {
     document.getElementById('step-3').classList.add('hidden');
     document.getElementById('step-2').classList.remove('hidden');
 }
-function goBackToInterests() {
+function goBackToLanguages() {
     document.getElementById('step-4').classList.add('hidden');
     document.getElementById('step-3').classList.remove('hidden');
+}
+
+function goBackToEducation() {
+    document.getElementById('result').classList.add('hidden');
+    document.getElementById('step-4').classList.remove('hidden');
 }
 
 // Restart the process
 function restart() {
     // Reset variables
-    userExperience = null;
-    userAgeGroup = null;
-    userInterests = [];
-    userTimeSlot = [];
+    patient_maritalStatus = null;
+    patient_religion = null;
+    patient_language = null;
+    patient_education = null;
+    // userTimeSlot = [];
 
     // Reset checkboxes
     document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
@@ -94,7 +111,7 @@ function restart() {
 
 // Start the Guided Tour
 function startGuidedTour() {
-    document.getElementById('banner-image').classList.add('hidden');
+    // document.getElementById('banner-image').classList.add('hidden');
     document.getElementById('landing-screen').classList.add('hidden');
     document.getElementById('step-1').classList.remove('hidden');
     document.getElementById('main-menu-button').classList.remove('hidden');
@@ -102,10 +119,10 @@ function startGuidedTour() {
 
 function goToMainMenu() {
     // Reset all variables
-    userExperience = null;
-    userAgeGroup = null;
-    userInterests = [];
-    userTimeSlot = [];
+    patient_maritalStatus = null;
+    patient_religion = null;
+    patient_language = null;
+    patient_education = null;
 
     // Reset checkboxes
     document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
@@ -125,8 +142,9 @@ function goToMainMenu() {
     // Show the landing screen
     document.getElementById('landing-screen').classList.remove('hidden');
     document.getElementById('container').classList.remove('hidden');
-    document.getElementById('banner-image').classList.remove('hidden');
+    //document.getElementById('banner-image').classList.remove('hidden');
     document.getElementById('main-menu-button').classList.add('hidden');
+    document.getElementById('patient-orientation-container').classList.add('hidden');
     document.getElementById('user-options').classList.remove('user_options_1');
 }
 
@@ -134,7 +152,17 @@ function showChatInterface() {
     console.log("show AI Chat");
     document.getElementById('main-menu-button').classList.remove('hidden');
     document.getElementById('container').classList.add('hidden');
-    document.getElementById('banner-image').classList.add('hidden');
+    //document.getElementById('banner-image').classList.add('hidden');
     document.getElementById('chat-container').classList.remove('hidden');
+    document.getElementById('user-options').classList.add('user_options_1');
+}
+
+function showPatientOrientation() {
+    console.log("show patient orientation");
+    document.getElementById('main-menu-button').classList.remove('hidden');
+    document.getElementById('container').classList.add('hidden');
+    //document.getElementById('banner-image').classList.add('hidden');
+    document.getElementById('chat-container').classList.add('hidden');
+    document.getElementById('patient-orientation-container').classList.remove('hidden');
     document.getElementById('user-options').classList.add('user_options_1');
 }

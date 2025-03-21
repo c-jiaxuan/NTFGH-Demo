@@ -108,6 +108,23 @@ function showAvatar() {
   pauseVideo(idleVideo_element);
 }
 
+async function getFilesFromFolder(directoryHandle) {
+  try {
+    const fileList = [];
+
+    for await (const handle of directoryHandle.values()) {
+        if (handle.kind === "file") {
+            fileList.push(handle.name);
+        }
+    }
+
+    console.log("Files in folder:", fileList);
+  } catch (err) {
+    console.error("Error:", err);
+  }
+}
+
+
 // init();
 
 // introVideo_element.addEventListener('ended', () => {

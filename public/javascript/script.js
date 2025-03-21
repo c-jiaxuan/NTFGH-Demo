@@ -85,7 +85,7 @@ document.addEventListener('AIPLAYER_LOAD_COMPLETE', function (evt) {
 
 // Preloading is finished
 document.addEventListener('AICLIPSET_PRELOAD_COMPLETED', function (evt) {
-    incrementPreloadCount();
+    // incrementPreloadCount();
     if(isPreloadingFinished()) {
         // Chatbot to begin chat
         beginChat();
@@ -99,5 +99,19 @@ document.addEventListener('SPEAK_EVENT', function (evt) {
     console.log("Received SPEAK_EVENT with data: " + evt.detail.message + ", " + evt.detail.gesture);
     speak(evt.detail.message, evt.detail.gesture);
     appController.updateAppState(APP_STATE.AVATAR_PROCESSING);
+});
+
+document.addEventListener('PRELOAD_TIMEOUT', function () {
+    // Show screen alerting user that avatar preload has timed out
+    // Prompt to refresh or contact support
+    createWarningOverlay('AVATAR PRELOAD TIMEOUT, please refresh the page and try again.');
+});
+
+document.addEventListener('AIPLAYER_FAILED', function (evt) {
+    createWarningOverlay('AVATAR LOADING FAILED: ' + evt.detail.errorCode + ", " + evt.detail.error + ". ");
+});
+
+document.addEventListener('AIPLAYER_PLAY_FAILED', function (evt) {
+    createWarningOverlay('AVATR PLAY FAILED');
 });
 

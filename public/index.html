@@ -9,7 +9,7 @@
 <body>
     <header class="header">
         <div class="logo-container">
-            <img src="./Images/ntfgh.jpg" alt="Logo">
+            <img src="./images/ntfgh.jpg" alt="Logo">
         </div>
     </header>
     <div id="overlay" class="overlay">
@@ -24,7 +24,7 @@
             <option value="zh">Chinese</option>
         </select>
     </div>
-    <button id="main-menu-button" onclick="goToMainMenu(); showVideo('AI-idle-video')" class="hidden">
+    <button id="main-menu-button" onclick="goToMainMenu(); showVideo('AI-idle-video'); resetStep()" class="hidden">
         <p class="lang lang-en">Main Menu</p>
         <p class="lang lang-zh">主菜单</p>
     </button>
@@ -50,6 +50,26 @@
         </div>
     </div>
     <div id="user-options" class="user_options">
+        <div id="patient-orientation-container" class="chat-container hidden">
+            <div class="info-header" style="font-size: 2.5em; text-align: center;">
+                <p class="lang lang-en">Please view the following information and acknowledge upon completing them</p>
+                <p class="lang lang-zh">请查看以下信息并在填写后确认</p>
+            </div>
+            <h2 id="image-title" style="font-size: 3em; text-align: center;">
+                <p class="lang lang-en">Daily Ward Activities</p>
+                <p class="lang lang-zh">日常病房活动</p>
+            </h2>
+            <div class="chat-history-container">
+                <img id="orientation-image" src="./images/orientation/or_1.png" alt="Patient Orientation Image" style="width: 100%; height: auto;"/>
+            </div>
+            <div id="acknowledge-button-container" class="speak-button-container">
+                <button class="button button1" id="acknowledge-btn" onclick="dispatchAcknowledgeEvent()">
+                    <!-- <img src="./images/Control_Signs/Mic-Icon.png" alt="Snow"> -->
+                    <p class="lang lang-en">Acknowledge</p>
+                    <p class="lang lang-zh">承认</p>
+                </button>
+            </div>
+        </div>
         <div id="chat-container" class="chat-container hidden">
             <div id="chat-history-container" class="chat-history-container">
             <!-- Messages appear here -->
@@ -57,26 +77,26 @@
             <div class="input-area-container">
                 <input id="input" class="input-area" type="text" size="200" maxlength="200" placeholder="Type your message...">
                 <button id="send-button" class="send-button" onclick=sendMessageFromChatbox()>
-                <img src="./Images/Control_Signs/Send.png" alt="Snow">
+                <img src="./images/Control_Signs/Send.png" alt="Snow">
                 </button>
             </div>
-            <div id="speak-button-container" class="speak-button-container" onclick="startRecognize()">
-                <button class="button button1">
-                    <img src="./Images/Control_Signs/Mic-Icon.png" alt="Snow">
+            <div id="speak-button-container" class="speak-button-container">
+                <button class="button button1" onclick="startRecognize()">
+                    <img src="./images/Control_Signs/Mic-Icon.png" alt="Snow">
                     <p class="lang lang-en">Speak with AI</p>
                     <p class="lang lang-zh">与人工智能对话</p>
                 </button>
             </div>
             <div id="listening-button-container" class="speak-button-container" onclick="endRecognize(false)">
                 <button class="button button1">
-                    <img src="./Images/Control_Signs/Mic-Icon.png" alt="Snow">
+                    <img src="./images/Control_Signs/Mic-Icon.png" alt="Snow">
                     <p class="lang lang-en">Listening...</p>
                     <p class="lang lang-zh">听...</p>
                 </button>
             </div>
             <div id="processing-button-container" class="speak-button-container">
                 <button class="button button1">
-                    <img src="./Images/Control_Signs/Mic-Icon.png" alt="Snow">
+                    <img src="./images/Control_Signs/Mic-Icon.png" alt="Snow">
                     <p class="lang lang-en">Processing...</p>
                     <p class="lang lang-zh">处理...s</p>
                 </button>
@@ -87,71 +107,69 @@
             <div id="landing-screen">
                 <p class="question lang lang-en">Welcome to Ng Teng Fong General Hospital! What can I do for you today?</p>
                 <p class="question lang lang-zh">欢迎来到黄廷方综合医院！今天我能为您做些什么？</p>
-                <!-- <button onclick="startGuidedTour(); showVideo('AI-visited-video')">Guided Tour Setup</button> -->
                 <button onclick="showChatInterface(); showAvatar(); beginChat()">
                     <p class="lang lang-en">Ask AI</p>
                     <p class="lang lang-zh">询问 AI</p>
+                </button>
+                <button onclick="showPatientOrientation()">
+                    <p class="lang lang-en">Orientation</p>
+                    <p class="lang lang-zh">患者导向</p>
+                </button>
+                <button onclick="startGuidedTour();">
+                    <p class="lang lang-en">Assessment</p>
+                    <p class="lang lang-zh">患者评估</p>
                 </button>
                 <button onclick="openWayfinding()">
                     <p class="lang lang-en">Wayfinding Page</p>
                     <p class="lang lang-zh">导航页面</p>
                 </button>
             </div>
-
             <!-- Step 1: Have you been here before -->
             <div id="step-1" class="hidden">
-                <p class="question">Have you been to this museum before?</p>
-                <button onclick="handleExperience('yes'); showVideo('AI-agegroup-video')">Yes</button>
-                <button onclick="handleExperience('no'); showVideo('AI-agegroup-video')">No</button>
+                <p class="question">What is your marital status?</p>
+                <button onclick="handleMaritalStatus('Single');">Single</button>
+                <button onclick="handleMaritalStatus('Married');">Married</button>
+                <button onclick="handleMaritalStatus('Seperated');">Seperated</button>
+                <button onclick="handleMaritalStatus('Divorced');">Divorced</button>
+                <button onclick="handleMaritalStatus('Widowed');">Widowed</button>
+                <button onclick="handleMaritalStatus('Unknown');">Unknown</button>
             </div>
 
             <!-- Other steps remain unchanged -->
             <div id="step-2" class="hidden">
-                <p class="question">What is your age group?</p>
-                <button onclick="handleAgeGroup('Child'); showVideo('AI-interests-video')">Under 18</button>
-                <button onclick="handleAgeGroup('Adult'); showVideo('AI-interests-video')">18-64</button>
-                <button onclick="handleAgeGroup('Senior'); showVideo('AI-interests-video')">65+</button>
-                <button class="back-button" onclick="goBackToExperience(); showVideo('AI-agegroup-video')">Back</button>
+                <p class="question">What is your religion?</p>
+                <button onclick="handleReligion('Buddhism');">Buddhism</button>
+                <button onclick="handleReligion('Islam');">Islam</button>
+                <button onclick="handleReligion('Hindusim');">Hindusim</button>
+                <button onclick="handleReligion('Taosim');">Taosim</button>
+                <button onclick="handleReligion('Sikhism');">Sikhism</button>
+                <button onclick="handleReligion('Christianity');">Christianity</button>
+                <button onclick="handleReligion('Free Thinker');">Free Thinker</button>
+                <button onclick="handleReligion('Others');">Others</button>
+                <button class="back-button" onclick="goBackToMaritalStatus();">Back</button>
             </div>
-
             <div id="step-3" class="hidden">
-                <p class="question">What are your interests?</p>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" value="Changi Fortress" class="interests"> Changi Fortress</label><br>
-                    <label><input type="checkbox" value="Fallen Fortress" class="interests"> Fallen Fortress</label><br>
-                    <label><input type="checkbox" value="The Interned" class="interests"> The Interned</label><br>
-                    <label><input type="checkbox" value="Life as POWs" class="interests"> Life as POWs</label><br>
-                    <label><input type="checkbox" value="Resilience in Adversity" class="interests"> Resilience in Adversity</label><br>
-                    <label><input type="checkbox" value="Creativity in Adversity" class="interests"> Creativity in Adversity</label><br>
-                    <label><input type="checkbox" value="Liberation" class="interests"> Liberation</label><br>
-                    <label><input type="checkbox" value="Legacies" class="interests"> Legacies</label>
-                </div>
-                <button onclick="handleInterests(); showVideo('AI-duration-video')">Next</button>
-                <button class="back-button" onclick="goBackToAgeGroup(); showVideo('AI-agegroup-video')">Back</button>
+                <p class="question">What is your preferred language?</p>
+                <button onclick="handleLanguage('English');">English</button>
+                <button onclick="handleLanguage('Chinese');">Chinese</button>
+                <button onclick="handleLanguage('Malay');">Malay</button>
+                <button onclick="handleLanguage('Tamil');">Tamil</button>
+                <button class="back-button" onclick="goBackToReligion();">Back</button>
             </div>
 
             <div id="step-4" class="hidden">
-                <p class="question">What is your preferred tour duration?</p>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" value="30 Minutes" class="time-slot"> 30 Minutes</label><br>
-                    <label><input type="checkbox" value="60 Minutes" class="time-slot"> 60 Minutes</label><br>
-                    <label><input type="checkbox" value="90 Minutes" class="time-slot"> 90 Minutes</label><br>
-                </div>
-                <button onclick="handleTimeSlot(); showVideo('AI-results-video')">Submit</button>
-                <button class="back-button" onclick="goBackToInterests(); showVideo('AI-interests-video')">Back</button>
+                <p class="question">What is your highest level of education?</p>
+                <button onclick="handleEducation('No Formal Education');">No Formal Education</button>
+                <button onclick="handleEducation('Primary');">Primary</button>
+                <button onclick="handleEducation('Secondary');">Secondary</button>
+                <button onclick="handleEducation('Post-Secondary');">Post-Secondary</button>
+                <button class="back-button" onclick="goBackToLanguages();">Back</button>
             </div>
             <div id="result" class="hidden">
                 <p class="question" id="output-message"></p>
-                <button onclick="">Proceed with Tour</button>
-                <button class="back-button" onclick="restart(); showVideo('AI-visited-video')">Start Over</button>
+                <button onclick="">Proceed</button>
+                <button class="back-button" onclick="restart();">Start Over</button>
             </div>
-        </div>
-        <div id="banner-image"  class="imageContainer">
-            <div class="text-overlay">
-                <p class="lang lang-en">Events</p>
-                <p class="lang lang-zh">活动</p>
-            </div>
-            <img alt="banner-image" src="./Images/banner_3.png" width="100%">
         </div>
     </div>
     <script
@@ -165,7 +183,10 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn-aihuman.deepbrainai.io/sdk/web/aiPlayer-1.5.3.min.js"></script>
     <script src="./javascript/fileSystem.js"></script>
+    <script src="./javascript/utilities.js"></script>
     <script src="./javascript/script.js"></script>
+    <script src="./javascript/warning-screen-overlay.js"></script>
+    <script src="./javascript/patient-orientation-screen.js"></script>
     <script src="./javascript/avatar.js"></script>
     <script src="./javascript/survey.js"></script>
     <script src="./javascript/chatbot.js"></script>
