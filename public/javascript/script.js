@@ -80,7 +80,6 @@ document.getElementById('langSelector').addEventListener('change', function (evt
 // AI Player has loaded, but has not preloaded finished
 document.addEventListener('AIPLAYER_LOAD_COMPLETE', function (evt) {
     loadChat();
-    getFilesFromFolder('../videos');
 });
 
 // Preloading is finished

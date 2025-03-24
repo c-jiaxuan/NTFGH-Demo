@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "type": "msedge",
+            "name": "http://file:///C:/Users/E0C0538/Documents/NTFGH%20Resources/NTFGH-Demo/public/index.html",
+            "request": "launch",
+            "url": "http://file:///C:/Users/E0C0538/Documents/NTFGH%20Resources/NTFGH-Demo/public/index.html"
+        }
+    ]
+}

@@ -1,7 +1,3 @@
-// Retrieve all video files from one folder
-// Dynamically create video elements using the name of the video files
-
-
 // Buffer to store and track which video element is being played
 var playingVideo = null;
 
@@ -107,23 +103,6 @@ function showAvatar() {
   pauseVideo(resultsVideo_element);
   pauseVideo(idleVideo_element);
 }
-
-async function getFilesFromFolder(directoryHandle) {
-  try {
-    const fileList = [];
-
-    for await (const handle of directoryHandle.values()) {
-        if (handle.kind === "file") {
-            fileList.push(handle.name);
-        }
-    }
-
-    console.log("Files in folder:", fileList);
-  } catch (err) {
-    console.error("Error:", err);
-  }
-}
-
 
 // init();
 
