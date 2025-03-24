@@ -9,7 +9,7 @@ body {
 
 body::before {
     content: "";
-    background: url('./Images/ntfgh_lobby.png') no-repeat center center;
+    background: url('./images/ntfgh_lobby.png') no-repeat center center;
     background-size: cover;
     position: absolute;
     top: 0;
