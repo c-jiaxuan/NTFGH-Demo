@@ -1,30 +1,20 @@
-import express from "express";
-import cors from "cors";
-import axios from "axios";
-
+const express = require('express');
 const app = express();
-app.use(cors());
+const port = 3000;
+
+// Middleware to parse JSON
 app.use(express.json());
 
-app.get("/api/data1", async (req, res) => {
-    try {
-        const response = await axios.get("https://jsonplaceholder.typicode.com/posts/1");
-        res.json(response.data);
-    } catch (error) {
-        console.error("Error fetching data1:", error.message);
-        res.status(500).json({ error: "Error fetching data1", details: error.message });
-    }
+let appStatus = { state: 0 };
+let orientationStatus = { state: 0 };
+
+//GET: get app status
+app.get('/data/appStatus', (req, res) => {
+    res.json(appStatus);
 });
 
-app.get("/api/data2", async (req, res) => {
-    try {
-        const response = await axios.get("https://jsonplaceholder.typicode.com/users/1");
-        res.json(response.data);
-    } catch (error) {
-        console.error("Error fetching data2:", error.message);
-        res.status(500).json({ error: "Error fetching data2", details: error.message });
-    }
+// POST: update app status
+app.post('/data/updateAppStatus', (req, res) => {
+    appStatus = { ...appStatus, ...req.body };
+    res.json({ success: true, newState: appStatus });
 });
-
-const PORT = 3000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

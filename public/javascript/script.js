@@ -28,6 +28,24 @@ class AppController {
         return this.state;
     }
 
+    onAIPlayerInit = () => {
+        this.aiPlayerInit = true;
+        this.checkAndUpdateInitState();
+      }
+
+    onTranscribeInit = () => {
+        this.transcribeInit = true;
+        this.checkAndUpdateInitState();
+    }
+
+    onTranscribeStarted = () => {
+
+    }
+
+    onTranscribeEnded = () => {
+        
+    }
+
     updateAppState(newState, isForce) {
         if (isForce) {
             this.state = newState;
