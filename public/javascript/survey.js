@@ -4,6 +4,7 @@ let patient_religion = null;
 let patient_language = null;
 let patient_education = null;
 // let patient_userTimeSlot = [];
+let delivery_items = [];
 
 // Handle the first question
 function handleMaritalStatus(response) {
@@ -111,7 +112,6 @@ function restart() {
 
 // Start the Guided Tour
 function startGuidedTour() {
-    // document.getElementById('banner-image').classList.add('hidden');
     document.getElementById('landing-screen').classList.add('hidden');
     document.getElementById('step-1').classList.remove('hidden');
     document.getElementById('main-menu-button').classList.remove('hidden');
@@ -139,12 +139,20 @@ function goToMainMenu() {
     // Hide AI chat
     document.getElementById('chat-container').classList.add('hidden');
 
+    // Hide main menu button
+    document.getElementById('main-menu-button').classList.add('hidden');
+
+    // Hide Patient Orientation
+    document.getElementById('patient-orientation-container').classList.add('hidden');
+
+    // Hide Delivery Screen
+    document.getElementById('delivery-screen-container').classList.add('hidden');
+
     // Show the landing screen
     document.getElementById('landing-screen').classList.remove('hidden');
     document.getElementById('container').classList.remove('hidden');
-    //document.getElementById('banner-image').classList.remove('hidden');
-    document.getElementById('main-menu-button').classList.add('hidden');
-    document.getElementById('patient-orientation-container').classList.add('hidden');
+
+    // Remove the additional style that shifts the user_options container upwards
     document.getElementById('user-options').classList.remove('user_options_1');
 }
 
@@ -152,7 +160,6 @@ function showChatInterface() {
     console.log("show AI Chat");
     document.getElementById('main-menu-button').classList.remove('hidden');
     document.getElementById('container').classList.add('hidden');
-    //document.getElementById('banner-image').classList.add('hidden');
     document.getElementById('chat-container').classList.remove('hidden');
     document.getElementById('user-options').classList.add('user_options_1');
 }
@@ -161,8 +168,16 @@ function showPatientOrientation() {
     console.log("show patient orientation");
     document.getElementById('main-menu-button').classList.remove('hidden');
     document.getElementById('container').classList.add('hidden');
-    //document.getElementById('banner-image').classList.add('hidden');
     document.getElementById('chat-container').classList.add('hidden');
     document.getElementById('patient-orientation-container').classList.remove('hidden');
+    document.getElementById('user-options').classList.add('user_options_1');
+}
+
+function showDeliveryScreen() {
+    console.log("show delivery screen");
+    document.getElementById('main-menu-button').classList.remove('hidden');
+    document.getElementById('container').classList.add('hidden');
+    document.getElementById('chat-container').classList.add('hidden');
+    document.getElementById('delivery-screen-container').classList.remove('hidden');
     document.getElementById('user-options').classList.add('user_options_1');
 }

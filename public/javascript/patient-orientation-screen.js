@@ -5,9 +5,9 @@ let patientOrientation_imgs = ['./images/orientation/or_1.png',
                         './images/orientation/or_4.png'
 ];
 
-let patientOrientation_titles = ['Daily Ward Activities',
+let patientOrientation_titles = ['Care Team',
                                 'Visitation Hours',
-                                'Personal Care',
+                                'Nurse Call System',
                                 'Preventing Falls'
 ];
 

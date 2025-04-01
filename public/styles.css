@@ -44,7 +44,7 @@ body::before {
     align-items: center;
     right: -45%;  
     width: 50%;
-    top: 20%;
+    top: 10%;
     z-index: 4;
 }
 
@@ -56,7 +56,7 @@ body::before {
 /* Container Styling */
 .container {
     position: relative;
-    width: 75%;
+    /* width: 75%; */   
     background: #fff;
     padding: 20px;
     margin: 8px;
@@ -88,20 +88,20 @@ body::before {
 /* Question Text */
 .question {
     margin-bottom: 20px;
-    font-size: 2.5em;
+    font-size: 4em;
 }
 
 /* Checkbox Group Styling */
 .checkbox-group {
-    margin: 10px 0;
-    font-size: 2em;
+    margin: 30px 0;
+    font-size: 3em;
 }
 
 input[type="checkbox"] {
-    transform: scale(4); /* Increase the size of the checkbox */
+    transform: scale(5); /* Increase the size of the checkbox */
     transform-origin: left;
-    margin-right: 45px; /* Optional: Add spacing between checkbox and label */
-    margin-bottom: 25px;
+    margin-right: 100px; /* Optional: Add spacing between checkbox and label */
+    margin-bottom: 50px;
 }
 
 /* Button Styling */
@@ -109,16 +109,16 @@ button {
     padding: 10px 15px;
     margin: 5px 0;
     width: 100%;
-    background: #35c1e8;
+    background: #0c4c9a;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 2em;
+    font-size: 4em;
 }
 
 button:hover {
-    background: #25809a;
+    background: #083060;
 }
 
 /* Hidden Elements */
@@ -142,12 +142,12 @@ button:hover {
 
 #AIPlayerWrapper {
     position: fixed;
-    height: 2750px;
-    width: 1500px;
+    height: 2450px;
+    width: 1300px;
     top: 15%;
-    left: -15%;
+    left: -20%;
     pointer-events: none; 
-    z-index: 2;
+    z-index: 6;
 }
 
 .AIControlContainer {
@@ -167,17 +167,18 @@ button:hover {
     width: 35%;
     top: 10px;
     right: 15%;
-    background: #35c1e8;
+    background: #0c4c9a;
     color: white;
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     z-index: 1000; /* Ensure it appears above other elements */
+    font-size: 3em;
 }
 
 #main-menu-button:hover {
-    background: #25809a;
+    background: #083060;
 }
 
 /* Modal Overlay */
@@ -221,19 +222,19 @@ button:hover {
 
 /* Close Button */
 .close-button {
-    background: #35c1e8;
+    background: #0c4c9a;
     color: white;
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 1.5em;
+    font-size: 3em;
     margin-top: 10px;
     width: 80%;
 }
 
 .close-button:hover {
-    background: #25809a;
+    background: #083060;
 }
 
 .hidden {
@@ -249,6 +250,7 @@ button:hover {
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    pointer-events: normal;
 }
 
 .input-area {
@@ -257,6 +259,7 @@ button:hover {
     padding: 8px;
     font-size: 24px;
     border: none;
+    pointer-events: normal;
 }
 
 .send-button {
@@ -291,6 +294,7 @@ button:hover {
     justify-content: flex-start; /* Horizontally centers the content */
     text-align: center;
     gap: 10px;
+    font-size: 2em;
     bottom: 0;
 }
 
@@ -316,7 +320,8 @@ button:hover {
     display: flex; 
     flex-direction: column; 
     justify-content: flex-end;
-    z-index: 4
+    z-index: 4;
+    pointer-events: normal;
 }
 
 .chat-history-container {
@@ -348,7 +353,7 @@ button:hover {
     color: rgb(32, 32, 32);
 }
 .message.bot span {
-    background: #35c1e8;
+    background: #0c4c9a;
     color: rgb(255, 255, 255);
 }
 .message-time {
@@ -393,7 +398,7 @@ button:hover {
 }
 
 .overlay-content h2 {
-    font-size: 32px; /* Increase font size */
+    font-size: 64px; /* Increase font size */
     font-weight: bold; /* Make it bold */
     color: #333; /* Darker color for visibility */
     margin-bottom: 15px; /* Add spacing */
@@ -410,17 +415,17 @@ button:hover {
 
 /* Loading Spinner */
 .loading-spinner {
-    border: 5px solid rgba(0, 0, 0, 0.1);
-    border-top: 5px solid #333;
+    border: 10px solid rgba(0, 0, 0, 0.1);
+    border-top: 10px solid #333;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    width: 64px;
+    height: 64px;
     animation: spin 1s linear infinite;
 }
 
 /* Loading Text */
 .loading-text {
-    font-size: 18px;
+    font-size: 36px;
     font-weight: bold;
     color: #333;
 }
@@ -444,4 +449,5 @@ button:hover {
     height: 50%;
     width: 10%;
     pointer-events: normal;
+    font-size: 2.5em;
 }
