@@ -10,7 +10,6 @@
     "aws": "webpack --config webpack_aws.config.js"
   },
   "dependencies": {
-    "@aws-sdk/client-bedrock-runtime": "^3.523.0",
     "@aws-sdk/client-cognito-identity": "^3.310.0",
     "@aws-sdk/client-transcribe-streaming": "^3.624.0",
     "@aws-sdk/credential-provider-cognito-identity": "^3.310.0",
