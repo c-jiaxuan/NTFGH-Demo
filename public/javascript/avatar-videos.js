@@ -1,4 +1,8 @@
 // Buffer to store and track which video element is being played
+
+// Create a file storing const files names
+// This script will read in the const files and automatically create the video elements
+
 var playingVideo = null;
 
 var introVideo_element      = document.getElementById('AI-intro-video');

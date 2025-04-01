@@ -52,12 +52,12 @@
     <div id="user-options" class="user_options">
         <div id="patient-orientation-container" class="chat-container hidden">
             <div class="info-header" style="font-size: 2.5em; text-align: center;">
-                <p class="lang lang-en">Please view the following information and acknowledge upon completing them</p>
-                <p class="lang lang-zh">请查看以下信息并在填写后确认</p>
+                <p class="lang lang-en">Please view the following information and acknowledge upon completing them.</p>
+                <p class="lang lang-zh">请查看以下信息并在填写后确认。</p>
             </div>
             <h2 id="image-title" style="font-size: 3em; text-align: center;">
-                <p class="lang lang-en">Daily Ward Activities</p>
-                <p class="lang lang-zh">日常病房活动</p>
+                <p class="lang lang-en">Care Team</p>
+                <p class="lang lang-zh">护理团队</p>
             </h2>
             <div class="chat-history-container">
                 <img id="orientation-image" src="./images/orientation/or_1.png" alt="Patient Orientation Image" style="width: 100%; height: auto;"/>
@@ -65,6 +65,26 @@
             <div id="acknowledge-button-container" class="speak-button-container">
                 <button class="button button1" id="acknowledge-btn" onclick="dispatchAcknowledgeEvent()">
                     <!-- <img src="./images/Control_Signs/Mic-Icon.png" alt="Snow"> -->
+                    <p class="lang lang-en">Acknowledge</p>
+                    <p class="lang lang-zh">承认</p>
+                </button>
+            </div>
+        </div>
+        <div id="delivery-screen-container" class="chat-container hidden">
+            <div class="info-header" style="font-size: 2.5em; text-align: center;">
+                <p class="lang lang-en">Please select what you require to be delivered.</p>
+                <p class="lang lang-zh">请选择您需要交付的物品。</p>
+            </div>
+            <div class="chat-history-container">
+                <div class="checkbox-group">
+                    <label><input type="checkbox" value="Medicine" class="interests">Medicine</label><br>
+                    <label><input type="checkbox" value="Meal" class="interests">Meal</label><br>
+                    <label><input type="checkbox" value="Clothes" class="interests">Clothes</label><br>
+                    <label><input type="checkbox" value="Equipment" class="interests">Equipment</label><br>
+                </div>
+            </div>
+            <div id="acknowledge-button-container" class="speak-button-container">
+                <button class="button button1" id="acknowledge-btn" onclick="">
                     <p class="lang lang-en">Acknowledge</p>
                     <p class="lang lang-zh">承认</p>
                 </button>
@@ -108,7 +128,7 @@
                 <p class="question lang lang-en">Welcome to Ng Teng Fong General Hospital! What can I do for you today?</p>
                 <p class="question lang lang-zh">欢迎来到黄廷方综合医院！今天我能为您做些什么？</p>
                 <button onclick="showChatInterface(); showAvatar(); beginChat()">
-                    <p class="lang lang-en">Ask AI</p>
+                    <p class="lang lang-en">Chat with AI</p>
                     <p class="lang lang-zh">询问 AI</p>
                 </button>
                 <button onclick="showPatientOrientation()">
@@ -122,6 +142,10 @@
                 <button onclick="openWayfinding()">
                     <p class="lang lang-en">Wayfinding Page</p>
                     <p class="lang lang-zh">导航页面</p>
+                </button>
+                <button onclick="showDeliveryScreen()">
+                    <p class="lang lang-en">Delivery</p>
+                    <p class="lang lang-zh">送货服务</p>
                 </button>
             </div>
             <!-- Step 1: Have you been here before -->
@@ -138,15 +162,17 @@
             <!-- Other steps remain unchanged -->
             <div id="step-2" class="hidden">
                 <p class="question">What is your religion?</p>
-                <button onclick="handleReligion('Buddhism');">Buddhism</button>
-                <button onclick="handleReligion('Islam');">Islam</button>
-                <button onclick="handleReligion('Hindusim');">Hindusim</button>
-                <button onclick="handleReligion('Taosim');">Taosim</button>
-                <button onclick="handleReligion('Sikhism');">Sikhism</button>
-                <button onclick="handleReligion('Christianity');">Christianity</button>
-                <button onclick="handleReligion('Free Thinker');">Free Thinker</button>
-                <button onclick="handleReligion('Others');">Others</button>
-                <button class="back-button" onclick="goBackToMaritalStatus();">Back</button>
+                    <div style="font-size: 10px;">
+                    <button onclick="handleReligion('Buddhism');">Buddhism</button>
+                    <button onclick="handleReligion('Islam');">Islam</button>
+                    <button onclick="handleReligion('Hindusim');">Hindusim</button>
+                    <button onclick="handleReligion('Taosim');">Taosim</button>
+                    <button onclick="handleReligion('Sikhism');">Sikhism</button>
+                    <button onclick="handleReligion('Christianity');">Christianity</button>
+                    <button onclick="handleReligion('Free Thinker');">Free Thinker</button>
+                    <button onclick="handleReligion('Others');">Others</button>
+                    <button class="back-button" onclick="goBackToMaritalStatus();">Back</button>
+                </div>
             </div>
             <div id="step-3" class="hidden">
                 <p class="question">What is your preferred language?</p>
