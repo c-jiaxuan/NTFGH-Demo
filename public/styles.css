@@ -27,7 +27,14 @@ body::before {
     padding: 16px;
     width: 100%; /* Full width of the viewport */
     z-index: 1000; /* Ensure it appears above other elements */
-    pointer-events: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    pointer-events: normal;
+}
+
+.logo-container {
+    width: 50%;
 }
 
 .logo-container img {
@@ -44,13 +51,15 @@ body::before {
     align-items: center;
     right: -45%;  
     width: 50%;
+    height: 80%;
     top: 10%;
+    border-radius: 15px;
     z-index: 4;
 }
 
 .user_options_1 {
     height: 90%;
-    top: -3%;
+    top: 7%;
 }
 
 /* Container Styling */
@@ -59,8 +68,9 @@ body::before {
     /* width: 75%; */   
     background: #fff;
     padding: 20px;
-    margin: 8px;
-    border-radius: 8px;
+    height: 100%;
+    width: 100%;
+    border-radius: 15px;
     box-shadow: 0 10px 16px rgba(0, 0, 0, 0.35);
 }
 
@@ -91,6 +101,46 @@ body::before {
     font-size: 4em;
 }
 
+.options-header {
+    display: flex;
+    align-items: start;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.options-title {
+    color: #484848;
+    text-align: center;
+    font-family: "Inter-Bold", sans-serif;
+    font-size: 56px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+}
+
+.options-subtitle {
+    color: #484848;
+    text-align: center;
+    font-family: "Inter-Regular", sans-serif;
+    font-size: 48px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 8px;
+}
+
+.options-buttondiv {
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
 /* Checkbox Group Styling */
 .checkbox-group {
     margin: 30px 0;
@@ -106,19 +156,45 @@ input[type="checkbox"] {
 
 /* Button Styling */
 button {
-    padding: 10px 15px;
+    background: #0c4c9a;
+    border-radius: 25px;
+    padding: 30px 15px;
     margin: 5px 0;
     width: 100%;
-    background: #0c4c9a;
+    height: 25%;
     color: white;
     border: none;
-    border-radius: 5px;
     cursor: pointer;
-    font-size: 4em;
+    font-size: 48px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    display: flex; /* Enable flexbox */
+    align-items: center; /* Vertically align the content */
+    justify-content: flex-start; /* Align items to the left */
+}
+
+button img.button-icon {
+    width: 15%; /* Set the image size */
+    height: auto;
+    margin-right: 15px; /* Space between image and text */
+}
+
+button .button-text {
+    display: flex;
+    flex-direction: column; /* Stack the text vertically */
+    justify-content: center; /* Center the text vertically */
+    width: 100%;
 }
 
 button:hover {
     background: #083060;
+}
+
+.button main_menu {
+    width: 100%;
+    height: 100%;
+    font-size: 24px;
+    object-fit: contain;
+    display: block;
 }
 
 /* Hidden Elements */
@@ -164,17 +240,20 @@ button:hover {
 /* Main Menu Button Styling */
 #main-menu-button {
     position: fixed;
-    width: 35%;
-    top: 10px;
+    width: 15%;
+    top: 20px;
     right: 15%;
+    height: 5%;
+    right: 20%;
     background: #0c4c9a;
     color: white;
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    z-index: 1000; /* Ensure it appears above other elements */
-    font-size: 3em;
+    z-index: 1000;
+    font-size: 32px;
+    justify-content: space-around;
 }
 
 #main-menu-button:hover {
@@ -314,8 +393,9 @@ button:hover {
     position: relative;
     padding: 8px;
     height: 95%;
+    width: 100%;
     background: #f1f1f1;
-    border-radius: 8px;
+    border-radius: 15px;
     box-shadow: 0 4px 6px #0000001a;
     display: flex; 
     flex-direction: column; 
@@ -390,6 +470,12 @@ button:hover {
 
 /* Overlay Content */
 .overlay-content {
+    position: absolute;
+    top: 50%; /* Example: center vertically */
+    left: 50%; /* Example: center horizontally */
+    width: 70%;
+    transform: translate(-50%, -50%); /* Adjust to center the element */
+    z-index: 1100; /* Make sure it's above the background */
     background: white;
     padding: 20px;
     border-radius: 8px;
@@ -438,16 +524,34 @@ button:hover {
 
 .languageSelectorDiv {
     position: relative;
+    width: 35%;
     z-index: 5;
-    height: 10%;
+    height: 100%;
 }
 
 .languageSelector {
     position: relative;
     z-index: 5;
-    right: -89%;
-    height: 50%;
-    width: 10%;
-    pointer-events: normal;
-    font-size: 2.5em;
+    left: 85%;
+    height: 100%;
+    width: 50%;
+    top: -20px;
+    font-size: 36px;
+}
+
+.lang-input-selector-class {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.init-selector-div {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    margin: 24px;
 }

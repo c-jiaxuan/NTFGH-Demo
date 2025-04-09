@@ -11,37 +11,66 @@
         <div class="logo-container">
             <img src="./images/ntfgh.jpg" alt="Logo">
         </div>
+        <div class="languageSelectorDiv">
+            <select id="langSelector" class="languageSelector">
+                <option value="en">English</option>
+                <option value="zh">Chinese</option>
+            </select>
+        </div>
+        <button id="main-menu-button" onclick="goToMainMenu(); showVideo('AI-idle-video'); resetStep()" class="hidden">
+            <p class="lang lang-en">Home</p>
+            <p class="lang lang-zh">主菜单</p>
+        </button>
     </header>
     <div id="overlay" class="overlay">
         <div class="overlay-content">
-            <h2>Welcome to Ng Teng Fong Hospital</h2>
+            <h2>Welcome to Ng Teng Fong General Hospital</h2>
             <button id="start-button">Meet the AI Concierge</button>
         </div>
+        <div id="lang-input-selector-div" class="overlay-content">
+            <h2>Please select your language and input method</h2>
+            <div class="lang-input-selector-class">
+                <!-- // have two sub categories language and input side-by-side -->
+                <div id="init-Lang-selector-div" class="init-selector-div">
+                    <!-- // Have the 2 options top and bottom -->
+                    <button>
+                        <img src="./images/images_new/english_icon.png" alt="Concierge Icon" class="button-icon">
+                        <div class="button-text">
+                            English
+                        </div>
+                    </button>
+                    <button>
+                        <img src="./images/images_new/chinese_icon.png" alt="Concierge Icon" class="button-icon">
+                        <div class="button-text">
+                            中文
+                        </div>
+                    </button>
+                </div>
+                <div id="init-input-selector-div" class="init-selector-div">
+                    <!-- // Have the 2 options top and bottom -->
+                    <button>
+                        <img src="./images/images_new/tap_icon.png" alt="Concierge Icon" class="button-icon">
+                        <div class="button-text">
+                            Touch
+                        </div>
+                    </button>
+                    <button>
+                        <img src="./images/images_new/speaking-icon.png" alt="Concierge Icon" class="button-icon">
+                        <div class="button-text">
+                            Voice
+                        </div>
+                    </button>
+                </div>
+            </div>
+            <button id="init-lang-input-confirm-button">Confirm</button>
+        </div>
     </div>
-    <div class="languageSelectorDiv">
-        <select id="langSelector" class="languageSelector">
-            <option value="en">English</option>
-            <option value="zh">Chinese</option>
-        </select>
-    </div>
-    <button id="main-menu-button" onclick="goToMainMenu(); showVideo('AI-idle-video'); resetStep()" class="hidden">
-        <p class="lang lang-en">Main Menu</p>
-        <p class="lang lang-zh">主菜单</p>
-    </button>
     <div id="AIPlayerWrapper"></div>
-        <!-- <video id="AI-intro-video" class="premadeVideo" src="./videos/intro.mp4"></video>
-        <video id="AI-visited-video" class="premadeVideo" src="./videos/visited.mp4"></video>
-        <video id="AI-agegroup-video" class="premadeVideo" src="./videos/age_group.mp4"></video>
-        <video id="AI-interests-video" class="premadeVideo" src="./videos/interests.mp4"></video>
-        <video id="AI-duration-video" class="premadeVideo" src="./videos/duration.mp4"></video>
-        <video id="AI-results-video" class="premadeVideo" src="./videos/preferences.mp4"></video>
-        <video id="AI-idle-video" class="premadeVideo" src="./videos/idle.mp4" autoplay muted loop></video> -->
-    <!-- Modal for Wayfinding -->
     <div id="wayfinding-modal" class="modal hidden">
         <div class="modal-content">
             <iframe id="wayfinding-iframe" href="https://www.mappedin.com/" title="Mappedin Map" name="Mappedin Map" 
                     allow="clipboard-write 'self' https://app.mappedin.com; web-share 'self' https://app.mappedin.com" 
-                    scrolling="no" width="100%" height="1300" frameborder="0" style="border:0">
+                    scrolling="no" width="100%" height="1200" frameborder="0" style="border:0">
             </iframe>
             <button class="close-button" onclick="closeWayfinding()">
                 <p class="lang lang-en">Close</p>
@@ -124,29 +153,62 @@
         </div>
         <div id="container" class="container">
             <!-- Landing Screen -->
-            <div id="landing-screen">
-                <p class="question lang lang-en">Welcome to Ng Teng Fong General Hospital! What can I do for you today?</p>
-                <p class="question lang lang-zh">欢迎来到黄廷方综合医院！今天我能为您做些什么？</p>
-                <button onclick="showChatInterface(); showAvatar(); beginChat()">
-                    <p class="lang lang-en">Chat with AI</p>
-                    <p class="lang lang-zh">询问 AI</p>
-                </button>
-                <button onclick="showPatientOrientation()">
-                    <p class="lang lang-en">Orientation</p>
-                    <p class="lang lang-zh">患者导向</p>
-                </button>
-                <button onclick="startGuidedTour();">
-                    <p class="lang lang-en">Assessment</p>
-                    <p class="lang lang-zh">患者评估</p>
-                </button>
+            <div id="landing-screen" style="height: 100%;">
+                <div class="options-header">
+                    <p class="options-title lang lang-en">Welcome to Ng Teng Fong General Hospital</p>
+                    <p class="options-title lang lang-zh">欢迎来到黄廷方综合医院</p>
+                    <p class="options-subtitle lang lang-en">What can I do for you today?</p>
+                    <p class="options-subtitle lang lang-zh">今天我能为您做些什么？</p>
+                </div>
+                <div id="main-menu-options-div" class="options-buttondiv">
+                    <button onclick="showChatInterface(); showAvatar(); beginChat()">
+                        <img src="./images/images_new/talk_icon.png" alt="Chat Icon" class="button-icon">
+                        <div class="button-text">
+                            <p class="lang lang-en">Chat with AI</p>
+                            <p class="lang lang-zh">询问 AI</p>
+                        </div>
+                    </button>
+                    <button onclick="showAdmissionServicesScreen()">
+                        <img src="./images/images_new/check-list_icon.png" alt="Admission Icon" class="button-icon">
+                        <div class="button-text">
+                            <p class="lang lang-en">Admission Services</p>
+                            <p class="lang lang-zh">入学服务</p>
+                        </div>
+                    </button>
+                    <button onclick="">
+                        <img src="./images/images_new/doorman_icon.png" alt="Concierge Icon" class="button-icon">
+                        <div class="button-text">
+                            <p class="lang lang-en">Concierge Services</p>
+                            <p class="lang lang-zh">礼宾服务</p>
+                        </div>
+                    </button>
+                </div>
+                <div id="admission-services-div" class="options-buttondiv hidden">
+                    <button onclick="showPatientOrientation()" class="admission-button">
+                        <img src="./images/images_new/orientation_icon.png" alt="Orientation Icon" class="button-icon">
+                        <div class="button-text">
+                            <p class="lang lang-en">Patient Orientation</p>
+                            <p class="lang lang-zh">患者导向</p>
+                        </div>
+                    </button>
+                    <button onclick="startPatientAssessment();" class="concierge-button">
+                        <img src="./images/images_new/check-list_icon.png" alt="Assessment Icon" class="button-icon">
+                        <div class="button-text">
+                            <p class="lang lang-en">Patient Assessment</p>
+                            <p class="lang lang-zh">患者评估</p>
+                        </div>
+                    </button>
+                </div>
+                <!--
                 <button onclick="openWayfinding()">
                     <p class="lang lang-en">Wayfinding Page</p>
                     <p class="lang lang-zh">导航页面</p>
-                </button>
-                <button onclick="showDeliveryScreen()">
+                </button> -->
+                <!-- <button onclick="showDeliveryScreen()">
                     <p class="lang lang-en">Delivery</p>
                     <p class="lang lang-zh">送货服务</p>
-                </button>
+                </button> 
+                -->
             </div>
             <!-- Step 1: Have you been here before -->
             <div id="step-1" class="hidden">
@@ -208,10 +270,10 @@
   ></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn-aihuman.deepbrainai.io/sdk/web/aiPlayer-1.5.3.min.js"></script>
-    <script src="./javascript/fileSystem.js"></script>
     <script src="./javascript/utilities.js"></script>
     <script src="./javascript/script.js"></script>
     <script src="./javascript/warning-screen-overlay.js"></script>
+    <script src="./javascript/input-selector-screen-overlay.js"></script>
     <script src="./javascript/patient-orientation-screen.js"></script>
     <script src="./javascript/avatar.js"></script>
     <script src="./javascript/survey.js"></script>
