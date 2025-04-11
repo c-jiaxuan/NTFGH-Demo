@@ -4,6 +4,7 @@ const inputButtons = document.querySelectorAll('#init-input-selector-div button'
 const confirmButton = document.getElementById('init-lang-input-confirm-button');
 const overlay = document.getElementById('lang-input-selector-div'); // Overlay element
 
+// DATA NOT SUPPOSED TO BE IN UI SCRIPT 
 let selectedLang = null;
 let selectedInput = null;
 
@@ -37,19 +38,21 @@ inputButtons.forEach(button => {
 function toggleConfirmButton() {
     if (selectedLang && selectedInput) {
         confirmButton.disabled = false;
-        confirmButton.style.backgroundColor = '#0c4c9a'; // Green when enabled
+        confirmButton.style.backgroundColor = '#0c4c9a'; // Blue when enabled
     } else {
         confirmButton.disabled = true;
         confirmButton.style.backgroundColor = '#d3d3d3'; // Grey when disabled
     }
 }
 
-// Initial state: "Confirm" button is disabled
-confirmButton.disabled = true;
-confirmButton.style.backgroundColor = '#d3d3d3'; // Greyed out initially
-
 // Hide the overlay when "Confirm" is clicked
 confirmButton.addEventListener('click', () => {
     // Hide the overlay by setting display to none
     overlay.style.display = 'none';
 });
+
+function toggleConfirmButton(confimation) {
+    // Initial state: "Confirm" button is disabled
+    confirmButton.disabled = confimation;
+    confirmButton.style.backgroundColor =  confimation?  '#0c4c9a' : '#d3d3d3'; // Greyed out initially
+}

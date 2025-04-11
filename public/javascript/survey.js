@@ -106,10 +106,8 @@ function restart() {
 // Start the Guided Tour
 function startPatientAssessment() {
     document.getElementById('landing-screen').classList.add('hidden');
-    document.getElementById('step-1').classList.remove('hidden');
+    document.getElementById('patient-assessment-div').classList.remove('hidden');
     document.getElementById('main-menu-button').classList.remove('hidden');
-
-    // Set current displayed screen to be the patient assessment
 }
 
 function goToMainMenu() {
@@ -126,13 +124,6 @@ function goToMainMenu() {
     document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
         checkbox.checked = false;
     });
-
-    // Hide all steps and the result screen
-    document.getElementById('step-1').classList.add('hidden');
-    document.getElementById('step-2').classList.add('hidden');
-    document.getElementById('step-3').classList.add('hidden');
-    document.getElementById('step-4').classList.add('hidden');
-    document.getElementById('result').classList.add('hidden');
 
     // Hide AI chat
     document.getElementById('chat-container').classList.add('hidden');
@@ -155,6 +146,8 @@ function goToMainMenu() {
 
     document.getElementById('main-menu-options-div').classList.remove('hidden');
     document.getElementById('admission-services-div').classList.add('hidden');
+
+    document.getElementById('patient-assessment-div').classList.add('hidden');
 
     updateHeaderAndSubtitle('en', 'Welcome to Ng Teng Fong General Hospital', 'What can I do for you today?');
     updateHeaderAndSubtitle('zh', '欢迎来到黄廷方综合医院', '今天我能为您做些什么？');
@@ -196,6 +189,17 @@ function showAdmissionServicesScreen() {
     document.getElementById('chat-container').classList.add('hidden');
     document.getElementById('main-menu-options-div').classList.add('hidden');
     document.getElementById('admission-services-div').classList.remove('hidden');
+
+    current_display_screen = document.getElementById('admission-services-div');
+    updateHeaderAndSubtitle('en', 'Admission Services', 'Services required for patient onboarding into our hospital.');
+    updateHeaderAndSubtitle('zh', '欢迎来到健康加诊所', '患者入住本院所需的服务');
+}
+
+function showLangInputSetupScreen() {
+    console.log("show admission services");
+    document.getElementById('main-menu-button').classList.remove('hidden');
+    document.getElementById('chat-container').classList.add('hidden');
+    document.getElementById('main-menu-options-div').classList.add('hidden');
 
     current_display_screen = document.getElementById('admission-services-div');
     updateHeaderAndSubtitle('en', 'Admission Services', 'Services required for patient onboarding into our hospital.');

@@ -33,6 +33,7 @@
                 <!-- // have two sub categories language and input side-by-side -->
                 <div id="init-Lang-selector-div" class="init-selector-div">
                     <!-- // Have the 2 options top and bottom -->
+                    <div>Langauge</div>
                     <button>
                         <img src="./images/images_new/english_icon.png" alt="Concierge Icon" class="button-icon">
                         <div class="button-text">
@@ -47,6 +48,7 @@
                     </button>
                 </div>
                 <div id="init-input-selector-div" class="init-selector-div">
+                    <div>Mode</div>
                     <!-- // Have the 2 options top and bottom -->
                     <button>
                         <img src="./images/images_new/tap_icon.png" alt="Concierge Icon" class="button-icon">
@@ -79,17 +81,21 @@
         </div>
     </div>
     <div id="user-options" class="user_options">
-        <div id="patient-orientation-container" class="chat-container hidden">
+        <div id="patient-orientation-container" class="chat-container hidden" style="justify-content: space-between;">
             <div class="info-header" style="font-size: 2.5em; text-align: center;">
                 <p class="lang lang-en">Please view the following information and acknowledge upon completing them.</p>
                 <p class="lang lang-zh">请查看以下信息并在填写后确认。</p>
             </div>
-            <h2 id="image-title" style="font-size: 3em; text-align: center;">
+            <h2 id="image-title" style="font-size: 3em; text-align: center; margin: 12px;">
                 <p class="lang lang-en">Care Team</p>
                 <p class="lang lang-zh">护理团队</p>
             </h2>
-            <div class="chat-history-container">
-                <img id="orientation-image" src="./images/orientation/or_1.png" alt="Patient Orientation Image" style="width: 100%; height: auto;"/>
+            <div class="chat-history-container" style="height: 50%;">
+                <img id="orientation-image" src="./images/orientation/or_1.png" alt="Patient Orientation Image" style="width: 100%; height: 60%; object-fit: cover; object-position: top;"/>
+            </div>
+            <div>
+                <p class="lang lang-en">Care Team</p>
+                <p class="lang lang-zh">护理团队</p>
             </div>
             <div id="acknowledge-button-container" class="speak-button-container">
                 <button class="button button1" id="acknowledge-btn" onclick="dispatchAcknowledgeEvent()">
@@ -178,7 +184,7 @@
                     <button onclick="">
                         <img src="./images/images_new/doorman_icon.png" alt="Concierge Icon" class="button-icon">
                         <div class="button-text">
-                            <p class="lang lang-en">Concierge Services</p>
+                            <p class="lang lang-en">General Requests</p>
                             <p class="lang lang-zh">礼宾服务</p>
                         </div>
                     </button>
@@ -191,7 +197,7 @@
                             <p class="lang lang-zh">患者导向</p>
                         </div>
                     </button>
-                    <button onclick="startPatientAssessment();" class="concierge-button">
+                    <button onclick="startPatientAssessment(); testGeneration();" class="concierge-button">
                         <img src="./images/images_new/check-list_icon.png" alt="Assessment Icon" class="button-icon">
                         <div class="button-text">
                             <p class="lang lang-en">Patient Assessment</p>
@@ -199,64 +205,51 @@
                         </div>
                     </button>
                 </div>
-                <!--
-                <button onclick="openWayfinding()">
-                    <p class="lang lang-en">Wayfinding Page</p>
-                    <p class="lang lang-zh">导航页面</p>
-                </button> -->
-                <!-- <button onclick="showDeliveryScreen()">
-                    <p class="lang lang-en">Delivery</p>
-                    <p class="lang lang-zh">送货服务</p>
-                </button> 
-                -->
-            </div>
-            <!-- Step 1: Have you been here before -->
-            <div id="step-1" class="hidden">
-                <p class="question">What is your marital status?</p>
-                <button onclick="handleMaritalStatus('Single');">Single</button>
-                <button onclick="handleMaritalStatus('Married');">Married</button>
-                <button onclick="handleMaritalStatus('Seperated');">Seperated</button>
-                <button onclick="handleMaritalStatus('Divorced');">Divorced</button>
-                <button onclick="handleMaritalStatus('Widowed');">Widowed</button>
-                <button onclick="handleMaritalStatus('Unknown');">Unknown</button>
-            </div>
-
-            <!-- Other steps remain unchanged -->
-            <div id="step-2" class="hidden">
-                <p class="question">What is your religion?</p>
-                    <div style="font-size: 10px;">
-                    <button onclick="handleReligion('Buddhism');">Buddhism</button>
-                    <button onclick="handleReligion('Islam');">Islam</button>
-                    <button onclick="handleReligion('Hindusim');">Hindusim</button>
-                    <button onclick="handleReligion('Taosim');">Taosim</button>
-                    <button onclick="handleReligion('Sikhism');">Sikhism</button>
-                    <button onclick="handleReligion('Christianity');">Christianity</button>
-                    <button onclick="handleReligion('Free Thinker');">Free Thinker</button>
-                    <button onclick="handleReligion('Others');">Others</button>
-                    <button class="back-button" onclick="goBackToMaritalStatus();">Back</button>
+                <div id="LI-setup-div" class="hidden">
+                    <h2>Please select your language and input method</h2>
+                    <div class="lang-input-selector-class">
+                        <!-- // have two sub categories language and input side-by-side -->
+                        <div id="init-Lang-selector-div" class="init-selector-div">
+                            <!-- // Have the 2 options top and bottom -->
+                            <div>Langauge</div>
+                            <button>
+                                <img src="./images/images_new/english_icon.png" alt="Concierge Icon" class="button-icon">
+                                <div class="button-text">
+                                    English
+                                </div>
+                            </button>
+                            <button>
+                                <img src="./images/images_new/chinese_icon.png" alt="Concierge Icon" class="button-icon">
+                                <div class="button-text">
+                                    中文
+                                </div>
+                            </button>
+                        </div>
+                        <div id="init-input-selector-div" class="init-selector-div">
+                            <div>Mode</div>
+                            <!-- // Have the 2 options top and bottom -->
+                            <button>
+                                <img src="./images/images_new/tap_icon.png" alt="Concierge Icon" class="button-icon">
+                                <div class="button-text">
+                                    Touch
+                                </div>
+                            </button>
+                            <button>
+                                <img src="./images/images_new/speaking-icon.png" alt="Concierge Icon" class="button-icon">
+                                <div class="button-text">
+                                    Voice
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: space-evenly;">
+                        <button>Help</button>
+                        <button>Confirm</button>
+                    </div>
                 </div>
             </div>
-            <div id="step-3" class="hidden">
-                <p class="question">What is your preferred language?</p>
-                <button onclick="handleLanguage('English');">English</button>
-                <button onclick="handleLanguage('Chinese');">Chinese</button>
-                <button onclick="handleLanguage('Malay');">Malay</button>
-                <button onclick="handleLanguage('Tamil');">Tamil</button>
-                <button class="back-button" onclick="goBackToReligion();">Back</button>
-            </div>
-
-            <div id="step-4" class="hidden">
-                <p class="question">What is your highest level of education?</p>
-                <button onclick="handleEducation('No Formal Education');">No Formal Education</button>
-                <button onclick="handleEducation('Primary');">Primary</button>
-                <button onclick="handleEducation('Secondary');">Secondary</button>
-                <button onclick="handleEducation('Post-Secondary');">Post-Secondary</button>
-                <button class="back-button" onclick="goBackToLanguages();">Back</button>
-            </div>
-            <div id="result" class="hidden">
-                <p class="question" id="output-message"></p>
-                <button onclick="">Proceed</button>
-                <button class="back-button" onclick="restart();">Start Over</button>
+            <div id="patient-assessment-div" class="hidden" style="position: relative; height: 100%; top: -5%;">
+                <!-- Assessment question and answers generated here -->
             </div>
         </div>
     </div>
@@ -272,6 +265,7 @@
     <script src="https://cdn-aihuman.deepbrainai.io/sdk/web/aiPlayer-1.5.3.min.js"></script>
     <script src="./javascript/utilities.js"></script>
     <script src="./javascript/script.js"></script>
+    <script src="./javascript/assessment-screen-manager.js"></script>
     <script src="./javascript/warning-screen-overlay.js"></script>
     <script src="./javascript/input-selector-screen-overlay.js"></script>
     <script src="./javascript/patient-orientation-screen.js"></script>

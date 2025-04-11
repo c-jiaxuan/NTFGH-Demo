@@ -17,3 +17,10 @@ function replaceImageWithVideo(imageId, videoSrc, options = {}) {
 
     imgElement.parentNode.replaceChild(videoElement, imgElement);
 }
+
+function util_dispatchEvent(event) {
+    console.log("Dispatching event");
+    console.log("event type : " + event.type);
+    console.log("event      : " + event);
+    document.dispatchEvent(event);
+}
