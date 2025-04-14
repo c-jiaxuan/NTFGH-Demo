@@ -1,0 +1,180 @@
+body {
+    font-family: Arial, sans-serif;
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    width: 1920px;
+    height: 1080px;
+}
+
+body::before {
+    content: "";
+    background: url('./img/ntfgh_lobby.png') no-repeat center center;
+    background-size: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1920px;
+    height: 1080px;
+    opacity: 0.5; /* Adjust transparency here */
+    z-index: -5; /* Place it behind the content */
+}
+
+.header {
+    position: fixed; /* Keeps the header fixed */
+    top: 0;
+    left: 0;
+    padding: 16px;
+    width: 100%; /* Full width of the viewport */
+    z-index: 1000; /* Ensure it appears above other elements */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    pointer-events: normal;
+}
+
+.logo-container {
+    width: 50%;
+}
+
+.logo-container img {
+    width: 300px;
+    height: auto;
+    pointer-events: none; 
+}
+
+.side-content {
+    width: 1043px;
+    height: 900px;
+    position: absolute;
+    left: 847px;
+    top: 143px;
+}
+
+.side-bg {
+    background: #e8e8e8;
+    border-radius: 10px;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 1px;
+    top: -1px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.langauge-selector {
+    width: 220px;
+    height: 60px;
+    position: absolute;
+    left: 1669px;
+    top: 35px;
+    display: flex;
+    align-items: center;   /* vertical center */
+    padding-left: 10px;
+    background-color: transparent; /* optional, since we use bg inside */
+    border: none;
+}
+
+.home-button {
+    width: 220px;
+    height: 60px;
+    position: absolute;
+    left: 1430px;
+    top: 35px;
+    display: flex;
+    align-items: center;   /* vertical center */
+    padding-left: 10px;
+    background-color: transparent; /* optional, since we use bg inside */
+    border: none;
+}
+
+.button-bg-blue {
+    position: absolute;
+    inset: 0; /* same as top: 0; left: 0; right: 0; bottom: 0; */
+    background: #0c4c9a;
+    border-radius: 10px;
+    width: 220px;
+    height: 60px;
+    z-index: 0;
+}
+  
+.button-icon {
+    color: #ffffff;
+    width: 52px;
+    height: 52px;
+    margin-right: 10px;
+    z-index: 1;
+}
+
+.button-text {
+    color: #ffffff;
+    width: 120px;
+    height: 52px;
+    margin-right: 10px;
+    z-index: 1;
+    text-align: center;
+    font-family: "Inter-SemiBold", sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.subpage{
+    z-index: 1;
+    position: absolute;
+    width:inherit;
+    height: inherit;
+}
+
+.orientation-guide{
+    color: #484848;
+    text-align: center;
+    font-family: "Inter-Regular", sans-serif;
+    font-size: 32px;
+    font-weight: 400;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left:10px;
+    padding-right: 10px;
+}
+
+#step-title {
+    color: #484848;
+    text-align: center;
+    font-family: "Inter-Bold", sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    margin: 0px;
+    height: 100px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+#content-block{
+    height: 600px;
+    padding-left: 10px;
+    padding-right: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+#content-block video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+#content-block img, #content-block video {
+    display: block;
+    margin: 20px auto;
+    max-width: 100%;
+}
+
+.video-wrapper {
+    position: relative;
+}
