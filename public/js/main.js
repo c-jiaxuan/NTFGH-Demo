@@ -8,8 +8,12 @@
 
 // main.js
 import { init, renderStep, handleAcknowledge } from './orientationController.js';
+import { renderDeliveryScreen, handleContinue } from './conciergeController.js';
+import { util_dispatchEvent } from './utilities.js';
 
 const acknowledgeBtn = document.getElementById('acknowledge-btn');
+const continueBtn = document.getElementById('continue-btn');
+const deliveryBtn = document.getElementById('delivery-button');
 
 // // Make variables globally accessible for renderStep (not ideal for production)
 // window.steps = steps;
@@ -27,4 +31,13 @@ renderStep();
 // Advance on button click
 acknowledgeBtn.addEventListener('click', () => {
   handleAcknowledge();
+});
+
+deliveryBtn.addEventListener('click', () => {
+  renderDeliveryScreen();
+})
+
+// When continue button is pressed in the delivery item selection
+document.addEventListener('BTN_CONTINUE', () => {
+  handleContinue();
 });

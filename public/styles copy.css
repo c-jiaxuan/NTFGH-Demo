@@ -33,6 +33,10 @@ body::before {
     pointer-events: normal;
 }
 
+.hidden {
+    display: none;
+}
+
 .logo-container {
     width: 50%;
 }
@@ -73,6 +77,47 @@ body::before {
     padding-left: 10px;
     background-color: transparent; /* optional, since we use bg inside */
     border: none;
+}
+
+.options-btn {
+  position: relative;
+  width: 700px;
+  height: 180px;
+  border: none;
+}
+.options-btn-bg {
+  background: rgb(12, 76, 154);
+  border-radius: 25px;
+  width: 700px;
+  height: 180px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+.options-btn-text {
+  color: #ffffff;
+  text-align: center;
+  font-family: "Inter-Bold", sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  position: absolute;
+  left: 47px;
+  top: 0px;
+  width: 700px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.options-btn-img {
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  left: 14px;
+  top: 19px;
+  object-fit: cover;
+  aspect-ratio: 1;
 }
 
 .home-button {
@@ -119,6 +164,41 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* Button Styling */
+button {
+    background: #0c4c9a;
+    border-radius: 25px;
+    padding: 30px 15px;
+    margin: 5px 0;
+    width: 30%;
+    height: 85%;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 48px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    display: flex; /* Enable flexbox */
+    align-items: center; /* Vertically align the content */
+    justify-content: flex-start; /* Align items to the left */
+}
+
+button img.button-icon {
+    width: 15%; /* Set the image size */
+    height: auto;
+    margin-right: 15px; /* Space between image and text */
+}
+
+button .button-text {
+    display: flex;
+    flex-direction: column; /* Stack the text vertically */
+    justify-content: center; /* Center the text vertically */
+    width: 100%;
+}
+
+button:hover {
+    background: #083060;
 }
 
 .subpage{

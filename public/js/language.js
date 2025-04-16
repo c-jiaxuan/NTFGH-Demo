@@ -28,3 +28,4 @@ const LanguageController = (() => {
       subscribe
     };
   })();
+  
