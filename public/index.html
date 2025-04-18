@@ -9,7 +9,7 @@
 <body>
     <header class="header">
         <div class="logo-container">
-            <img src="./images/ntfgh.jpg" alt="Logo">
+            <img src="./img/ntfgh.jpg" alt="Logo">
         </div>
         <div class="languageSelectorDiv">
             <select id="langSelector" class="languageSelector">
@@ -35,13 +35,13 @@
                     <!-- // Have the 2 options top and bottom -->
                     <div>Langauge</div>
                     <button>
-                        <img src="./images/images_new/english_icon.png" alt="Concierge Icon" class="button-icon">
+                        <img src="./img/icon/lang_en.png" alt="Concierge Icon" class="button-icon">
                         <div class="button-text">
                             English
                         </div>
                     </button>
                     <button>
-                        <img src="./images/images_new/chinese_icon.png" alt="Concierge Icon" class="button-icon">
+                        <img src="./img/icon/lang_zh.png" alt="Concierge Icon" class="button-icon">
                         <div class="button-text">
                             中文
                         </div>
@@ -51,13 +51,13 @@
                     <div>Mode</div>
                     <!-- // Have the 2 options top and bottom -->
                     <button>
-                        <img src="./images/images_new/tap_icon.png" alt="Concierge Icon" class="button-icon">
+                        <img src="./img/icon/tap_icon.png" alt="Concierge Icon" class="button-icon">
                         <div class="button-text">
                             Touch
                         </div>
                     </button>
                     <button>
-                        <img src="./images/images_new/speaking-icon.png" alt="Concierge Icon" class="button-icon">
+                        <img src="./img/icon/speaking-icon.png" alt="Concierge Icon" class="button-icon">
                         <div class="button-text">
                             Voice
                         </div>
@@ -91,7 +91,7 @@
                 <p class="lang lang-zh">护理团队</p>
             </h2>
             <div class="chat-history-container" style="height: 50%;">
-                <img id="orientation-image" src="./images/orientation/or_1.png" alt="Patient Orientation Image" style="width: 100%; height: 60%; object-fit: cover; object-position: top;"/>
+                <img id="orientation-image" src="./img//orientation/fall-precaution.jpg" alt="Patient Orientation Image" style="width: 100%; height: 60%; object-fit: cover; object-position: top;"/>
             </div>
             <div>
                 <p class="lang lang-en">Care Team</p>
@@ -132,26 +132,26 @@
             <div class="input-area-container">
                 <input id="input" class="input-area" type="text" size="200" maxlength="200" placeholder="Type your message...">
                 <button id="send-button" class="send-button" onclick=sendMessageFromChatbox()>
-                <img src="./images/Control_Signs/Send.png" alt="Snow">
+                <img src="./img/icon/Send.png" alt="Snow">
                 </button>
             </div>
             <div id="speak-button-container" class="speak-button-container">
                 <button class="button button1" onclick="startRecognize()">
-                    <img src="./images/Control_Signs/Mic-Icon.png" alt="Snow">
+                    <img src="./img/icon/Mic-Icon.png" alt="Snow">
                     <p class="lang lang-en">Speak with AI</p>
                     <p class="lang lang-zh">与人工智能对话</p>
                 </button>
             </div>
             <div id="listening-button-container" class="speak-button-container" onclick="endRecognize(false)">
                 <button class="button button1">
-                    <img src="./images/Control_Signs/Mic-Icon.png" alt="Snow">
+                    <img src="./img/icon/Mic-Icon.png" alt="Snow">
                     <p class="lang lang-en">Listening...</p>
                     <p class="lang lang-zh">听...</p>
                 </button>
             </div>
             <div id="processing-button-container" class="speak-button-container">
                 <button class="button button1">
-                    <img src="./images/Control_Signs/Mic-Icon.png" alt="Snow">
+                    <img src="./img/icon/Mic-Icon.png" alt="Snow">
                     <p class="lang lang-en">Processing...</p>
                     <p class="lang lang-zh">处理...s</p>
                 </button>
@@ -168,21 +168,21 @@
                 </div>
                 <div id="main-menu-options-div" class="options-buttondiv">
                     <button onclick="showChatInterface(); showAvatar(); beginChat()">
-                        <img src="./images/images_new/talk_icon.png" alt="Chat Icon" class="button-icon">
+                        <img src="./img/icon/talk_icon.png" alt="Chat Icon" class="button-icon">
                         <div class="button-text">
                             <p class="lang lang-en">Chat with AI</p>
                             <p class="lang lang-zh">询问 AI</p>
                         </div>
                     </button>
                     <button onclick="showAdmissionServicesScreen()">
-                        <img src="./images/images_new/check-list_icon.png" alt="Admission Icon" class="button-icon">
+                        <img src="./img/icon/check-list_icon.png" alt="Admission Icon" class="button-icon">
                         <div class="button-text">
                             <p class="lang lang-en">Admission Services</p>
                             <p class="lang lang-zh">入学服务</p>
                         </div>
                     </button>
                     <button onclick="">
-                        <img src="./images/images_new/doorman_icon.png" alt="Concierge Icon" class="button-icon">
+                        <img src="./img/icon/doorman_icon.png" alt="Concierge Icon" class="button-icon">
                         <div class="button-text">
                             <p class="lang lang-en">General Requests</p>
                             <p class="lang lang-zh">礼宾服务</p>
@@ -191,14 +191,14 @@
                 </div>
                 <div id="admission-services-div" class="options-buttondiv hidden">
                     <button onclick="showPatientOrientation()" class="admission-button">
-                        <img src="./images/images_new/orientation_icon.png" alt="Orientation Icon" class="button-icon">
+                        <img src="./img/icon/orientation_icon.png" alt="Orientation Icon" class="button-icon">
                         <div class="button-text">
                             <p class="lang lang-en">Patient Orientation</p>
                             <p class="lang lang-zh">患者导向</p>
                         </div>
                     </button>
                     <button onclick="startPatientAssessment(); testGeneration();" class="concierge-button">
-                        <img src="./images/images_new/check-list_icon.png" alt="Assessment Icon" class="button-icon">
+                        <img src="./img/icon/check-list_icon.png" alt="Assessment Icon" class="button-icon">
                         <div class="button-text">
                             <p class="lang lang-en">Patient Assessment</p>
                             <p class="lang lang-zh">患者评估</p>
@@ -211,31 +211,31 @@
                         <!-- // have two sub categories language and input side-by-side -->
                         <div id="init-Lang-selector-div" class="init-selector-div">
                             <!-- // Have the 2 options top and bottom -->
-                            <div>Langauge</div>
+                            <h3>Langauge</h3>
                             <button>
-                                <img src="./images/images_new/english_icon.png" alt="Concierge Icon" class="button-icon">
+                                <img src="./img/icon/lang_en.png" alt="Concierge Icon" class="button-icon">
                                 <div class="button-text">
                                     English
                                 </div>
                             </button>
                             <button>
-                                <img src="./images/images_new/chinese_icon.png" alt="Concierge Icon" class="button-icon">
+                                <img src="./img/icon/lang_zh.png" alt="Concierge Icon" class="button-icon">
                                 <div class="button-text">
                                     中文
                                 </div>
                             </button>
                         </div>
                         <div id="init-input-selector-div" class="init-selector-div">
-                            <div>Mode</div>
+                            <h3>Mode</h3>
                             <!-- // Have the 2 options top and bottom -->
                             <button>
-                                <img src="./images/images_new/tap_icon.png" alt="Concierge Icon" class="button-icon">
+                                <img src="./img/icon/tap_icon.png" alt="Concierge Icon" class="button-icon">
                                 <div class="button-text">
                                     Touch
                                 </div>
                             </button>
                             <button>
-                                <img src="./images/images_new/speaking-icon.png" alt="Concierge Icon" class="button-icon">
+                                <img src="./img/icon/speaking-icon.png" alt="Concierge Icon" class="button-icon">
                                 <div class="button-text">
                                     Voice
                                 </div>
@@ -263,19 +263,19 @@
   ></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn-aihuman.deepbrainai.io/sdk/web/aiPlayer-1.5.3.min.js"></script>
-    <script src="./javascript/utilities.js"></script>
-    <script src="./javascript/script.js"></script>
-    <script src="./javascript/assessment-screen-manager.js"></script>
-    <script src="./javascript/warning-screen-overlay.js"></script>
-    <script src="./javascript/input-selector-screen-overlay.js"></script>
-    <script src="./javascript/patient-orientation-screen.js"></script>
-    <script src="./javascript/avatar.js"></script>
-    <script src="./javascript/survey.js"></script>
-    <script src="./javascript/chatbot.js"></script>
-    <script src="./javascript/wayfinding_ntfgh.js"></script>
-    <script src="./javascript/avatar-videos.js"></script>
-    <script src="./javascript/start-screen-overlay.js"></script>
-    <script src="./javascript/language-change.js"></script>
-    <script src="./javascript/./google-stt.js"></script>
+    <script src="./js/utilities.js"></script>
+    <script src="./js/script.js"></script>
+    <script src="./js/assessment-screen-manager.js"></script>
+    <script src="./js/warning-screen-overlay.js"></script>
+    <script src="./js/input-selector-screen-overlay.js"></script>
+    <script src="./js/patient-orientation-screen.js"></script>
+    <script type="module" src="./js/avatar.js"></script>
+    <script src="./js/survey.js"></script>
+    <script src="./js/chatbot.js"></script>
+    <script src="./js/wayfinding_ntfgh.js"></script>
+    <script src="./js/avatar-videos.js"></script>
+    <script src="./js/start-screen-overlay.js"></script>
+    <script src="./js/language-change.js"></script>
+    <script src="./js/google-stt.js"></script>
 </body>
 </html>

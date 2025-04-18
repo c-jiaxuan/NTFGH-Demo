@@ -16,6 +16,12 @@ const acknowledgeBtn = document.getElementById('acknowledge-btn');
 const backBtn = document.getElementById('back-btn');
 const helpBtn = document.getElementById('help-btn');
 const orientationBtn = document.getElementById('orientation-button');
+// import { init, renderStep, handleAcknowledge } from './orientationController.js';
+import { renderDeliveryScreen, handleContinue } from './conciergeController.js';
+import { util_dispatchEvent } from './utilities.js';
+
+const continueBtn = document.getElementById('continue-btn');
+const deliveryBtn = document.getElementById('delivery-button');
 
 const avatarDisplay = document.getElementById('AIPlayerWrapper');
 
@@ -74,4 +80,13 @@ orientationBtn.addEventListener('click', () => {
 // Advance on button click
 acknowledgeBtn.addEventListener('click', () => {
   orientationController.handleAcknowledge();
+});
+
+deliveryBtn.addEventListener('click', () => {
+  renderDeliveryScreen();
+})
+
+// When continue button is pressed in the delivery item selection
+document.addEventListener('BTN_CONTINUE', () => {
+  handleContinue();
 });

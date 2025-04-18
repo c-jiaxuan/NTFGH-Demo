@@ -79,7 +79,7 @@
             </div>
         </button>
       </div>
-      
+
       <div id="input-selector">
         <div>Mode</div>
         <!-- // Have the 2 options top and bottom -->
@@ -127,6 +127,61 @@
 
     <!-- <div id="concierge-page" class="subpage"></div> -->
 
+    <div id="concierge-page" class="subpage hidden">
+      <div id="concierge-page-title" style="height: 15%; font-size: 48px; font-weight: bold; display: flex; justify-content: center; align-items: center;">Concierge Services</div>
+      <div id="concierge-page-subtitle" class="orientation-guide">
+        Services provided for paitients during their stay.
+      </div>
+      <div id="concierge-options" class="subpage">
+        <div id="concierge-options-wrapper" class="subpage" style="height: 75%; width: 100%; display: flex; align-items: center; justify-content: space-evenly; flex-direction: column;">
+          <button id="delivery-button" class="options-btn">
+            <div class="options-btn-bg"></div>
+            <img class="options-btn-img" src="./img/icon/delivery_icon.png"/>
+            <div class="options-btn-text">Delivery</div>
+          </button>
+          <button class="options-btn">
+            <div class="options-btn-bg" style="background-color: grey;"></div>
+            <img class="options-btn-img" src="./img/icon/wellness-program _icon.png"/>
+            <div class="options-btn-text">Exercise Program</div>
+          </button>
+          <button class="options-btn">
+            <div class="options-btn-bg" style="background-color: grey;"></div>
+            <img class="options-btn-img" src="./img/icon/nurse_icon.png"/>
+            <div class="options-btn-text">Call a nurse</div>
+          </button>
+        </div>
+      </div>
+      
+      <div id="delivery-page" class="subpage hidden" style="height: 73%;">
+        <div id="delivery-items-wrapper" class="subpage" style="position: relative; height: 85%; width: 100%; display: flex; align-items: center; justify-content: space-evenly; flex-direction: row; flex-wrap: wrap;">
+          <!-- items will appear here -->
+        </div>
+        <div id="btn-div" style="height: 15%; width: 100%; display: flex; flex-direction: row; align-items: center; justify-content: space-around;">
+          <!-- buttons will go here -->
+        </div>
+      </div>
+      <div id="confirmation-page" class="subpage hidden" style="height: 73%;">
+        <div id="confirmed-items-wrapper" class="subpage" style="position: relative; height: 85%; width: 100%; display: flex; align-items: center; justify-content: space-evenly; flex-direction: column;">
+          <!-- items will appear here -->
+        </div>
+        <div id="btn-div" style="height: 15%; width: 100%; display: flex; flex-direction: row; align-items: center; justify-content: space-around;">
+          <!-- buttons will go here -->
+        </div>
+      </div>
+      <div id="waiting-page" class="subpage hidden" style="height: 73%;">
+        <div id="waiting-page-wrapper" class="subpage" style="position: relative; height: 85%; width: 100%; display: flex; align-items: center; justify-content: space-evenly; flex-direction: column;">
+          <img src="./img/concierge/delivery.png" style="height: 100%; width: auto;"></img>
+        </div>
+      </div>
+      <div id="finished-page" class="subpage hidden" style="height: 73%;">
+        <div id="finished-page-wrapper" class="subpage" style="position: relative; height: 85%; width: 100%; display: flex; align-items: center; justify-content: space-evenly; flex-direction: column;">
+          <img src="./img/concierge/tick.png" style="height: 100%; width: auto;"></img>
+        </div>
+          <div id="btn-div" style="height: 15%; width: 100%; display: flex; flex-direction: row; align-items: center; justify-content: space-around;">
+          <!-- buttons will go here -->
+        </div>
+      </div>
+    </div>
   </div>
   <script
   type="text/javascript"

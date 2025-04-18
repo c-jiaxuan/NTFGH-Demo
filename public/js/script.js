@@ -75,7 +75,7 @@ const appController = new AppController();
 function initApp () {
     // Start loading chatbot, avatar
     // send out the event to start loading chatbot
-    initSample();
+    //initSample();
 
     // Set app state to loading
     appController.updateAppState(APP_STATE.LOADING, true);

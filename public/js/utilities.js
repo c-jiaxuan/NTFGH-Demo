@@ -1,5 +1,5 @@
 // To replace image with a video
-function replaceImageWithVideo(imageId, videoSrc, options = {}) {
+export function replaceImageWithVideo(imageId, videoSrc, options = {}) {
     const imgElement = document.getElementById(imageId);
     if (!imgElement) {
         console.error(`Element with ID '${imageId}' not found.`);
@@ -18,7 +18,7 @@ function replaceImageWithVideo(imageId, videoSrc, options = {}) {
     imgElement.parentNode.replaceChild(videoElement, imgElement);
 }
 
-function util_dispatchEvent(event) {
+export function util_dispatchEvent(event) {
     console.log("Dispatching event");
     console.log("event type : " + event.type);
     console.log("event      : " + event);
