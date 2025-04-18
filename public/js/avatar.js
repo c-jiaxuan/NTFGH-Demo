@@ -1,10 +1,12 @@
-import LanguageController from './language.js';
+//import LanguageController from './language.js';
 
 const wrapper = document.getElementById('AIPlayerWrapper');
 const authServer = 'https://account.aistudios.com';
 const AI_PLAYER = new AIPlayer(wrapper);
-const appId = 'c-jiaxuan.github.io';
-const userKey = '5979244e-7071-444a-a9fe-81217af1cbef';
+// const appId = 'c-jiaxuan.github.io';
+// const userKey = '5979244e-7071-444a-a9fe-81217af1cbef';
+const appId = 'deepbrain.io';
+const userKey = 'bb872cb0-c6da-4c32-b68d-15ff95679837';
 
 AI_PLAYER.setConfig({
     authServer: authServer,
@@ -38,7 +40,9 @@ class AI_Message {
 }
   
 let botMessages = {};   // Dictionary to store all preset bot messages
-botMessages["start_msg"] = [new AI_Message("Welcome to Ng Teng Fong General Hospital! How can I help you today?", "G05")];
+botMessages["start_msg"] = [new AI_Message("Welcome to Ng Teng Fong General Hospital! How can I help you today?", "G05"),
+    new AI_Message("Hello, shall we get started?")
+];
 botMessages["orientation"] = [new AI_Message("We would like to introduce to you the Care Team.", "G02"),
     new AI_Message("Please watch this video")
 ];
@@ -64,7 +68,7 @@ var currTimeout = null;
 //const female_Avatar = true;
 
 //Language preset
-//const englishMaleVoice = 'google/en-US/MALE_en-US-Standard-D';
+const englishMaleVoice = 'google/en-US/MALE_en-US-Standard-D';
 const englishFemaleVoice = 'amazon/en-US/Female_Danielle';
 const chineseFemaleVoice = 'google/cmn-CN/FEMALE_cmn-CN-Wavenet-A';
 
@@ -93,9 +97,6 @@ async function initAvatar() {
         top: 0,
         speed: 1.0,
     });
-
-    LanguageController.subscribe(onLanguageChanged);
-    onLanguageChanged(LanguageController.getLanguage()); // Init with current language
 }
   
 // =========================== AIPlayer Setup ================================ //
@@ -185,7 +186,7 @@ function initAIPlayerEvent() {
         if (state === 'playerLoadComplete') {
             // To set custom voice
             //const customVoice = AI_PLAYER.findCustomVoice("google/en-US/FEMALE_en-US-Neural2-C");
-            const customVoicePackMale = AI_PLAYER.findCustomVoice(maleVoice);
+            const customVoicePackMale = AI_PLAYER.findCustomVoice(englishMaleVoice);
             const customVoice = AI_PLAYER.findCustomVoice(englishFemaleVoice);
             const customChineseVoice = AI_PLAYER.findCustomVoice(chineseFemaleVoice);
 
@@ -540,7 +541,7 @@ function setLanguage (lang) {
         }
     }
     
-    const isSuccess = female_Avatar ? AI_PLAYER.setCustomVoice(customVoice) : AI_PLAYER.setCustomVoice(maleVoice); 
+    const isSuccess = female_Avatar ? AI_PLAYER.setCustomVoice(customVoice) : AI_PLAYER.setCustomVoice(englishMaleVoice); 
     console.log(isSuccess ? "Successfully set custom voice" : "Unsuccessful in setting custom voice");
     
     const customVoice_check = AI_PLAYER.getCustomVoice();
@@ -556,4 +557,4 @@ function showCustomVoice() {
     console.log("customVoices = " + JSON.stringify(customVoices));
 }
 
-export default initAvatar;
+export default { initAvatar, speak, preload, pause, stop, resume, setLanguage };

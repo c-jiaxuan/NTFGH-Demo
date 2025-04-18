@@ -1,4 +1,4 @@
-export const steps = [
+const steps = [
     {
       title: 'Care Team',
       substeps: [
@@ -12,15 +12,15 @@ export const steps = [
                 <li>Before specimen collection</li>
                 <li>When we issue documents to you</li>
             </ul>`, 
-            imgSrc: './img/ID_Card.png' },
+            imgSrc: './img/orientation/ID_Card.png' },
         {
           type: 'quiz',
           title: 'Do you have your wristband?',
           content: {
             image: '',
             options: [
-              {text: 'Yes', correct: true},
-              {text: 'No', correct: false}
+              {text: 'Yes', correct: true, response: "", nextQns: true},
+              {text: 'No', correct: false, response: "", nextQns: false}
             ]
           }
         },
@@ -30,8 +30,8 @@ export const steps = [
           content: {
             image: '',
             options: [
-              {text: 'Yes', correct: true},
-              {text: 'No', correct: false}
+              {text: 'Yes', correct: true, response: "", nextQns: false},
+              {text: 'No', correct: false, response: "", nextQns: false}
             ]
           }
         }
@@ -43,14 +43,13 @@ export const steps = [
         { title: 'Nurse Call System Video', type: 'video', src: './vid/nurse-call-system.mov' },
         {
           type: 'quiz',
-          title: 'Which button do you press to call the nurse for help',
+          title: 'Which button do you press to call the nurse for help?',
           content: {
             image: '',
             options: [
-              {text: '1', correct: true},
-              {text: '2', correct: false},
-              {text: '3', correct: false},
-              {text: '4', correct: false},
+              {text: 'Red Button', correct: true, response: "", nextQns: false},
+              {text: 'Right Button', correct: false, response: "", nextQns: false},
+              {text: 'Left Button', correct: false, response: "", nextQns: false},
             ]
           }
         }
@@ -63,7 +62,7 @@ export const steps = [
           content: `The main visiting hours are:<br> 
           <u>Daily:</u>
           12:00PM - 08:00PM
-          <br> 
+          <br><br>
           Visistors are required to register before entering the wards
           <br> 
           <b>Visitor Management Kiosks</b><br>
@@ -78,14 +77,14 @@ export const steps = [
             <u>Self-Registration</u><br>
             Singaporeans and PRs with an NRIC, Singapore Driving Licence, or Student/Senior EZ-link card can self-register at Visitor Management Kiosks (Level 1&2, Tower B). You'll need the patient's full name, ward (e.g. B5), and bed number.
             <br>
-            <img></img>
+            <img src="./img/orientation/Nametag.png" style="max-height: 130px;"></img>
             <u>Assisted Registration</u><br>
             If you don't have the required info or documents, register at the Visitor Registration Counter (Level 1, Tower B). After registration, scan you NRIC or registation label at the Level 1 gantry to enter the ward.
             ` },
          
         { title: 'Visitation Policy', type: 'text', 
           content: `
-          <img></img>
+          <img src="./img/orientation/Visiting_policy.png" style="max-height: 130px;"></img>
           <ul>
             <li>Two members of the family (apart from the four visitors) may register as caregivers. Caregivers may enter the wards at any time to assist with the care of the patient. Visiting hours will not apply.</li>
             <li>A maximum of two visitors are allowed into other areas such as the Isolation Ward, Kidney Unit, Ambulatory Unit and Endoscopy at any one time during visiting horus.</li>
@@ -96,32 +95,42 @@ export const steps = [
       title: 'Fall Precaution',
       substeps: [
         { title: 'Fall Precaution Video', type: 'video', src: './vid/fall-precaution.mp4' },
-        { title: 'Fall Precaution QR', type: 'image', src: './img/fall-precaution.jpg' }
+        { title: 'Fall Precaution QR', type: 'image', src: './img/orientation/fall-precaution.jpg' }
       ]
     }
   ];
   
   let major = 0;
   let minor = 0;
+  let continueTimer = 1;
+  let nextQns = false;
   
+  const orientationPage = document.getElementById('orientation-page');
   const stepTitle = document.getElementById('step-title');
   const contentBlock = document.getElementById('content-block');
   const acknowledgeBtn = document.getElementById('acknowledge-btn');
+  const acknowledgeBtnTxt = acknowledgeBtn.querySelector('.button-text');
+  const acknowledgeBtnProgress = acknowledgeBtn.querySelector('.overlay-progress');
 
-  export function init()
+  function init()
   {
     major = 0;
     minor = 0;
+    orientationPage.style.visibility = "hidden";
+  }
+
+  function enable(isEnabled){
+    orientationPage.style.visibility = isEnabled ? "visible" : "hidden";
   }
   
-  export function renderStep() {
+  function renderStep() {
     const curMajorStep = steps[major];
     const sub = curMajorStep.substeps[minor];
   
     // Set the title with major step and substep titles with unique IDs
-    stepTitle.innerHTML = `<span id="majorStepTitle">${curMajorStep.title} (${minor + 1}/${curMajorStep.substeps.length})</span><br><span id="subStepTitle">${sub.title}</span>`;
+    stepTitle.innerHTML = `<span id="majorStepTitle">${curMajorStep.title} (${minor + 1}/${curMajorStep.substeps.length})</span><br><span style="font-size: 24px;" id="subStepTitle">${sub.title}</span>`;
     contentBlock.innerHTML = '';
-    acknowledgeBtn.style.display = 'none';
+    acknowledgeBtn.className = 'action-button-disabled';
   
     // Check for substep types and add corresponding IDs for styling
     if (sub.type === 'text') {
@@ -129,15 +138,15 @@ export const steps = [
       p.innerHTML = sub.content;
       p.id = 'textSubstep';  // ID for text type substep
       contentBlock.appendChild(p);
-      acknowledgeBtn.style.display = 'block';
-  
+      acknowledgeBtn.className = 'action-button';
+
     } else if (sub.type === 'image') {
       const img = document.createElement('img');
       img.src = sub.src;
       img.id = 'imageSubstep';  // ID for image type substep
       img.style.maxWidth = '100%';
       contentBlock.appendChild(img);
-      acknowledgeBtn.style.display = 'block';
+      acknowledgeBtn.className = 'action-button';
   
     } else if (sub.type === 'text-image') {
       const text = document.createElement('p');
@@ -149,7 +158,7 @@ export const steps = [
       img.style.maxWidth = '100%';
       contentBlock.appendChild(text);
       contentBlock.appendChild(img);
-      acknowledgeBtn.style.display = 'block';
+      acknowledgeBtn.className = 'action-button';
   
     } else if (sub.type === 'video') {
         const video = document.createElement('video');
@@ -159,17 +168,8 @@ export const steps = [
     
         // Create countdown text with background
         const countdownText = document.createElement('div');
-        countdownText.id = 'countdownText';
-        countdownText.textContent = '3'; // Initial countdown time
-        countdownText.style.position = 'absolute';
-        countdownText.style.top = '10px';
-        countdownText.style.left = '10px';
-        countdownText.style.padding = '10px';
-        countdownText.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-        countdownText.style.color = 'white';
-        countdownText.style.fontSize = '20px';
-        countdownText.style.fontWeight = 'bold';
-        countdownText.style.borderRadius = '5px';
+        countdownText.classList.add('countdown-text');
+        countdownText.style.display = 'flex';
     
         const wrapper = document.createElement('div');
         wrapper.classList.add('video-wrapper');
@@ -182,13 +182,14 @@ export const steps = [
         let countdown = 3;
         const countdownInterval = setInterval(() => {
           countdown--;
-          countdownText.textContent = countdown;
+          countdownText.textContent = "Video is starting in " + countdown;
     
           if (countdown <= 0) {
             clearInterval(countdownInterval);
             setTimeout(() => {
               video.requestFullscreen().catch(() => {});
               video.play();
+              countdownText.style.display = 'none';
             }, 500);
           }
         }, 1000);
@@ -197,16 +198,16 @@ export const steps = [
         if (document.fullscreenElement) {
           document.exitFullscreen();
         }
-        acknowledgeBtn.style.display = 'block';
+        acknowledgeBtn.className = 'action-button';
       };
     } else if (sub.type === 'quiz') {
       const quizContainer = document.createElement('div');
       quizContainer.id = 'quizSubstep';
     
       // Title
-      const title = document.createElement('h3');
-      title.textContent = sub.title;
-      quizContainer.appendChild(title);
+      // const title = document.createElement('h3');
+      // title.textContent = sub.title;
+      // quizContainer.appendChild(title);
     
       // Image (optional)
       if (sub.content.image) {
@@ -220,22 +221,40 @@ export const steps = [
       // Options
       const optionsWrapper = document.createElement('div');
       optionsWrapper.style.display = 'grid';
-      optionsWrapper.style.gridTemplateColumns = sub.content.options.length === 2 ? '1fr 1fr' : '1fr 1fr';
+      optionsWrapper.style.justifySelf = 'center';
+      //optionsWrapper.style.gridTemplateColumns = sub.content.options.length === 2 ? '1fr 1fr' : '1fr 1fr';
+      //optionsWrapper.style.gridTemplateColumns = "repeat(2, 1fr)";
       optionsWrapper.style.gap = '10px';
       optionsWrapper.style.marginTop = '20px';
     
       sub.content.options.forEach(opt => {
-        const btn = document.createElement('button');
-        btn.textContent = opt.text;
-        btn.style.padding = '10px';
+        //const btn = document.createElement('button');
+        const btn = acknowledgeBtn.cloneNode(true);
+        btn.className = 'action-button';
+        const btnText = btn.querySelector(".button-text");
+        btnText.innerHTML = opt.text;
+
         btn.onclick = () => {
           if (opt.correct) {
-            btn.style.background = '#4CAF50'; // Green for correct
-            acknowledgeBtn.style.display = 'block';
+            //btn.style.background = '#4CAF50'; // Green for correct
+            btn.className = 'action-button correct';
           } else {
-            btn.style.background = '#f44336'; // Red for incorrect
-            btn.disabled = true;
+            //btn.style.background = '#f44336'; // Red for incorrect
+            //btn.disabled = true;
+            btn.className = 'action-button wrong';
           }
+          acknowledgeBtn.className = "action-button";
+
+          optionsWrapper.childNodes.forEach(child => {
+            if(child != btn){
+              child.className = 'action-button-disabled';
+            }
+          })
+
+          //Trigger response
+
+          //skip or no skip
+          nextQns = opt.nextQns;
         };
         optionsWrapper.appendChild(btn);
       });
@@ -243,23 +262,73 @@ export const steps = [
       quizContainer.appendChild(optionsWrapper);
       contentBlock.appendChild(quizContainer);
     }
+
+    setCurrentStep(sub.type, major, minor);
   }
-  
-  
-  export function handleAcknowledge() {
+
+function setCurrentStep(type, stepIndex, substepIndex) {
+  localStorage.setItem('currentStep', JSON.stringify({ type, stepIndex, substepIndex }));
+}
+
+  function handleAcknowledge() {
     const curMajorStep = steps[major];
-  
-    if (minor < curMajorStep.substeps.length - 1) {
-      minor++;
-    } else {
-      if (major < steps.length - 1) {
+    const sub = curMajorStep.substeps[minor];
+
+    if(sub.type === "quiz")
+    {
+      if(nextQns){
+        if (minor < curMajorStep.substeps.length - 1) {
+          minor++;
+        } else {
+          if (major < steps.length - 1) {
+            major++;
+            minor = 0;
+          } else {
+            alert('Orientation Complete!');
+            return;
+          }
+        }
+      }
+      else{
+        //To change
         major++;
-        minor = 0;
+        minor = 0;   
+      }
+    } else {
+      if (minor < curMajorStep.substeps.length - 1) {
+        minor++;
       } else {
-        alert('Orientation Complete!');
-        return;
+        if (major < steps.length - 1) {
+          major++;
+          minor = 0;
+        } else {
+          alert('Orientation Complete!');
+          return;
+        }
       }
     }
 
-    renderStep();
+    let current = 0;
+    let percent = (current / continueTimer) * 100;
+    acknowledgeBtnProgress.style.width = `${percent}%`;
+    acknowledgeBtn.className = "action-button-selected";
+    acknowledgeBtnTxt.innerHTML = `Continue in ${continueTimer - current}s`;
+
+    const interval = setInterval(() => {
+      current++;
+      percent = (current / continueTimer) * 100;
+      acknowledgeBtnProgress.style.width = `${percent}%`;
+
+      if (continueTimer - current > 0) {
+        acknowledgeBtn.className = "action-button-selected";
+        acknowledgeBtnTxt.innerHTML = `Continue in ${continueTimer - current}s`;
+      } else {
+        clearInterval(interval);
+        acknowledgeBtnTxt.innerHTML = 'Acknowledge';
+        acknowledgeBtnProgress.style.width = '0%';
+        renderStep();
+      }
+    }, 1000);
   }
+
+export default { steps, init, enable, renderStep, handleAcknowledge }

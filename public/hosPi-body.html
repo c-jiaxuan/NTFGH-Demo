@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920, initial-scale=1.0" />
+  <title>Orientation Display</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background-color: black;
+    }
+
+    #container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    img, video {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    video {
+      background: black;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <img id="stepImage" class="hidden" />
+    <video id="stepVideo" class="hidden" autoplay muted playsinline></video>
+  </div>
+
+  <script type="module">
+    const stepImage = document.getElementById('stepImage');
+    const stepVideo = document.getElementById('stepVideo');
+
+    stepImage.classList.remove('hidden');
+    stepImage.src = "./img/idle-poster.png";
+    
+    function updateDisplay(type, major, minor) {
+        if(type === "quiz") return;
+
+      if (type === 'video') {
+        stepImage.classList.add('hidden');
+        console.log(major);
+        //stepImage.src = `./img/step${major+1}-${minor+1}.png`;
+        if(major==0 || major==3)
+            stepVideo.src = `./vid/step${major+1}-${minor+1}.mp4`;
+        else
+            stepVideo.src = `./vid/step${major+1}-${minor+1}.mov`;
+
+        stepVideo.classList.remove('hidden');
+
+        let countdown = 3;
+        const countdownInterval = setInterval(() => {
+          countdown--;
+          //countdownText.textContent = "Video is starting in " + countdown;
+    
+          if (countdown <= 0) {
+            clearInterval(countdownInterval);
+            setTimeout(() => {
+                //stepVideo.requestFullscreen().catch(() => {});
+                stepVideo.play();
+              //countdownText.style.display = 'none';
+            }, 500);
+          }
+        }, 1000);
+
+        stepVideo.onended = () => {
+            // if (document.fullscreenElement) {
+            //     document.exitFullscreen();
+            // }
+            //acknowledgeBtn.className = 'action-button';
+        };
+      } else {
+        console.log(major);
+
+        stepVideo.classList.add('hidden');
+        stepVideo.pause();
+        stepImage.src =  `./img/step${major+1}-${minor+1}.png`;
+        stepImage.classList.remove('hidden');
+      }
+    }
+
+    // Listen for changes from the orientation page
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'currentStep') {
+        const stepData = JSON.parse(event.newValue);
+        const { type, stepIndex, substepIndex } = stepData;
+        console.log(type, stepIndex, substepIndex);
+        updateDisplay(type, stepIndex, substepIndex);
+      }
+    });
+  </script>
+</body>
+</html>
