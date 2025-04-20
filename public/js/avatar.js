@@ -65,7 +65,7 @@ const VOICE_TIMEOUT = new Event('VOICE_TIMEOUT');
 var currTimeout = null;
 
 // Gender preset
-//const female_Avatar = true;
+const female_Avatar = true;
 
 //Language preset
 const englishMaleVoice = 'google/en-US/MALE_en-US-Standard-D';
@@ -115,7 +115,8 @@ async function generateClientToken() {
         console.log('generateClientToken Error:', result);
     }
 }
-  
+
+// Method for <v1.5.3
 //   async function generateClientToken() {
 //       const result = await makeRequest("GET", "/api/generateJWT");
 //       console.log("Generate Token");
@@ -319,7 +320,7 @@ function initAIPlayerEvent() {
     }
 
     console.log('onAIPlayerEvent:', aiEvent.type, typeName, 'clipSet:', aiEvent.clipSet);
-    return;
+        return;
     };
 
     //AIError & callback
@@ -548,13 +549,6 @@ function setLanguage (lang) {
     if (customVoice_check == null) {
         console.log("custom voice is not set");
     }
-}
-
-function showCustomVoice() {
-    const languages = AI_PLAYER.getSpeakableLanguages(AI_PLAYER.getGender());
-    console.log("languages = " + languages);
-    const customVoices = AI_PLAYER.getCustomVoicesWith('cmn-CN', AI_PLAYER.getGender());
-    console.log("customVoices = " + JSON.stringify(customVoices));
 }
 
 export default { initAvatar, speak, preload, pause, stop, resume, setLanguage };

@@ -9,9 +9,9 @@ const curDir = fileURLToPath(new URL(".", import.meta.url))
 
 //ES module style
 export default {
-    entry: './src/aws_sdk_index.js',
+    entry: './src/aws-services.js',
     output: {
-      filename: `demo_aws_sdk.js`,
+      filename: `aws-services.js`,
       path: curDir + '/public'
     },
     mode: 'development',

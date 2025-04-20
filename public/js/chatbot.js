@@ -1,5 +1,43 @@
 // LLMs API Settings
 // Change these to change the LLMs response
+const adl_questions = [
+    {
+        question: 'Do you need any help with your meals or feeding?',
+        choices: { 'Dependant': 'Yes, I need full assistance to eat. Such as someone actively needing to feed me.',
+            'Needs-Assistance': 'I need some help, like cutting or opening packaging. Does not include using cutlery such as chopsticks, spoons, forks and others',
+            'Independant': 'No help needed, I can manage fully on my own.', 
+            'Unable to assess': 'Unable to classify.'}
+    },
+    {
+        question: 'Do you need any help with dressing or grooming?',
+        choices: { 'Dependant': 'Yes, I need full assistance to dress and groom myself',
+            'Needs-Assistance': 'I need some help',
+            'Independant': 'No help needed, I can manage fully on my own.', 
+            'Unable to assess': 'Unable to classify.'}
+    },
+    {
+        question: 'Do you need any help with your toileting or bathing?',
+        choices: { 'Dependant': 'Yes, I need full assistance to toileting and bathing, such as someone to bathe me and clean after',
+            'Needs-Assistance': 'I need some help',
+            'Independant': 'No help needed, I can manage fully on my own.', 
+            'Unable to assess': 'Unable to classify.'}
+    },
+    {
+        question: 'Do you need any help with turning in bed?',
+        choices: { 'Dependant': 'Yes, I need full assistance to turning in bed, such as having a helper to turn me',
+            'Needs-Assistance': 'I need some help, such as holding onto the bed frame or by using some assistive devices',
+            'Independant': 'No help needed, I can manage fully on my own.', 
+            'Unable to assess': 'Unable to classify.'}
+    },
+    {
+        question: 'Do you need any help with ambulation?',
+        choices: { 'Dependant': 'Yes, I need full assistance with ambulation. Such as requiring someone to push my wheelchair',
+            'Needs-Assistance': 'I need some help, like a walking stick or a wheelchair I can wheel on my own',
+            'Independant': 'No help needed, I can manage fully on my own.', 
+            'Unable to assess': 'Unable to classify.'}
+    }
+]
+
 var bot_app = "sgroots"; // Don't change this
 var bot_tone = "Succinct"; // Professional, Casual, Enthusiastic, Informational, Funny, Succinct
 var bot_format = "Summary"; // Summary, Report, Bullet Points, LinkedIn Post, Email
@@ -8,6 +46,9 @@ var bot_followup = true;
 
 var llm_summarise_api_url = 'https://gramener.com/docsearch/summarize';
 var llm_similarity_api_url = 'https://gramener.com/docsearch/similarity';
+var llmClassifyLink = 'https://voicewebapp.straivedemo.com/classify';
+
+var selectedQuestion = adl_questions[0];
 
 // For similarity
 let result;
@@ -249,6 +290,48 @@ function sendToSummarize(message, context) {
         console.log("Follow-Up Questions:", followUpQuestions);
 
         processBotMessage(messageContent, followUpQuestions);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+// Send user question to LLMs => retrieve and process the response
+function sendToClassify(message) {
+    console.log("posting API...");
+    // Display processing status
+    createTempBubble(BOT_BUBBLE, "Retrieving Answer", 0);
+
+    //Setup request body
+    const payload = {
+        "question": selectedQuestion.question,
+        "user_input": message,
+        "choices": selectedQuestion.choices,
+    };
+
+    // Make API call
+    fetch(llmClassifyLink, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => {
+        // Handle response
+        if (response.ok) {
+            return response.json(); // Parse JSON response
+        } else {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+    })
+    .then(data => {
+        console.log('Success:', data);
+
+        var botResponse = formatResponse(data);
+
+        processBotMessage(botResponse);
     })
     .catch(error => {
         console.error('Error:', error);

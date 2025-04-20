@@ -4,6 +4,10 @@ export const Events = {
     SETTING_PRESS: 'app:setting-pressed',
     UPDATE_LANGUAGE: 'app:update-language',
     UPDATE_INPUTMODE: 'app:update-inputmode',
+    GETTING_START_PRESS: 'app:getting-started-pressed',
+    START_ORIENTATION: 'main:start-orientation',
+    START_PATIENT_ASSESSMENT: 'main:start-assessment',
+    START_DELIVERY: 'main:start-deliver'
 };
   
 export const EventBus = {

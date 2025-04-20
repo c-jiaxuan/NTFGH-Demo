@@ -1,24 +1,50 @@
 import { EventBus, Events } from "../event-bus.js";
+import { BaseView } from './base-view.js';
 
-const langButtons = document.querySelectorAll('#lang-selector button');
-const inputButtons = document.querySelectorAll('#input-selector button');
+export class SettingsView extends BaseView {
+    constructor(id)
+    {
+        super(id);
+        this.langButtons = document.querySelectorAll('#lang-selector button');
+        this.inputButtons = document.querySelectorAll('#input-selector button');
 
-function init(){
-    // Function to handle selection of language
-    langButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            console.log("button-clicked");
-            EventBus.emit(Events.UPDATE_LANGUAGE, button.innerText);
+        this.init();
+    }
+
+    init()
+    {
+        // Function to handle selection of language
+        this.langButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                console.log("button-clicked");
+                EventBus.emit(Events.UPDATE_LANGUAGE, button.innerText);
+            });
         });
-    });
-
-    // Function to handle selection of input method
-    inputButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            console.log("button-clicked");
-            EventBus.emit(Events.UPDATE_INPUTMODE, button.innerText);
+    
+        // Function to handle selection of input method
+        this.inputButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                console.log("button-clicked");
+                EventBus.emit(Events.UPDATE_INPUTMODE, button.innerText);
+            });
         });
-    });
+    }
+
+    setCurrent(language, input){
+        const allButtons = document.querySelectorAll('.action-button.settings');
+
+        allButtons.forEach(btn => {
+          const type = btn.dataset.type;
+          const value = btn.dataset.value;
+      
+          // Clear previous highlights
+          btn.classList.remove('selected');
+      
+          // Highlight based on default values
+          if ((type === 'language' && value === language) ||
+              (type === 'mode' && value === input)) {
+            btn.classList.add('selected');
+          }
+        });
+    }
 }
-
-export default { init }

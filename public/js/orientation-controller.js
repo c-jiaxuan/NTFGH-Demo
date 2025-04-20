@@ -102,7 +102,7 @@ const steps = [
   
   let major = 0;
   let minor = 0;
-  let continueTimer = 1;
+  let continueTimer = 5;
   let nextQns = false;
   
   const orientationPage = document.getElementById('orientation-page');
@@ -309,26 +309,29 @@ function setCurrentStep(type, stepIndex, substepIndex) {
     }
 
     let current = 0;
-    let percent = (current / continueTimer) * 100;
-    acknowledgeBtnProgress.style.width = `${percent}%`;
+    let elapsedMs = 0;
+    const updateInterval = 50; // ms for smooth progress
+    const totalMs = continueTimer * 1000;
+
     acknowledgeBtn.className = "action-button-selected";
-    acknowledgeBtnTxt.innerHTML = `Continue in ${continueTimer - current}s`;
+    acknowledgeBtnTxt.innerHTML = `Continue in ${continueTimer}s`;
 
     const interval = setInterval(() => {
-      current++;
-      percent = (current / continueTimer) * 100;
+      elapsedMs += updateInterval;
+      const percent = (elapsedMs / totalMs) * 100;
       acknowledgeBtnProgress.style.width = `${percent}%`;
 
-      if (continueTimer - current > 0) {
-        acknowledgeBtn.className = "action-button-selected";
-        acknowledgeBtnTxt.innerHTML = `Continue in ${continueTimer - current}s`;
+      const secondsLeft = Math.ceil((totalMs - elapsedMs) / 1000);
+      if (secondsLeft > 0) {
+        acknowledgeBtnTxt.innerHTML = `Continue in ${secondsLeft}s`;
       } else {
         clearInterval(interval);
         acknowledgeBtnTxt.innerHTML = 'Acknowledge';
         acknowledgeBtnProgress.style.width = '0%';
         renderStep();
       }
-    }, 1000);
+    }, updateInterval);
+
   }
 
 export default { steps, init, enable, renderStep, handleAcknowledge }

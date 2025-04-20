@@ -41,144 +41,155 @@
         What can i do for you today?
       </div>
       <div>
-        <button class="action-button main-button">
+        <button id="chat-button" class="action-button main-button">
           <div class="button-bg"></div>
-          <img class="button-icon" src="./img/icon/home_icon.png"/>
+          <img class="button-icon" src="./img/icon/talk_icon.png"/>
           <div class="button-text">Chat with AI</div>
         </button>
-        <button id="orientation-button" class="action-button main-button">
+        <button id="getting-started-button" class="action-button main-button">
           <div class="button-bg"></div>
-          <img class="button-icon" src="./img/icon/home_icon.png"/>
+          <img class="button-icon" src="./img/icon/handshake_icon.png"/>
           <div class="button-text">Getting Started</div>
         </button>
-        <button class="action-button main-button">
+        <button id="delivery-button" class="action-button main-button">
           <div class="button-bg"></div>
-          <img class="button-icon" src="./img/icon/question_icon.png"/>
-          <div class="button-text">Conceirge Services</div>
+          <img class="button-icon" src="./img/icon/delivery_icon.png"/>
+          <div class="button-text">Delivery Services</div>
+        </button>
+      </div>
+    </div>
+
+    <div id="getting-started-page" class="subpage">
+      <h1 id="setup-title">Getting Started</h1>
+      <div class="orientation-guide">
+        Services required for patient onboarding into our Hospital
+      </div>
+      <div>
+        <button id="orientation-button" class="action-button main-button">
+          <div class="button-bg"></div>
+          <img class="button-icon" src="./img/icon/orientation_icon.png"/>
+          <div class="button-text">Patient Orientation</div>
+        </button>
+        <button id="assessment-button" class="action-button main-button">
+          <div class="button-bg"></div>
+          <img class="button-icon" src="./img/icon/check-list_icon.png"/>
+          <div class="button-text">Patient Assessment</div>
         </button>
       </div>
     </div>
 
     <div id="setup-page" class="subpage">
-      <h1 id="setup-title">Language and Mode</h1>
-      <div class="orientation-guide">
-        Please select your preferred language and method of interaction.
-      </div>
-      <div id="lang-selector">
-        <div>Langauge</div>
-        <button>
-            <img src="./images/images_new/english_icon.png" alt="Concierge Icon" class="button-icon">
-            <div class="button-text">
-                English
-            </div>
-        </button>
-        <button>
-            <img src="./images/images_new/chinese_icon.png" alt="Concierge Icon" class="button-icon">
-            <div class="button-text">
-                中文
-            </div>
-        </button>
-      </div>
-
-      <div id="input-selector">
-        <div>Mode</div>
-        <!-- // Have the 2 options top and bottom -->
-        <button>
-            <img src="./images/images_new/tap_icon.png" alt="Concierge Icon" class="button-icon">
-            <div class="button-text">
-                Touch
-            </div>
-        </button>
-        <button>
-            <img src="./images/images_new/speaking-icon.png" alt="Concierge Icon" class="button-icon">
-            <div class="button-text">
-                Voice
-            </div>
-        </button>
+      <div class="language-mode-container">
+        <h2>Language and Mode</h2>
+        <p class="subtitle">
+          Please select the language and input method to be used for the patient assessment
+        </p>
+      
+        <div class="selection-grid">
+          <div id="lang-selector" class="section">
+            <h3>Language</h3>
+            <button class="action-button settings" data-type="language" data-value="en">
+              <div class="button-bg"></div>
+              <img class="button-icon" src="./img/icon/lang_en.png"/>
+              <div class="button-text">English</div>
+            </button>
+            <button class="action-button settings" data-type="language" data-value="zh">
+              <div class="button-bg"></div>
+              <img class="button-icon" src="./img/icon/lang_zh.png"/>
+              <div class="button-text">中文</div>
+            </button>
+            <button class="action-button-disabled settings">
+              <div class="button-bg"></div>
+              <div class="button-text">To be updated</div>
+            </button>
+          </div>
+      
+          <div id="input-selector" class="section">
+            <h3>Mode</h3>
+            <button class="action-button settings" data-type="mode" data-value="touch">
+              <div class="button-bg"></div>
+              <img class="button-icon" src="./img/icon/tap_icon.png"/>
+              <div class="button-text">Touch</div>
+            </button>
+            <button class="action-button settings" data-type="mode" data-value="voice">
+              <div class="button-bg"></div>
+              <img class="button-icon" src="./img/icon/speaking-icon.png"/>
+              <div class="button-text">Voice</div>
+            </button>
+          </div>
+        </div>
+      
+        <p class="confirm-instruction">
+          Press or Say “Confirm” once you’re ready.
+        </p>
+      </div>      
     </div>
 
-    <!-- <div id="assessment-page" class="subpage"></div> -->
-
-    <div id="orientation-page" style="visibility:hidden;" class="subpage">
+    <div id="orientation-page" class="subpage">
       <div class="orientation-guide">
         Please view the following information and acknowledge upon completing them
       </div>
       <h1 id="step-title"></h1>
       <div id="content-block"></div>
-
-      <div id="bottom-action-bar"  class="action-bar">
-        <button class="action-button">
-          <div class="button-bg"></div>
-          <img class="button-icon" src="./img/icon/home_icon.png"/>
-          <div class="button-text">Back</div>
-        </button>
-        <button id="help-button" class="action-button">
-          <div class="button-bg"></div>
-          <img class="button-icon" src="./img/icon/question_icon.png"/>
-          <div class="button-text">Help</div>
-        </button>
-        <button id="acknowledge-btn" class="action-button">
-          <div class="button-bg"></div>
-          <div class="overlay-progress"></div>
-          <div class="button-text">Acknowledge</div>
-        </button>
-      </div>
     </div>
 
-    <!-- <div id="concierge-page" class="subpage"></div> -->
+    <div id="patient-assessment-page" class="subpage">
+      <div id="app" class="assessment-wrapper"></div>
+    </div>
+    
+    <div id="bottom-action-bar" style="display: none;" class="action-bar">
+      <button id="back-button" class="action-button">
+        <div class="button-bg"></div>
+        <img class="button-icon" src="./img/icon/back-icon.png"/>
+        <div class="button-text">Back</div>
+      </button>
+      <button id="help-button" class="action-button">
+        <div class="button-bg"></div>
+        <img class="button-icon" src="./img/icon/question_icon.png"/>
+        <div class="button-text">Help</div>
+      </button>
+      <button id="acknowledge-button" class="action-button">
+        <div class="button-bg"></div>
+        <div class="overlay-progress"></div>
+        <div class="button-text">Acknowledge</div>
+      </button>
+    </div>
+    <div id="delivery-page" class="subpage">
+      <h1 id="setup-title">Delivery</h1>
+      <div id="delivery-guide" class="orientation-guide">
+        Please select what you require to be delivered.
+      </div>
+      <div class="item-grid">
+        <label class="item">
+          <img src="./img/concierge/blankets.png"/>
+          <div class="item-label">Blankets</div>
+        </label>
+        <label class="item">
+          <img src="./img/concierge/biscuits.png" alt="Snacks" />
+          <div class="item-label">Snacks</div>
+        </label>
+        <label class="item">
+          <img src="./img/concierge/supplies.png" alt="Toiletries & Hygiene" />
+          <div class="item-label">Toiletries & Hygiene</div>
+        </label>
+        <label class="item">
+          <img src="./img/concierge/magazines.png" alt="Entertainment" />
+          <div class="item-label">Entertainment</div>
+        </label>
+      </div>
 
-    <div id="concierge-page" class="subpage hidden">
-      <div id="concierge-page-title" style="height: 15%; font-size: 48px; font-weight: bold; display: flex; justify-content: center; align-items: center;">Concierge Services</div>
-      <div id="concierge-page-subtitle" class="orientation-guide">
-        Services provided for paitients during their stay.
+      <div id='delivering' class="delivery-img">
+        <img src="./img/concierge/delivery.png"></img>
       </div>
-      <div id="concierge-options" class="subpage">
-        <div id="concierge-options-wrapper" class="subpage" style="height: 75%; width: 100%; display: flex; align-items: center; justify-content: space-evenly; flex-direction: column;">
-          <button id="delivery-button" class="options-btn">
-            <div class="options-btn-bg"></div>
-            <img class="options-btn-img" src="./img/icon/delivery_icon.png"/>
-            <div class="options-btn-text">Delivery</div>
-          </button>
-          <button class="options-btn">
-            <div class="options-btn-bg" style="background-color: grey;"></div>
-            <img class="options-btn-img" src="./img/icon/wellness-program _icon.png"/>
-            <div class="options-btn-text">Exercise Program</div>
-          </button>
-          <button class="options-btn">
-            <div class="options-btn-bg" style="background-color: grey;"></div>
-            <img class="options-btn-img" src="./img/icon/nurse_icon.png"/>
-            <div class="options-btn-text">Call a nurse</div>
-          </button>
-        </div>
+
+      <div id='delivered' class="delivery-img">
+        <img src="./img/concierge/tick.png"></img>
       </div>
-      
-      <div id="delivery-page" class="subpage hidden" style="height: 73%;">
-        <div id="delivery-items-wrapper" class="subpage" style="position: relative; height: 85%; width: 100%; display: flex; align-items: center; justify-content: space-evenly; flex-direction: row; flex-wrap: wrap;">
-          <!-- items will appear here -->
+
+      <div id="avatar-chat">
+        <div class="avatar-bubble">
         </div>
-        <div id="btn-div" style="height: 15%; width: 100%; display: flex; flex-direction: row; align-items: center; justify-content: space-around;">
-          <!-- buttons will go here -->
-        </div>
-      </div>
-      <div id="confirmation-page" class="subpage hidden" style="height: 73%;">
-        <div id="confirmed-items-wrapper" class="subpage" style="position: relative; height: 85%; width: 100%; display: flex; align-items: center; justify-content: space-evenly; flex-direction: column;">
-          <!-- items will appear here -->
-        </div>
-        <div id="btn-div" style="height: 15%; width: 100%; display: flex; flex-direction: row; align-items: center; justify-content: space-around;">
-          <!-- buttons will go here -->
-        </div>
-      </div>
-      <div id="waiting-page" class="subpage hidden" style="height: 73%;">
-        <div id="waiting-page-wrapper" class="subpage" style="position: relative; height: 85%; width: 100%; display: flex; align-items: center; justify-content: space-evenly; flex-direction: column;">
-          <img src="./img/concierge/delivery.png" style="height: 100%; width: auto;"></img>
-        </div>
-      </div>
-      <div id="finished-page" class="subpage hidden" style="height: 73%;">
-        <div id="finished-page-wrapper" class="subpage" style="position: relative; height: 85%; width: 100%; display: flex; align-items: center; justify-content: space-evenly; flex-direction: column;">
-          <img src="./img/concierge/tick.png" style="height: 100%; width: auto;"></img>
-        </div>
-          <div id="btn-div" style="height: 15%; width: 100%; display: flex; flex-direction: row; align-items: center; justify-content: space-around;">
-          <!-- buttons will go here -->
+        <div> 
         </div>
       </div>
     </div>
@@ -194,5 +205,6 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://cdn-aihuman.deepbrainai.io/sdk/web/aiPlayer-1.5.3.min.js"></script>
   <script type="module" src="./js/main.js"></script>
+  <script src="./aws-services.js"></script>
 </body>
 </html>

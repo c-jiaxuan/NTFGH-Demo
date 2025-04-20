@@ -1,29 +1,10 @@
 import { EventBus, Events } from "./event-bus.js";
-import settingsView from "./view/settings-view.js";
-
-// main.js
 import languageController from './language-controller.js';
 import inputModeController from './input-mode-controller.js';
 import topMenuView from './view/top-menu-view.js';
-import orientationController from './orientation-controller.js';
+
 
 import avatar from './avatar.js';
-
-const mainPage = document.getElementById('main-page');
-const orientationPage = document.getElementById('orientation-page')
-
-const acknowledgeBtn = document.getElementById('acknowledge-btn');
-const backBtn = document.getElementById('back-btn');
-const helpBtn = document.getElementById('help-btn');
-const orientationBtn = document.getElementById('orientation-button');
-// import { init, renderStep, handleAcknowledge } from './orientationController.js';
-import { renderDeliveryScreen, handleContinue } from './conciergeController.js';
-import { util_dispatchEvent } from './utilities.js';
-
-const continueBtn = document.getElementById('continue-btn');
-const deliveryBtn = document.getElementById('delivery-button');
-
-const avatarDisplay = document.getElementById('AIPlayerWrapper');
 
 topMenuView.showHomeButton(true);
 topMenuView.updateInputModeStatus("touch");
@@ -32,28 +13,85 @@ topMenuView.updateLanguageStatus("en");
 let inputMode = "voice";
 let language = "en";
 
-// Initial render
-orientationController.init();
+import { MainMenuPageController } from './controller/main-menu-controller.js';
+import { SettingsPageController } from './controller/settings-page-controller.js';
+import { OrientationPageController } from './controller/orientation-page-controller.js';
+import { GettingStartedPageController } from "./controller/getting-started-controller.js";
+import { PatientAssessmentPageController } from './controller/patient-assessment-page-controller.js';
+import { DeliverPageController } from './controller/deliver-page-controller.js';
 
-function startOrientation(){
-  mainPage.style.visibility = 'hidden';
-  orientationController.enable(true);
-  orientationController.renderStep();
+// import other page controllers as needed
+const pages = {
+  home: new MainMenuPageController("main-page"),
+  settings: new SettingsPageController("setup-page"),
+  gettingStarted : new GettingStartedPageController("getting-started-page"),
+  orientation: new OrientationPageController("orientation-page"),
+  assessment: new PatientAssessmentPageController("patient-assessment-page"),
+  delivery: new DeliverPageController("delivery-page")
+};
+
+//store the current page
+let currentPage = null;
+
+//Hide all pages at start
+Object.values(pages).forEach(controller => {
+  controller.hide?.();
+});
+
+//Show home page
+currentPage = pages["home"];
+
+if(currentPage) currentPage.show();
+else console.warn('No Main Page found');
+
+function switchPage(pageName) {
+  const nextPage = pages[pageName];
+  if (!nextPage) {
+    console.warn(`Page "${pageName}" not found`);
+    return;
+  }
+
+  if (currentPage === nextPage) {
+    console.log(`Already on "${pageName}" page`);
+    return;
+  }
+
+  if (currentPage) currentPage.hide();
+  if (nextPage) nextPage.show();
+  currentPage = nextPage;
 }
 
-avatar.initAvatar();
-settingsView.init();
-
-EventBus.on(Events.HOME_PRESS, () => { onHomeButtonPressed(); });
+EventBus.on(Events.HOME_PRESS, () => { 
+  switchPage('home');
+});
 EventBus.on(Events.UPDATE_LANGUAGE, (e) => { onUpdateLanguage(e.detail); })
 EventBus.on(Events.UPDATE_INPUTMODE, (e) => { onUpdateInputMode(e.detail); })
+EventBus.on(Events.SETTING_PRESS, () => {
+  switchPage("settings");
+  pages["settings"].init(language, inputMode);
+});
+EventBus.on(Events.GETTING_START_PRESS, () => {
+  switchPage("gettingStarted");
+  
+});
+EventBus.on(Events.START_ORIENTATION, () => {
+  switchPage("orientation");
+  pages["orientation"].start();
+});
+EventBus.on(Events.START_PATIENT_ASSESSMENT, () => {
+  switchPage("assessment");
+  pages["assessment"].startAssessment();
+});
+EventBus.on(Events.START_DELIVERY, () => {
+  switchPage("delivery"); 
+});
 
-function onHomeButtonPressed(){
-  console.log("home-pressed");
-}
+avatar.initAvatar();
+//settingsView.init();
 
 function onUpdateLanguage(language){
   console.log(language);
+  this.language = language;
   //Update Avatar
   avatar.setLanguage(language);
   //Update chatbot
@@ -66,27 +104,31 @@ function onUpdateInputMode(mode){
   console.log(mode);
 
   //Update control mode
-  inputMode = mode;
+  this.inputMode = mode;
 }
 
-avatarDisplay.addEventListener('click', () => {
-  avatar.speak("Hello, shall we get started?");
+function startTranslate(text, lang){
+  document.dispatchEvent(new CustomEvent('aws-start-translate', {
+    detail: { 
+      sourceText: text,
+      targetLanguage: lang }
+  }));
+}
+
+function startTranscribe(){
+  document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
+    detail: { language: 'en-US' }
+  }));
+}
+
+document.addEventListener("aws-transcribe-update", (e) => {
+  console.log("update" + e.detail);
 });
 
-orientationBtn.addEventListener('click', () => {
-  startOrientation();
+document.addEventListener("aws-transcribe-complete", (e) => {
+  console.log("transcribe" + e.detail);
 });
 
-// Advance on button click
-acknowledgeBtn.addEventListener('click', () => {
-  orientationController.handleAcknowledge();
-});
-
-deliveryBtn.addEventListener('click', () => {
-  renderDeliveryScreen();
-})
-
-// When continue button is pressed in the delivery item selection
-document.addEventListener('BTN_CONTINUE', () => {
-  handleContinue();
+document.addEventListener("aws-translate-complete", (e) => {
+  console.log("translate" + e.detail);
 });

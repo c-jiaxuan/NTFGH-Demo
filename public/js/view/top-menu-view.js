@@ -48,12 +48,12 @@ homeButton.addEventListener('click', () => {
 
 languageStatus.addEventListener('click', () => { 
     //Activate settings page
-    
+    EventBus.emit(Events.SETTING_PRESS);
 });
 
 modeStatus.addEventListener('click', () => { 
     //Activate settings page
-    
+    EventBus.emit(Events.SETTING_PRESS);
 });
 
 export default {
