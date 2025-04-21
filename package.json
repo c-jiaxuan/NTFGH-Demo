@@ -23,6 +23,7 @@
     "microphone-stream": "6.0.1",
     "next": "^15.2.1",
     "node-polyfill-webpack-plugin": "4.0.0",
+    "openai": "^4.95.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "webpack": "^5.91.0"

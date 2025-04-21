@@ -43,27 +43,11 @@ export class PatientAssessmentPageController extends BasePageController {
     this.currentStepSpeak = false;
     this.currentStep = steps[this.currentStepIndex];
 
-    this.generateClientToken();
-
     this.showCurrentStep();
 
     this.actionBar.show();
     this.actionBar.showHelpBtn(true);
     this.actionBar.showAcknowledgeBtn(true);
-  }
-
-  async generateClientToken() {
-      const result = await this.makeRequest("GET", "/api/generateJWT");
-      console.log("Generate Token");
-      if (result) {
-          console.log('generateClientToken', result)
-
-          this.apiKey = result.openaiKey;
-      } 
-      else 
-      {
-          console.log("Error: " + result?.error);
-      }
   }
 
   onUpdateLanguage(language){
@@ -416,33 +400,15 @@ export class PatientAssessmentPageController extends BasePageController {
   //To be put in a separated script
   async extractInfoFromSpeech(transcript) {
     try {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      const res = await fetch("/api/extract", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": this.apiKey // ← Replace with your key
-        },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: [
-            {
-              role: "system",
-              content: "Extract the next-of-kin details from the user's sentence: name, relationship, phone number, and address. Return only a JSON object with keys: name, relationship, phone_number, address."
-            },
-            {
-              role: "user",
-              content: transcript
-            }
-          ],
-          temperature: 0,
-          max_tokens: 150
-        })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ transcript: transcript }),
       });
-  
-      const data = await response.json();
-      const resultText = data.choices[0].message.content;
-  
-      return JSON.parse(resultText);
+      
+      const data = await res.json();
+      console.log(data);
+      return data;
     } catch (err) {
       console.error("❌ GPT Extraction Failed:", err);
       EventBus.emit(AvatarEvents.SPEAK, {message:"I am not sure what you have sent, please try again.", gesture: ""});
@@ -474,21 +440,4 @@ export class PatientAssessmentPageController extends BasePageController {
     console.log(line.text);
     EventBus.emit(AvatarEvents.SPEAK, { message: line.text, gesture: line.gesture } );
   }
-
-  async makeRequest(method, url, params) {
-    const options = {
-      method,
-      headers: { "Content-Type": "application/json; charSet=utf-8" },
-    };
-
-    if (method === "POST") options.body = JSON.stringify(params || {});
-
-    return fetch(url, options)
-    .then((response) => response.json())
-    .then((data) => data)
-    .catch((error) => {
-        console.error("** An error occurred during the fetch", error);
-        return undefined;
-    });
-}
 }
