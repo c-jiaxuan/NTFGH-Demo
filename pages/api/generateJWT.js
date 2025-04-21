@@ -1,42 +1,45 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
-dotenv.config(); // Load variables from .env
-
-const userKey = process.env.USER_KEY;
-const appId = process.env.APP_ID;
-const openaiKey = process.env.OPENAI_API_KEY;
-
-const payload = {
-  appId: appId,
-  platform: "web",
-};
-
-const options = {
-  header: { typ: "JWT", alg: "HS256" },
-  expiresIn: 60 * 5, // 5 mins
-};
+dotenv.config(); // Load variables from .env (for local dev only)
 
 function generateJWT(req, res) {
   try {
+    // ✅ Always read env vars inside the function
+    const userKey = process.env.USER_KEY;
+    const appId = process.env.APP_ID;
+    const openaiKey = process.env.OPENAI_API_KEY;
+
+    // ❌ If any variable is missing, return error
     if (!userKey || !appId || !openaiKey) {
       return res.status(500).json({ error: "Missing environment config" });
     }
 
-    const clientToken = jwt.sign(payload, userKey, options);
+    const payload = {
+      appId,
+      platform: "web",
+    };
 
-    res.json({
-      appId: payload.appId,
-      token: clientToken,
-      openaiKey: openaiKey // ⚠️ Send only if this is a trusted/internal API
+    const options = {
+      header: { typ: "JWT", alg: "HS256" },
+      expiresIn: 60 * 5, // 5 minutes
+    };
+
+    const token = jwt.sign(payload, userKey, options);
+
+    // ⚠️ Only send openaiKey if this is a secure internal API
+    res.status(200).json({
+      appId,
+      token,
+      // openaiKey, // 🚨 REMOVE if this goes to frontend!
     });
   } catch (e) {
-    console.log("JWT generation error:", e.name, e.message);
+    console.error("JWT generation error:", e.message);
     res.status(500).json({ error: e.message });
   }
 }
 
 export default function handler(req, res) {
   if (req.method === "GET") return generateJWT(req, res);
-  res.status(405).json({ error: "Method Not Allowed" });
+  return res.status(405).json({ error: "Method Not Allowed" });
 }
