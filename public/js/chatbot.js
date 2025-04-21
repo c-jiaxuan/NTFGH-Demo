@@ -4,39 +4,41 @@ const adl_questions = [
     {
         question: 'Do you need any help with your meals or feeding?',
         choices: { 'Dependant': 'Yes, I need full assistance to eat. Such as someone actively needing to feed me.',
-            'Needs-Assistance': 'I need some help, like cutting or opening packaging. Does not include using cutlery such as chopsticks, spoons, forks and others',
+            'Needs Assistance': 'I need some help, like cutting or opening packaging. Does not include using cutlery such as chopsticks, spoons, forks and others',
             'Independant': 'No help needed, I can manage fully on my own.', 
             'Unable to assess': 'Unable to classify.'}
     },
-    {
-        question: 'Do you need any help with dressing or grooming?',
-        choices: { 'Dependant': 'Yes, I need full assistance to dress and groom myself',
-            'Needs-Assistance': 'I need some help',
-            'Independant': 'No help needed, I can manage fully on my own.', 
-            'Unable to assess': 'Unable to classify.'}
-    },
+    // {
+    //     question: 'Do you need any help with dressing or grooming?',
+    //     choices: { 'Dependant': 'Yes, I need full assistance to dress and groom myself',
+    //         'Needs-Assistance': 'I need some help',
+    //         'Independant': 'No help needed, I can manage fully on my own.', 
+    //         'Unable to assess': 'Unable to classify.'}
+    // },
     {
         question: 'Do you need any help with your toileting or bathing?',
         choices: { 'Dependant': 'Yes, I need full assistance to toileting and bathing, such as someone to bathe me and clean after',
-            'Needs-Assistance': 'I need some help',
+            'Needs Assistance': 'I need some help',
             'Independant': 'No help needed, I can manage fully on my own.', 
             'Unable to assess': 'Unable to classify.'}
     },
-    {
-        question: 'Do you need any help with turning in bed?',
-        choices: { 'Dependant': 'Yes, I need full assistance to turning in bed, such as having a helper to turn me',
-            'Needs-Assistance': 'I need some help, such as holding onto the bed frame or by using some assistive devices',
-            'Independant': 'No help needed, I can manage fully on my own.', 
-            'Unable to assess': 'Unable to classify.'}
-    },
-    {
-        question: 'Do you need any help with ambulation?',
-        choices: { 'Dependant': 'Yes, I need full assistance with ambulation. Such as requiring someone to push my wheelchair',
-            'Needs-Assistance': 'I need some help, like a walking stick or a wheelchair I can wheel on my own',
-            'Independant': 'No help needed, I can manage fully on my own.', 
-            'Unable to assess': 'Unable to classify.'}
-    }
+    // {
+    //     question: 'Do you need any help with turning in bed?',
+    //     choices: { 'Dependant': 'Yes, I need full assistance to turning in bed, such as having a helper to turn me',
+    //         'Needs-Assistance': 'I need some help, such as holding onto the bed frame or by using some assistive devices',
+    //         'Independant': 'No help needed, I can manage fully on my own.', 
+    //         'Unable to assess': 'Unable to classify.'}
+    // },
+    // {
+    //     question: 'Do you need any help with ambulation?',
+    //     choices: { 'Dependant': 'Yes, I need full assistance with ambulation. Such as requiring someone to push my wheelchair',
+    //         'Needs-Assistance': 'I need some help, like a walking stick or a wheelchair I can wheel on my own',
+    //         'Independant': 'No help needed, I can manage fully on my own.', 
+    //         'Unable to assess': 'Unable to classify.'}
+    // }
 ]
+
+window.adl_questions = adl_questions;
 
 var bot_app = "sgroots"; // Don't change this
 var bot_tone = "Succinct"; // Professional, Casual, Enthusiastic, Informational, Funny, Succinct

@@ -14,6 +14,17 @@ export class SettingsPageController extends BasePageController {
     this.actionBar.on("acknowledgeCountdownComplete", (e) => {
       this.nextStep();
     });
+
+    EventBus.on(Events.UPDATE_LANGUAGE, (e) => { this.onUpdateLanguage(e.detail); })
+    EventBus.on(Events.UPDATE_INPUTMODE, (e) => { this.onUpdateInputMode(e.detail); })
+  }
+
+  onUpdateLanguage(language){
+    this.view.setLanguage(language == "English" ? "en" : "zh");
+  }
+
+  onUpdateInputMode(input){
+    this.view.setInput(input.toLowerCase());
   }
 
   handleActionBarClicked(key){

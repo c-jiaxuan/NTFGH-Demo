@@ -51,8 +51,9 @@ class AwsController {
         this.translatedText = '';
         this.partialText = '';
 
+        this.hasTimeout = true;
         this.timeout = null;
-        this.PAUSE_TIME = 5000; // 3 seconds pause time
+        this.PAUSE_TIME = 3000; // 3 seconds pause time
     }
 
     isTranscriberReady = () => this.translateInit;
@@ -100,7 +101,7 @@ class AwsController {
     }
 
     updateTranscribingText = (data, IsPartial) => {
-      if (IsPartial) this.resetTimeout();
+      if (IsPartial && this.hasTimeout) this.resetTimeout();
 
       console.log(`updateTranscribingText ${data} - ${IsPartial}`);
         if (IsPartial) {
@@ -108,7 +109,7 @@ class AwsController {
             this.partialText = data;
         } else {
             // Add finalized text to full transcript
-            this.transcribingText += (this.partialText || '') + data + ' ';
+            this.transcribingText += data + ' ';
             this.partialText = ''; // Clear partial once finalized
         }
     
@@ -117,6 +118,19 @@ class AwsController {
         document.dispatchEvent(new CustomEvent("aws-transcribe-update", {
           detail: displayText
         }));
+    }
+
+    stopTranscribe = async() => {
+      transcriber.stopTranscribe();
+
+      document.dispatchEvent(new CustomEvent("aws-transcribe-complete", {
+        detail: this.transcribingText
+      }));
+
+      this.transcribingText = '';
+      this.partialText = '';
+
+      clearTimeout(this.timeout);
     }
 
     onTranscribeComplete = async (finalTranscribedText) => {
@@ -128,12 +142,14 @@ class AwsController {
       }));
 
       this.transcribingText = '';
+      this.partialText = '';
 
       clearTimeout(this.timeout);
     }
 
     resetTranscribe = () => { 
       this.transcribingText = '';
+      this.IsPartial = '';
     }
 
     // ==== TRANSLATION ====
@@ -144,8 +160,7 @@ class AwsController {
     }
 
     async startTranslate(sourceText, targetLang) {
-      const translated = await translater.startTranslate(sourceText, targetLang);
-      testDiv.innerHTML = translated;
+      translater.startTranslate(sourceText, targetLang);
     }
 }
 
@@ -156,15 +171,19 @@ awsController.onTranscribeInit();
 const translater = new Translater();
 awsController.onTranslateInit();
 
-const testDiv = document.getElementById('test-transcribe');
 
 document.addEventListener('aws-start-transcribe', async (e) => {
-  const { language } = e.detail;
-  await transcriber.startTranscribe();
+  const { language, timeout } = e.detail;
+  awsController.hasTimeout = timeout;
+  await transcriber.startTranscribe(language);
+});
+
+document.addEventListener('aws-reset-transcribe', async (e) => {
+  await transcriber.resetTranscribe();
 });
 
 document.addEventListener('aws-stop-transcribe', async () => {
-  await transcriber.stopTranscribe();
+  awsController.stopTranscribe();
 });
 
 document.addEventListener('aws-start-translate', async (e) => {

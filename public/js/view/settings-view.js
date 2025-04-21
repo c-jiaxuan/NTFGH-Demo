@@ -47,4 +47,40 @@ export class SettingsView extends BaseView {
           }
         });
     }
+
+    setLanguage(language) {
+        const allButtons = document.querySelectorAll('.action-button.settings');
+
+        allButtons.forEach(btn => {
+          const type = btn.dataset.type;
+          const value = btn.dataset.value;
+      
+          // Highlight based on default values
+          if (type === 'language')
+            {
+              if(value === language)
+                  btn.classList.add('selected');
+              else
+                  btn.classList.remove('selected');
+            }
+          });
+    }
+
+    setInput(input) {
+        const allButtons = document.querySelectorAll('.action-button.settings');
+
+        allButtons.forEach(btn => {
+          const type = btn.dataset.type;
+          const value = btn.dataset.value;
+               
+          // Highlight based on default values
+          if (type === 'mode')
+          {
+            if(value === input)
+                btn.classList.add('selected');
+            else
+                btn.classList.remove('selected');
+          }
+        });
+    }
 }

@@ -524,7 +524,6 @@ button:hover {
     justify-content: flex-end;
     align-items: center;
     height: 100vh;
-    background: url('bg-hospital.jpg') no-repeat center center;
     background-size: cover;
     padding-right: 4rem;
   }

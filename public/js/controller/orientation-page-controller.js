@@ -3,14 +3,16 @@ import { OrientationView } from '../view/orientation-view.js';
 import { EventBus, Events } from '../event-bus.js';
 import { steps } from './orientation-config.js'
 import { ActionBarView } from '../view/action-bar-view.js';
+import { ActionBarChatbot } from '../llm/action-bar-chatbot.js';
 
 export class OrientationPageController extends BasePageController {
   constructor(id){
     const view = new OrientationView(id);
-
     super(id, view);
 
     this.actionBar = new ActionBarView('bottom-action-bar');
+    this.actionChatbot = new ActionBarChatbot(this.actionBar);
+
     this.major = 0;
     this.minor = 0;
     this.continueTimer = 1;
@@ -37,7 +39,7 @@ export class OrientationPageController extends BasePageController {
     this.nextQns = false;
 
     this.actionBar.show();
-    this.actionBar.showHelpBtn(true);
+    this.actionBar.showHelpBtn(false);
     this.actionBar.showAcknowledgeBtn(true);
     this.setupStep();
   }
@@ -54,6 +56,10 @@ export class OrientationPageController extends BasePageController {
 
   onStepReadyForAcknowledge(e){
     this.actionBar.enableAcknowledgeBtn(true);
+
+    document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
+      detail: { language: 'en-US', timeout: false }
+    }));
   }
 
   onQuizAnswered(e){
@@ -65,12 +71,17 @@ export class OrientationPageController extends BasePageController {
     
     switch (key){
       case "back":
+        document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
+          detail: { language: 'en-US' }
+        }));
         this.previousStep();
         break;
       case "help":
-        this.actionBar.countdownAcknowledgeBtn(1, false);
         break;
       case "acknowledge":
+        document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
+          detail: { language: 'en-US' }
+        }));
         this.actionBar.countdownAcknowledgeBtn(1, true);
         break;
     }
@@ -108,7 +119,7 @@ export class OrientationPageController extends BasePageController {
           this.major++;
           this.minor = 0;
         } else {
-          alert('Orientation Complete!');
+          EventBus.emit(Events.HOME_PRESS);
           return;
         }
       }
@@ -139,14 +150,26 @@ export class OrientationPageController extends BasePageController {
     this.setupStep();
   }
 
+  handleTranscribeEvent(e){
+    console.log("transcribe" + e.detail);
+    this.actionChatbot.handleTranscript(e.detail);
+  }
+
   onEnter() {
     super.onEnter();
     console.log('Orientation page initialized');
+
+    document.addEventListener("aws-transcribe-update", this.handleTranscribeEvent.bind(this));
   }
 
   onExit() {
     super.onExit();
     console.log('Leaving Orientation page');
     this.actionBar.hide();
+    document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
+      detail: { language: 'en-US' }
+    }));
+    
+    document.removeEventListener("aws-transcribe-update", this.handleTranscribeEvent);
   }
 }

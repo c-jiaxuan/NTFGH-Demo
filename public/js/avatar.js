@@ -1,5 +1,7 @@
 //import LanguageController from './language.js';
 
+import { EventBus, Events, AvatarEvents } from "./event-bus.js";
+
 const wrapper = document.getElementById('AIPlayerWrapper');
 const authServer = 'https://account.aistudios.com';
 const AI_PLAYER = new AIPlayer(wrapper);
@@ -40,17 +42,17 @@ class AI_Message {
 }
   
 let botMessages = {};   // Dictionary to store all preset bot messages
-botMessages["start_msg"] = [new AI_Message("Welcome to Ng Teng Fong General Hospital! How can I help you today?", "G05"),
-    new AI_Message("Hello, shall we get started?")
+botMessages["start_msg"] = [new AI_Message("Welcome to Ng Teng Fong General Hospital! How can I help you today?", "G05")
 ];
-botMessages["orientation"] = [new AI_Message("We would like to introduce to you the Care Team.", "G02"),
-    new AI_Message("Please watch this video")
-];
-botMessages["assessment_msg"] = new AI_Message("What is your marital status?", "G02");
+// botMessages["orientation"] = [new AI_Message("We would like to introduce to you the Care Team.", "G02"),
+//     new AI_Message("Please watch this video")
+// ];
+// botMessages["assessment_msg"] = new AI_Message("What is your marital status?", "G02");
 botMessages["speech_error_msg"] = new AI_Message("I am not sure what you have sent, please try again.");
 botMessages["processing_msg"] = new AI_Message("Thank you! Please wait while I'm processing your question and I will reply to you shortly.");
   
 // To track how many messages have been preloaded
+let currentPreload = [];
 var preloadCount = 0;
 var totalMessages = 0;
 
@@ -87,7 +89,6 @@ async function initAvatar() {
     initAIPlayerEvent();
     await generateClientToken();
     await generateVerifiedToken();
-    countPreloadMessages();
   
     await AI_PLAYER.init({
         aiName: "M000320746_BG00007441H_light",
@@ -96,6 +97,23 @@ async function initAvatar() {
         left: 0,
         top: 0,
         speed: 1.0,
+    });
+
+    setupEventHandler();
+}
+
+function setupEventHandler(){
+    EventBus.on(AvatarEvents.PRELOAD, (e) => {
+        preloadMessages(e.detail);
+    });
+
+    EventBus.on(AvatarEvents.SPEAK, (e) => {
+        console.log(e.detail);
+        speak(e.detail["message"], e.detail["gesture"]);
+    });
+
+    EventBus.on(AvatarEvents.STOP, (e) => {
+        stop();
     });
 }
   
@@ -201,7 +219,7 @@ function initAIPlayerEvent() {
                 console.log("custom voice is not set");
             }
 
-            preloadMessages();
+            preloadMessages(botMessages);
 
             // Send out event for script.js
             document.dispatchEvent(new Event('loading:avatar-completed'));
@@ -292,6 +310,7 @@ function initAIPlayerEvent() {
             break;
         case AIEventType.AICLIPSET_PLAY_COMPLETED:
             typeName = 'AICLIPSET_PLAY_COMPLETED';
+            EventBus.emit(AvatarEvents.SPEAK_COMPLETED, {});
             dispatchEvent(new Event('AICLIPSET_PLAY_COMPLETED'));
 
             break;
@@ -374,16 +393,17 @@ async function speak(text, gst) {
     await refreshTokenIFExpired();
 
     console.log("Gesture: " + gst + " Speaking: ", text);
-    
-    if(isPreloadMessage(text))
-    {
-        AI_PLAYER.send({ text: text, gst: gst });
-    }
-    else
-    {
-        var msgToSpeak = breakdownSpeak(text);
-        AI_PLAYER.send(msgToSpeak);
-    }
+    AI_PLAYER.send({ text: text, gst: gst });
+
+    // if(isPreloadMessage(text))
+    // {
+    //     AI_PLAYER.send({ text: text, gst: gst });
+    // }
+    // else
+    // {
+    //     var msgToSpeak = breakdownSpeak(text);
+    //     AI_PLAYER.send(msgToSpeak);
+    // }
 }
 
 async function preload(clipSet) {
@@ -424,29 +444,61 @@ async function makeRequest(method, url, params) {
     });
 }
 
-// Preload messages
-// To move botMessages into another script for editing
-function preloadMessages() {
-    // Multi Gesture preload
-    let preloadArr = []; // Initialize an empty array
-    let obj;
+// // Preload messages
+// // To move botMessages into another script for editing
+// function preloadMessages() {
+//     // Multi Gesture preload
+//     let preloadArr = []; // Initialize an empty array
+//     let obj;
 
-    // Loop through the dictionary to create array of objects to preload
-    for (const key in botMessages) {
-        if (botMessages.hasOwnProperty(key)) {
-            const value = botMessages[key];
-            if (Array.isArray(value)) {
-                // If the value is an array, loop through its elements
-                value.forEach(async (item, index) => {
-                    obj = {text: item.message, gst: item.gesture};
-                    preloadArr.push(obj);
-                });
-            } else {
-                obj = {text: value.message, gst: value.gesture};
-                preloadArr.push(obj);
+//     // Loop through the dictionary to create array of objects to preload
+//     for (const key in botMessages) {
+//         if (botMessages.hasOwnProperty(key)) {
+//             const value = botMessages[key];
+//             if (Array.isArray(value)) {
+//                 // If the value is an array, loop through its elements
+//                 value.forEach(async (item, index) => {
+//                     obj = {text: item.message, gst: item.gesture};
+//                     preloadArr.push(obj);
+//                 });
+//             } else {
+//                 obj = {text: value.message, gst: value.gesture};
+//                 preloadArr.push(obj);
+//             }
+//         }
+//     }
+
+//     // Preload the array
+//     AI_PLAYER.preload(preloadArr);
+// }
+
+function preloadMessages(messages) {
+    let preloadArr = [];
+    console.log(messages);
+
+    if (Array.isArray(messages)) {
+        // If it's a flat array of AI_Message
+        messages.forEach(item => {
+            preloadArr.push({ text: item.message, gst: item.gesture });
+        });
+    } else {
+        // If it's a dictionary
+        for (const key in messages) {
+            if (messages.hasOwnProperty(key)) {
+                const value = messages[key];
+
+                if (Array.isArray(value)) {
+                    value.forEach(item => {
+                        preloadArr.push({ text: item.message, gst: item.gesture });
+                    });
+                } else {
+                    preloadArr.push({ text: value.message, gst: value.gesture });
+                }
             }
         }
     }
+
+    totalMessages = preloadArr.length;
 
     // Preload the array
     AI_PLAYER.preload(preloadArr);

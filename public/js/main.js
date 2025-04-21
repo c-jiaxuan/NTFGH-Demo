@@ -2,16 +2,17 @@ import { EventBus, Events } from "./event-bus.js";
 import languageController from './language-controller.js';
 import inputModeController from './input-mode-controller.js';
 import topMenuView from './view/top-menu-view.js';
+import { ActionBarView } from "./view/action-bar-view.js";
 
-
+import { ActionBarChatbot } from './llm/action-bar-chatbot.js';
 import avatar from './avatar.js';
 
-topMenuView.showHomeButton(true);
-topMenuView.updateInputModeStatus("touch");
-topMenuView.updateLanguageStatus("en");
-
-let inputMode = "voice";
+let inputMode = "touch";
 let language = "en";
+
+topMenuView.showHomeButton(true);
+topMenuView.updateInputModeStatus(inputMode);
+topMenuView.updateLanguageStatus(language);
 
 import { MainMenuPageController } from './controller/main-menu-controller.js';
 import { SettingsPageController } from './controller/settings-page-controller.js';
@@ -89,22 +90,30 @@ EventBus.on(Events.START_DELIVERY, () => {
 avatar.initAvatar();
 //settingsView.init();
 
-function onUpdateLanguage(language){
-  console.log(language);
-  this.language = language;
+function onUpdateLanguage(newLanguage){
+  if(newLanguage != "en" && newLanguage != "zh")
+    newLanguage = newLanguage == "English" ? "en" : "zh";
+  
+  console.log(newLanguage);
+
+  language = newLanguage;
   //Update Avatar
-  avatar.setLanguage(language);
+  avatar.setLanguage(newLanguage);
   //Update chatbot
 
   //Update speech recognition
   
+  topMenuView.updateLanguageStatus(newLanguage);
 }
 
 function onUpdateInputMode(mode){
+  mode = mode.toLowerCase();
   console.log(mode);
 
   //Update control mode
-  this.inputMode = mode;
+  inputMode = mode;
+
+  topMenuView.updateInputModeStatus(mode);
 }
 
 function startTranslate(text, lang){
@@ -121,14 +130,14 @@ function startTranscribe(){
   }));
 }
 
-document.addEventListener("aws-transcribe-update", (e) => {
-  console.log("update" + e.detail);
-});
+// document.addEventListener("aws-transcribe-update", (e) => {
+//   console.log("update" + e.detail);
+// });
 
-document.addEventListener("aws-transcribe-complete", (e) => {
-  console.log("transcribe" + e.detail);
-});
+// document.addEventListener("aws-transcribe-complete", (e) => {
+//   console.log("transcribe" + e.detail);
+// });
 
-document.addEventListener("aws-translate-complete", (e) => {
-  console.log("translate" + e.detail);
-});
+// document.addEventListener("aws-translate-complete", (e) => {
+//   console.log("translate" + e.detail);
+// });

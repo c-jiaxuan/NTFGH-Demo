@@ -22,12 +22,11 @@ export const steps = [
       },
       options: [
         { en: "Buddhism", zh: "佛教" },
-        { en: "Christianity", zh: "基督教" },
         { en: "Islam", zh: "伊斯兰教" },
         { en: "Hinduism", zh: "印度教" },
         { en: "Taoism", zh: "道教" },
-        { en: "Sikhism", zh: "锡克教" },
-        { en: "Chirstianity", zh: "基督教（拼写错误）" },
+        { en: "Free Thinker", zh: "自由思考者" },
+        { en: "Christianity", zh: "基督教" },
         { en: "None", zh: "无" }
       ]
     },
@@ -38,9 +37,9 @@ export const steps = [
         zh: "您是否需要在进餐或喂食方面的协助？"
       },
       options: [
-        { en: "Independent", zh: "独立" },
+        { en: "Independant", zh: "独立" },
         { en: "Needs assistance", zh: "需要协助" },
-        { en: "Dependent", zh: "完全依赖" },
+        { en: "Dependant", zh: "完全依赖" },
         { en: "Unable to assess", zh: "无法评估" }
       ]
     },
@@ -51,9 +50,9 @@ export const steps = [
         zh: "您是否需要如厕或洗澡方面的协助？"
       },
       options: [
-        { en: "Independent", zh: "独立" },
+        { en: "Independant", zh: "独立" },
         { en: "Needs assistance", zh: "需要协助" },
-        { en: "Dependent", zh: "完全依赖" },
+        { en: "Dependant", zh: "完全依赖" },
         { en: "Unable to assess", zh: "无法评估" }
       ]
     },
