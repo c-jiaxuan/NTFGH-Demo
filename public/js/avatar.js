@@ -7,8 +7,11 @@ const authServer = 'https://account.aistudios.com';
 const AI_PLAYER = new AIPlayer(wrapper);
 // const appId = 'c-jiaxuan.github.io';
 // const userKey = '5979244e-7071-444a-a9fe-81217af1cbef';
-const appId = 'deepbrain.io';
-const userKey = 'bb872cb0-c6da-4c32-b68d-15ff95679837';
+// const appId = 'deepbrain.io';
+// const userKey = 'bb872cb0-c6da-4c32-b68d-15ff95679837';
+
+const appId = 'https://ntfgh-demo-sb9d.onrender.com/test.html';
+const userKey = '0289b069-cffa-47f9-9733-ccda6d9c00ad';
 
 AI_PLAYER.setConfig({
     authServer: authServer,
