@@ -5,7 +5,7 @@ export class ActionBarChatbot {
       // Define keyword triggers
       this.commands = {
         back: ['go back', 'previous', 'return'],
-        help: ['help', 'i need help', 'can you help me'],
+        help: ['help', 'i need help', 'try again'],
         acknowledge: ['continue', 'next', 'proceed', 'acknowledge', 'done']
       };
     }

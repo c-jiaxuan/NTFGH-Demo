@@ -1,32 +1,42 @@
-const jwt = require("jsonwebtoken");
-//const userKey = "a952f746-20c7-4d82-9eea-0896af4d27e5"; //input userkey
-const userKey = "bb872cb0-c6da-4c32-b68d-15ff95679837"; //input userkey
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config(); // Load variables from .env
+
+const userKey = process.env.USER_KEY;
+const appId = process.env.APP_ID;
+const openaiKey = process.env.OPENAI_API_KEY;
+
 const payload = {
-  appId: "deepbrain.io", //input appId
-  //appId: "apr-2024-test", //input appId
+  appId: appId,
   platform: "web",
 };
 
 const options = {
   header: { typ: "JWT", alg: "HS256" },
-  expiresIn: 60 * 5, // expire time: 5 mins
+  expiresIn: 60 * 5, // 5 mins
 };
 
 function generateJWT(req, res) {
   try {
-    if (userKey.length <= 0 || payload.appId.length <= 0) {
-      res.json({ error: 'Empty appId or userkey'});
-    } else {
-      const clientToken = jwt.sign(payload, userKey, options);
-      res.json({ appId: payload.appId, token: clientToken });
+    if (!userKey || !appId || !openaiKey) {
+      return res.status(500).json({ error: "Missing environment config" });
     }
-  } catch (e) {
-    console.log("jwt generate err ", e.name, e.message);
 
-    res.json({error: e.message})
+    const clientToken = jwt.sign(payload, userKey, options);
+
+    res.json({
+      appId: payload.appId,
+      token: clientToken,
+      openaiKey: openaiKey // ⚠️ Send only if this is a trusted/internal API
+    });
+  } catch (e) {
+    console.log("JWT generation error:", e.name, e.message);
+    res.status(500).json({ error: e.message });
   }
 }
 
 export default function handler(req, res) {
   if (req.method === "GET") return generateJWT(req, res);
+  res.status(405).json({ error: "Method Not Allowed" });
 }

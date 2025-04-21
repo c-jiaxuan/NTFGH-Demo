@@ -20,6 +20,7 @@ export class PatientAssessmentPageController extends BasePageController {
     this.isTranscribeActive = false;
     this.allStepSpeech = [];
     this.currentStepSpeak = false;
+    this.apiKey = "Bearer ";
 
     this.view.on("readyForAcknowledge", (e) => {
       this.onStepReadyForAcknowledge(e.detail);
@@ -42,11 +43,28 @@ export class PatientAssessmentPageController extends BasePageController {
     this.currentStepSpeak = false;
     this.currentStep = steps[this.currentStepIndex];
 
+    this.generateClientToken();
+
     this.showCurrentStep();
 
     this.actionBar.show();
     this.actionBar.showHelpBtn(true);
     this.actionBar.showAcknowledgeBtn(true);
+  }
+
+  async generateClientToken() {
+      const result = await this.makeRequest("GET", "/api/generateJWT");
+      console.log("Generate Token");
+      if (result) {
+          console.log('generateClientToken', result)
+
+          this.apiKey = result.openaiKey;
+          console.log(this.apiKey);
+      } 
+      else 
+      {
+          console.log("Error: " + result?.error);
+      }
   }
 
   onUpdateLanguage(language){
@@ -148,6 +166,24 @@ export class PatientAssessmentPageController extends BasePageController {
         this.previousStep();
         break;
       case "help":
+        this.showCurrentStep();
+        if(this.inputMode == "voice")
+          {
+            document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
+              detail: { language: 'en-US', timeout: steps[this.currentStepIndex].type === "next-of-kin" || steps[this.currentStepIndex].type === "adl" }
+            }));
+            this.isTranscribeActive = true;     
+          }
+          else{
+            if(this.isTranscribeActive)
+            {
+              document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
+                detail: { language: 'en-US' }
+              }));
+              this.isTranscribeActive = false;
+            }
+          }
+
         break;
       case "acknowledge":
         if(this.inputMode == "voice"){
@@ -166,7 +202,7 @@ export class PatientAssessmentPageController extends BasePageController {
     if(!this.isActive) return;
 
     document.dispatchEvent(new CustomEvent('aws-reset-transcribe', {
-      
+
     }));
 
     const step = steps[this.currentStepIndex];
@@ -197,7 +233,6 @@ export class PatientAssessmentPageController extends BasePageController {
       this.currentStepSpeak = false;
 
       this.showCurrentStep();
-
     }
   }
 
@@ -386,7 +421,7 @@ export class PatientAssessmentPageController extends BasePageController {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer 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" // ← Replace with your key
+          "Authorization": this.apiKey // ← Replace with your key
         },
         body: JSON.stringify({
           model: "gpt-3.5-turbo",
@@ -440,4 +475,21 @@ export class PatientAssessmentPageController extends BasePageController {
     console.log(line.text);
     EventBus.emit(AvatarEvents.SPEAK, { message: line.text, gesture: line.gesture } );
   }
+
+  async makeRequest(method, url, params) {
+    const options = {
+      method,
+      headers: { "Content-Type": "application/json; charSet=utf-8" },
+    };
+
+    if (method === "POST") options.body = JSON.stringify(params || {});
+
+    return fetch(url, options)
+    .then((response) => response.json())
+    .then((data) => data)
+    .catch((error) => {
+        console.error("** An error occurred during the fetch", error);
+        return undefined;
+    });
+}
 }
