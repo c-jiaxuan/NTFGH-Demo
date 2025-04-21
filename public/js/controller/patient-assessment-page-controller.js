@@ -59,7 +59,6 @@ export class PatientAssessmentPageController extends BasePageController {
           console.log('generateClientToken', result)
 
           this.apiKey = result.openaiKey;
-          console.log(this.apiKey);
       } 
       else 
       {
