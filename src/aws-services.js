@@ -69,6 +69,9 @@ class AwsController {
 
     // ==== TRANSCRIPTION ====
     startTranscribe = async () => {
+        this.transcribingText = '';
+        this.partialText = '';
+        
         transcriber.startTranscribe();
     }
 
@@ -164,6 +167,12 @@ class AwsController {
     }
 }
 
+const languageMap = {
+  en: 'en-US',
+  zh: 'zh-CN',
+  //Add more to map
+};
+
 export const awsController = new AwsController();
 const transcriber = new Transcriber();
 awsController.onTranscribeInit();
@@ -175,7 +184,7 @@ awsController.onTranslateInit();
 document.addEventListener('aws-start-transcribe', async (e) => {
   const { language, timeout } = e.detail;
   awsController.hasTimeout = timeout;
-  await transcriber.startTranscribe(language);
+  await transcriber.startTranscribe(languageMap[language]);
 });
 
 document.addEventListener('aws-reset-transcribe', async (e) => {

@@ -1,19 +1,7 @@
 import { EventBus, Events } from "./event-bus.js";
-import languageController from './language-controller.js';
-import inputModeController from './input-mode-controller.js';
+import { appSettings } from "./appSettings.js";
 import topMenuView from './view/top-menu-view.js';
-import { ActionBarView } from "./view/action-bar-view.js";
-
-import { ActionBarChatbot } from './llm/action-bar-chatbot.js';
 import avatar from './avatar.js';
-
-let inputMode = "touch";
-let language = "en";
-
-topMenuView.showHomeButton(true);
-topMenuView.updateInputModeStatus(inputMode);
-topMenuView.updateLanguageStatus(language);
-
 import { MainMenuPageController } from './controller/main-menu-controller.js';
 import { SettingsPageController } from './controller/settings-page-controller.js';
 import { OrientationPageController } from './controller/orientation-page-controller.js';
@@ -31,13 +19,17 @@ const pages = {
   delivery: new DeliverPageController("delivery-page")
 };
 
-//store the current page
-let currentPage = null;
+//Initialise
+appSettings.language = 'en';
+appSettings.inputMode = 'touch';
 
 //Hide all pages at start
 Object.values(pages).forEach(controller => {
   controller.hide?.();
 });
+
+//store the current page
+let currentPage = null;
 
 //Show home page
 currentPage = pages["home"];
@@ -62,6 +54,7 @@ function switchPage(pageName) {
   currentPage = nextPage;
 }
 
+//Add events listener
 EventBus.on(Events.HOME_PRESS, () => { 
   switchPage('home');
 });
@@ -69,11 +62,10 @@ EventBus.on(Events.UPDATE_LANGUAGE, (e) => { onUpdateLanguage(e.detail); })
 EventBus.on(Events.UPDATE_INPUTMODE, (e) => { onUpdateInputMode(e.detail); })
 EventBus.on(Events.SETTING_PRESS, () => {
   switchPage("settings");
-  pages["settings"].init(language, inputMode);
+  pages["settings"].init(appSettings.inputMode, appSettings.language);
 });
 EventBus.on(Events.GETTING_START_PRESS, () => {
   switchPage("gettingStarted");
-  
 });
 EventBus.on(Events.START_ORIENTATION, () => {
   switchPage("orientation");
@@ -87,8 +79,12 @@ EventBus.on(Events.START_DELIVERY, () => {
   switchPage("delivery"); 
 });
 
+//initialise the top view
+topMenuView.showHomeButton(true);
+topMenuView.updateInputModeStatus(appSettings.inputMode);
+topMenuView.updateLanguageStatus(appSettings.language);
+
 avatar.initAvatar();
-//settingsView.init();
 
 function onUpdateLanguage(newLanguage){
   if(newLanguage != "en" && newLanguage != "zh")
@@ -96,12 +92,9 @@ function onUpdateLanguage(newLanguage){
   
   console.log(newLanguage);
 
-  language = newLanguage;
+  appSettings.language = newLanguage;
   //Update Avatar
   avatar.setLanguage(newLanguage);
-  //Update chatbot
-
-  //Update speech recognition
   
   topMenuView.updateLanguageStatus(newLanguage);
 }
@@ -111,7 +104,7 @@ function onUpdateInputMode(mode){
   console.log(mode);
 
   //Update control mode
-  inputMode = mode;
+  appSettings.inputMode = mode;
 
   topMenuView.updateInputModeStatus(mode);
 }
