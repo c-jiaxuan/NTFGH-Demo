@@ -60,14 +60,38 @@ const createTranscribeClient = () => {
   });
 };
 
+// const createMicrophoneStream = async () => {
+//   microphoneStream = new MicrophoneStreamImpl();
+//   microphoneStream.setStream(
+//     await window.navigator.mediaDevices.getUserMedia({
+//       video: false,
+//       audio: true,
+//     }),
+//   );
+// };
+
 const createMicrophoneStream = async () => {
-  microphoneStream = new MicrophoneStreamImpl();
-  microphoneStream.setStream(
-    await window.navigator.mediaDevices.getUserMedia({
+  try {
+    const userMedia = await window.navigator.mediaDevices.getUserMedia({
       video: false,
       audio: true,
-    }),
-  );
+    });
+    microphoneStream = new MicrophoneStreamImpl();
+    microphoneStream.setStream(userMedia);
+  } catch (error) {
+    handleMicrophoneError(error);
+  }
+};
+
+const handleMicrophoneError = (error) => {
+  console.error("Microphone access error:", error);
+
+  // Example: you can show an in-app notification or return an error flag
+  // or call a callback to notify the user in the UI
+  // e.g., displayMicrophoneError("Please enable microphone access in your browser settings.");
+
+  // Or propagate the error upward if needed
+  throw new Error("Microphone permission denied or not available.");
 };
 
 const startStreaming = async (language, callback) => {

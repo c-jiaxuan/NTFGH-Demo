@@ -1,5 +1,4 @@
 import { BaseView } from './base-view.js';
-import { EventBus, Events } from '../event-bus.js';
 
 // 💬 Language options embedded in the same file
 const languageOptions = {
@@ -44,9 +43,6 @@ export class ActionBarView extends BaseView {
 
         this.currentLangLabels = languageOptions.en.actionBarLabels;
         this.activeInterval = null;
-
-        // 🎧 Listen to language changes
-        EventBus.on(Events.UPDATE_LANGUAGE, this.handleLanguageChange.bind(this));
     }
 
     show() {
@@ -87,23 +83,37 @@ export class ActionBarView extends BaseView {
 
     countdownAcknowledgeBtn(countdownTime, enabled) {
         if (enabled) {
+            // Clear any previously running countdown
+            if (this.activeInterval) {
+                clearInterval(this.activeInterval);
+                this.activeInterval = null;
+            }
+        
             let elapsedMs = 0;
             const updateInterval = 50;
             const totalMs = countdownTime * 1000;
-
+        
             this.buttons['acknowledge'].className = "action-button-selected";
             this.acknowledgeBtnTxt.innerHTML = this.currentLangLabels.countdown(countdownTime);
-
+        
             this.activeInterval = setInterval(() => {
                 elapsedMs += updateInterval;
                 const percent = (elapsedMs / totalMs) * 100;
                 this.acknowledgeBtnProgress.style.width = `${percent}%`;
-
+        
                 const secondsLeft = Math.ceil((totalMs - elapsedMs) / 1000);
                 if (secondsLeft > 0) {
                     this.acknowledgeBtnTxt.innerHTML = this.currentLangLabels.countdown(secondsLeft);
                 } else {
-                    this.countdownAcknowledgeBtn(5, false);
+                    if (this.activeInterval) {
+                        clearInterval(this.activeInterval);
+                        this.activeInterval = null;
+                    }
+        
+                    this.buttons['acknowledge'].className = "action-button";
+                    this.acknowledgeBtnTxt.innerHTML = this.currentLangLabels.acknowledge;
+                    this.acknowledgeBtnProgress.style.width = '0%';
+        
                     this.emit("acknowledgeCountdownComplete", {});
                 }
             }, updateInterval);
@@ -138,8 +148,8 @@ export class ActionBarView extends BaseView {
         }
     }
 
-    handleLanguageChange(e) {
-        const langData = languageOptions[e.detail];
+    handleLanguageChange(language) {
+        const langData = languageOptions[language];
         if (langData && langData.actionBarLabels) {
             this.updateLanguageLabels(langData.actionBarLabels);
         }

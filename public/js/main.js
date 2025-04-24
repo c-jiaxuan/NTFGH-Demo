@@ -73,7 +73,7 @@ EventBus.on(Events.START_ORIENTATION, () => {
 });
 EventBus.on(Events.START_PATIENT_ASSESSMENT, () => {
   switchPage("assessment");
-  pages["assessment"].startAssessment();
+  pages["assessment"].start();
 });
 EventBus.on(Events.START_DELIVERY, () => {
   switchPage("delivery"); 

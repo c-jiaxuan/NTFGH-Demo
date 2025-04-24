@@ -1,16 +1,19 @@
 export const steps = [
   {
     title: 'Care Team',
+    translations: {
+      zh: { title: '护理团队' }
+    },
     substeps: [
       {
         title: 'Introduction',
         type: 'video',
         src: './vid/care-team-intro.mp4',
-        avatarSpeech: 'Let’s begin with an introduction to your care team.',
+        avatarSpeech: '',
         translations: {
           zh: {
             title: '介绍',
-            avatarSpeech: '让我们从介绍您的护理团队开始。',
+            avatarSpeech: '',
           }
         }
       },
@@ -47,8 +50,8 @@ export const steps = [
         content: {
           image: '',
           options: [
-            { text: 'Yes', correct: true, response: '', nextQns: true },
-            { text: 'No', correct: false, response: '', nextQns: false }
+            { text: 'Yes', translations: { zh: '是' }, correct: true, response: '', nextQns: true },
+            { text: 'No', translations: { zh: '否' }, correct: false, response: '', nextQns: false }
           ]
         },
         avatarSpeech: 'Do you have your wristband?',
@@ -65,8 +68,8 @@ export const steps = [
         content: {
           image: '',
           options: [
-            { text: 'Yes', correct: true, response: '', nextQns: false },
-            { text: 'No', correct: false, response: '', nextQns: false }
+            { text: 'Yes', translations: { zh: '是' }, correct: true, response: '', nextQns: false },
+            { text: 'No', translations: { zh: '否' }, correct: false, response: '', nextQns: false }
           ]
         },
         avatarSpeech: 'Is your name and ID number correct?',
@@ -81,16 +84,19 @@ export const steps = [
   },
   {
     title: 'Nurse Call System',
+    translations: {
+      zh: { title: '护士呼叫系统' }
+    },
     substeps: [
       {
         title: 'Nurse Call System Video',
         type: 'video',
         src: './vid/nurse-call-system.mov',
-        avatarSpeech: 'Watch this video to understand how to call a nurse.',
+        avatarSpeech: '',
         translations: {
           zh: {
             title: '护士呼叫系统视频',
-            avatarSpeech: '观看这个视频了解如何呼叫护士。',
+            avatarSpeech: '',
           }
         }
       },
@@ -100,9 +106,9 @@ export const steps = [
         content: {
           image: '',
           options: [
-            { text: 'Red Button', correct: true, response: '', nextQns: false },
-            { text: 'Right Button', correct: false, response: '', nextQns: false },
-            { text: 'Left Button', correct: false, response: '', nextQns: false }
+            { text: 'Red Button', translations: { zh: '红色按钮' }, correct: true, response: '', nextQns: false },
+            { text: 'Right Button', translations: { zh: '右侧按钮' }, correct: false, response: '', nextQns: false },
+            { text: 'Left Button', translations: { zh: '左侧按钮' }, correct: false, response: '', nextQns: false }
           ]
         },
         avatarSpeech: 'Which button do you press to call the nurse?',
@@ -117,6 +123,9 @@ export const steps = [
   },
   {
     title: 'Visitation Policy',
+    translations: {
+      zh: { title: '探访政策' }
+    },
     substeps: [
       {
         title: 'Visiting Hours',
@@ -154,6 +163,9 @@ Tower B，第一层
       },
       {
         title: 'Visitation Policy',
+    translations: {
+      zh: { title: '探访政策' }
+    },
         type: 'text',
         content: `First time visitors must register once for the duration of the patient's stay.
             <br>
@@ -182,6 +194,9 @@ Tower B，第一层
       },
       {
         title: 'Visitation Policy',
+    translations: {
+      zh: { title: '探访政策' }
+    },
         type: 'text',
         content: ` <img src="./img/orientation/Visiting_policy.png" style="max-height: 130px;"></img>
           <ul>
@@ -204,16 +219,19 @@ Tower B，第一层
   },
   {
     title: 'Fall Precaution',
+    translations: {
+      zh: { title: '防跌倒' }
+    },
     substeps: [
       {
         title: 'Fall Precaution Video',
         type: 'video',
         src: './vid/fall-precaution.mp4',
-        avatarSpeech: 'Watch this video to learn how to prevent falls.',
+        avatarSpeech: '',
         translations: {
           zh: {
             title: '防跌倒视频',
-            avatarSpeech: '观看这个视频了解如何防止跌倒。',
+            avatarSpeech: '',
           }
         }
       },

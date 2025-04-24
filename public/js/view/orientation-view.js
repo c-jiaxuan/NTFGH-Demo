@@ -7,12 +7,28 @@ export class OrientationView extends BaseView {
 
         this.stepTitle = document.getElementById('step-title');
         this.contentBlock = document.getElementById('content-block');
+        this.guideBlock = this.element.querySelector('.orientation-guide');
     }
 
     renderStep(majorStep, minorStep, major, minor)
     {
-        this.stepTitle.innerHTML = `<span id="majorStepTitle">${majorStep.title} (${minor + 1}/${majorStep.substeps.length})</span><br><span style="font-size: 24px;" id="subStepTitle">${minorStep.title}</span>`;
+        this.clearAllIntervals();
+        
+        const displayTitle = majorStep.localizedTitle || majorStep.title;
+        this.stepTitle.innerHTML = `
+          <span id="majorStepTitle">${displayTitle} (${minor + 1}/${majorStep.substeps.length})</span><br>
+          <span style="font-size: 24px;" id="subStepTitle">${minorStep.title}</span>`;
         this.contentBlock.innerHTML = '';
+
+        if (this.guideBlock) {
+            const lang = minorStep.language || 'en';
+            const guideMessages = {
+              en: "Please view the following information and acknowledge upon completing them",
+              zh: "请查看以下信息，并在完成后点击确认"
+            };
+          
+            this.guideBlock.textContent = guideMessages[lang] || guideMessages.en;
+          }
 
         if (minorStep.type === 'text') {
             const p = document.createElement('p');
@@ -64,8 +80,12 @@ export class OrientationView extends BaseView {
             let countdown = 3;
             const countdownInterval = setInterval(() => {
             countdown--;
-            countdownText.textContent = "Video is starting in " + countdown;
-        
+            if (minorStep.countdownMessage) {
+                countdownText.textContent = minorStep.countdownMessage(countdown);
+            } else {
+                countdownText.textContent = "Video is starting in " + countdown; // fallback
+            }     
+
             if (countdown <= 0) {
                 clearInterval(countdownInterval);
                 setTimeout(() => {
@@ -105,8 +125,13 @@ export class OrientationView extends BaseView {
 
                 const text = document.createElement("div");
                 text.className = "button-text";
-                text.textContent = opt.text;
+                const lang = minorStep.language || 'en'; // default fallback
+                const displayText = (lang !== 'en' && opt.translations?.[lang])
+                  ? opt.translations[lang]
+                  : opt.text;
                 
+                text.textContent = displayText;
+
                 btn.appendChild(bg);
                 btn.appendChild(text);
         

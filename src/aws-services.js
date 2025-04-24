@@ -7,12 +7,22 @@ class Transcriber {
 
       return true;
     } catch (error) {
-      alert("An error occurred while recording: " + error.message);
+      console.warn("Transcription error:", error);
       await this.stopTranscribe();
-
+      
+      setTimeout(() => this.startTranscribe(), 1000);
       return false;
     }
   };
+
+  shouldRetry(error) {
+    return (
+      error.name === "AbortError" ||
+      error.message?.includes("stream closed") ||
+      error.message?.includes("timeout") ||
+      error.message?.includes("network")
+    );
+  }
 
   onTranscriptionDataReceived(data, IsPartial) {
     awsController.updateTranscribingText(data, IsPartial);
@@ -23,6 +33,13 @@ class Transcriber {
     const { stopRecording } = await import("./libs/transcribeClient.js");
     stopRecording();
   };
+
+  notifyError(message) {
+    // You can customize this to trigger a toast, modal, or error section in your app
+    document.dispatchEvent(new CustomEvent("aws-error", {
+      detail: message
+    }));
+  }  
 }
 
 class Translater {
@@ -36,10 +53,18 @@ class Translater {
   
         awsController.onTranslationComplete(translation);
       } catch (error) {
-        alert(`There was an error translating the text: ${error.message}`);
+        console.error("Translation error:", error);
+        this.notifyError("There was an error translating the text. Please try again.");
         return '';
       }
     }
+
+    notifyError(message) {
+      // You can customize this to trigger a toast, modal, or error section in your app
+      document.dispatchEvent(new CustomEvent("aws-error", {
+        detail: message
+      }));
+    }    
 }
 
 class AwsController {
@@ -180,7 +205,6 @@ awsController.onTranscribeInit();
 const translater = new Translater();
 awsController.onTranslateInit();
 
-
 document.addEventListener('aws-start-transcribe', async (e) => {
   const { language, timeout } = e.detail;
   awsController.hasTimeout = timeout;
@@ -188,7 +212,7 @@ document.addEventListener('aws-start-transcribe', async (e) => {
 });
 
 document.addEventListener('aws-reset-transcribe', async (e) => {
-  await transcriber.resetTranscribe();
+  awsController.resetTranscribe();
 });
 
 document.addEventListener('aws-stop-transcribe', async () => {

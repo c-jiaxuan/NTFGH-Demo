@@ -35,10 +35,9 @@ export class PatientAssessmentPageController extends BasePageController {
     EventBus.on(Events.UPDATE_LANGUAGE, (e) => { this.onUpdateLanguage(e.detail); })
     EventBus.on(Events.UPDATE_INPUTMODE, (e) => { this.onUpdateInputMode(e.detail); })
     EventBus.on(AvatarEvents.SPEAK_COMPLETED, (e) => { this.onAvatarSpeakCompleted(e.detail); })
-
   }
 
-  startAssessment(){
+  start(){
     this.currentStepIndex = 0;
     this.currentStepSpeak = false;
     this.currentStep = steps[this.currentStepIndex];

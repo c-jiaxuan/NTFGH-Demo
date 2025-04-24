@@ -1,65 +1,147 @@
 import { BasePageController } from './base-page-controller.js';
 import { OrientationView } from '../view/orientation-view.js';
-import { EventBus, Events } from '../event-bus.js';
+import { AvatarEvents, EventBus, Events } from '../event-bus.js';
 import { steps } from './orientation-config.js'
-import { ActionBarView } from '../view/action-bar-view.js';
-import { ActionBarChatbot } from '../llm/action-bar-chatbot.js';
+import { ActionBarController } from './action-bar-controller.js';
+import { appSettings } from '../appSettings.js';
 
 export class OrientationPageController extends BasePageController {
   constructor(id){
     const view = new OrientationView(id);
     super(id, view);
 
-    this.actionBar = new ActionBarView('bottom-action-bar');
-    this.actionChatbot = new ActionBarChatbot(this.actionBar);
+    this.actionBar = new ActionBarController('bottom-action-bar');
 
     this.major = 0;
     this.minor = 0;
     this.continueTimer = 1;
     this.nextQns = false;
     this.currentStep = null;
-
+    
+    //Listen to its own view event
     this.view.on("readyForAcknowledge", (e) => {
-      this.onStepReadyForAcknowledge(e.detail);
+      this.actionBar.enableAcknowledge(true);
     });
 
     this.view.on("quizAnswered", (e) => {
       this.onQuizAnswered(e.detail);
     })
 
-    this.actionBar.bindButtonClick(this.handleActionBarClicked.bind(this));
-    this.actionBar.on("acknowledgeCountdownComplete", (e) => {
+    //Listen to action bar controller event
+    this.actionBar.on("acknowledged", (e) => {
       this.nextStep();
     });
+    this.actionBar.on("action-button-clicked", (e) => { 
+      this.handleActionBarClicked(e.detail);
+    })
+
+    //Listen to global events
+    //Listen to global events
+    EventBus.on(Events.UPDATE_LANGUAGE, (e) => { this.onUpdateLanguage(e.detail); })
+    EventBus.on(Events.UPDATE_INPUTMODE, (e) => { this.onUpdateInputMode(e.detail); })
+  }
+
+  //Handle events for language and input mode 
+  onUpdateLanguage(language){
+    //update view to new language
+    this.setupStep(language);
+  }
+
+  onUpdateInputMode(inputMode){
+
   }
 
   start(){
     this.major = 0;
     this.minor = 0;
     this.nextQns = false;
+    this.setupStep(appSettings.language);
+    
+    // const avatarSpeechesInChinese = this.getAvatarSpeechesByLanguage(appSettings.language);
+    // EventBus.emit(AvatarEvents.PRELOAD, avatarSpeechesInChinese);
 
     this.actionBar.show();
-    this.actionBar.showHelpBtn(false);
-    this.actionBar.showAcknowledgeBtn(true);
-    this.setupStep();
   }
 
-  setupStep(){
-    this.actionBar.showBackBtn(this.major != 0 || this.minor != 0);
-    this.actionBar.enableAcknowledgeBtn(false);
+  getAvatarSpeechesByLanguage(lang = 'en') {
+    const speeches = [];
+  
+    steps.forEach(majorStep => {
+      majorStep.substeps.forEach(substep => {
+        let speech = substep.avatarSpeech;
+  
+        // If language is not 'en' and a translation exists, override
+        if (lang !== 'en' && substep.translations?.[lang]?.avatarSpeech) {
+          speech = substep.translations[lang].avatarSpeech;
+        }
+  
+        if (speech) {
+          speeches.push({ message: speech, gesture: "" });
+        }
+      });
+    });
+  
+    return speeches;
+  }
+
+  getNextAvatarSpeech(major, minor, lang = 'en') {
+    // Calculate next step indices
+    const currentStep = steps[major];
+    const isLastInSubsteps = minor >= currentStep.substeps.length - 1;
+  
+    let nextMajor = major;
+    let nextMinor = minor + 1;
+  
+    if (isLastInSubsteps) {
+      nextMajor = major + 1;
+      nextMinor = 0;
+    }
+  
+    // Check if within bounds
+    if (nextMajor >= steps.length || nextMinor >= steps[nextMajor].substeps.length) {
+      return null; // No next step
+    }
+  
+    const nextStep = steps[nextMajor].substeps[nextMinor];
+  
+    let speech = nextStep.avatarSpeech;
+  
+    if (lang !== 'en' && nextStep.translations?.[lang]?.avatarSpeech) {
+      speech = nextStep.translations[lang].avatarSpeech;
+    }
+  
+    return speech ? { message: speech, gesture: "" } : null;
+  }
+
+  setupStep(language){
+    if(!this.isActive) return;
+
+    this.actionBar.update(this.major != 0 || this.minor != 0);
+    this.actionBar.enableAcknowledge(false);
 
     const curMajorStep = steps[this.major];
     const sub = curMajorStep.substeps[this.minor];
 
-    this.view.renderStep(curMajorStep, sub, this.major, this.minor);
-  }
+    const lang = language;
 
-  onStepReadyForAcknowledge(e){
-    this.actionBar.enableAcknowledgeBtn(true);
+    const localizedTitle = (lang !== 'en' && curMajorStep.translations?.[lang]?.title)
+      ? curMajorStep.translations[lang].title
+      : curMajorStep.title;
 
-    document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
-      detail: { language: 'en-US', timeout: false }
-    }));
+    curMajorStep.localizedTitle = localizedTitle;
+
+    const localizedSub = (lang !== 'en' && sub.translations?.[lang])
+      ? { ...sub, ...sub.translations[lang] }
+      : sub;
+
+    localizedSub.countdownMessage = this.getCountdownMessageFunction(language);
+    localizedSub.language = language;
+
+    this.view.renderStep(curMajorStep, localizedSub, this.major, this.minor);
+    if(localizedSub.avatarSpeech != "") EventBus.emit(AvatarEvents.SPEAK, {message: localizedSub.avatarSpeech, gesture: ""});
+
+    const nextSpeech = this.getNextAvatarSpeech(this.major, this.minor, language);
+    EventBus.emit(AvatarEvents.PRELOAD, nextSpeech);
   }
 
   onQuizAnswered(e){
@@ -68,21 +150,15 @@ export class OrientationPageController extends BasePageController {
 
   handleActionBarClicked(key){
     if(!this.isActive) return;
-    
+    console.log(key);
     switch (key){
       case "back":
-        document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
-          detail: { language: 'en-US' }
-        }));
         this.previousStep();
         break;
       case "help":
         break;
       case "acknowledge":
-        document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
-          detail: { language: 'en-US' }
-        }));
-        this.actionBar.countdownAcknowledgeBtn(1, true);
+        this.actionBar.countdownAcknowledgeBtn(true);
         break;
     }
   }
@@ -125,7 +201,7 @@ export class OrientationPageController extends BasePageController {
       }
     }
 
-    this.setupStep();
+    this.setupStep(appSettings.language);
   }
 
   previousStep()
@@ -147,29 +223,30 @@ export class OrientationPageController extends BasePageController {
       }
     }
 
-    this.setupStep();
+    this.setupStep(appSettings.language);
   }
 
-  handleTranscribeEvent(e){
-    console.log("transcribe" + e.detail);
-    this.actionChatbot.handleTranscript(e.detail);
+  getCountdownMessageFunction(language) {
+    const texts = {
+      en: "Video is starting in",
+      zh: "视频将在"
+    };
+    const prefix = texts[language] || texts.en;
+  
+    return function(count) {
+      return `${prefix} ${count}`;
+    };
   }
+  
 
   onEnter() {
     super.onEnter();
     console.log('Orientation page initialized');
-
-    document.addEventListener("aws-transcribe-update", this.handleTranscribeEvent.bind(this));
   }
 
   onExit() {
     super.onExit();
     console.log('Leaving Orientation page');
     this.actionBar.hide();
-    document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
-      detail: { language: 'en-US' }
-    }));
-    
-    document.removeEventListener("aws-transcribe-update", this.handleTranscribeEvent);
   }
 }

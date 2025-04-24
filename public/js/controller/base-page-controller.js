@@ -1,3 +1,4 @@
+import { AvatarEvents, EventBus } from "../event-bus.js";
 
 export class BasePageController {
     constructor(id, view) {
@@ -5,7 +6,17 @@ export class BasePageController {
       this.view = view;
       this.isActive = false;
 
+      this.events = new EventTarget();
+
       this.intervals = [];
+    }
+
+    emit(eventName, detail) {
+      this.events.dispatchEvent(new CustomEvent(eventName, { detail }));
+    }
+
+    on(eventName, callback) {
+        this.events.addEventListener(eventName, callback);
     }
   
     show() {
@@ -15,7 +26,6 @@ export class BasePageController {
   
     hide() {
       this.clearAllIntervals();
-
       this.view.hide();
       this.onExit();
     }
@@ -26,12 +36,12 @@ export class BasePageController {
     }
   
     onEnter() {
-      // Optional: override in child
       this.isActive = true;
     }
   
     onExit() {
-      // Optional: override in child
       this.isActive = false;
+
+      EventBus.emit(AvatarEvents.STOP, {});
     }
   }
