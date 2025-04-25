@@ -1,6 +1,4 @@
-import { BaseView } from './base-view.js';
-
-// 💬 Language options embedded in the same file
+// Language options embedded in the same file
 const languageOptions = {
     en: {
         label: "English",
@@ -27,6 +25,8 @@ const languageOptions = {
         }
     }
 };
+
+import { BaseView } from './base-view.js';
 
 export class ActionBarView extends BaseView {
     constructor(id) {

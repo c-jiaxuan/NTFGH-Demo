@@ -10,14 +10,22 @@ export class OrientationPageController extends BasePageController {
     const view = new OrientationView(id);
     super(id, view);
 
+    //action bar of the page
     this.actionBar = new ActionBarController('bottom-action-bar');
 
+    //page-related settings
     this.major = 0;
     this.minor = 0;
-    this.continueTimer = 1;
-    this.nextQns = false;
-    this.currentStep = null;
-    
+    this.nextQns = false; //logic need to be updated. should store which step is next
+  }
+
+  onEnter() {
+    super.onEnter();
+    console.log('Orientation page initialized');
+
+    //Show actionbar together with it
+    this.actionBar.show();
+
     //Listen to its own view event
     this.view.on("readyForAcknowledge", (e) => {
       this.actionBar.enableAcknowledge(true);
@@ -36,9 +44,37 @@ export class OrientationPageController extends BasePageController {
     })
 
     //Listen to global events
-    //Listen to global events
     EventBus.on(Events.UPDATE_LANGUAGE, (e) => { this.onUpdateLanguage(e.detail); })
     EventBus.on(Events.UPDATE_INPUTMODE, (e) => { this.onUpdateInputMode(e.detail); })
+  }
+
+  onExit() {
+    super.onExit();
+    console.log('Leaving Orientation page');
+
+    //Hide the action bar together with it
+    this.actionBar.hide();
+
+    //Remove listen to its own view event
+    this.view.off("readyForAcknowledge", (e) => {
+      this.actionBar.enableAcknowledge(true);
+    });
+
+    this.view.off("quizAnswered", (e) => {
+      this.onQuizAnswered(e.detail);
+    })
+
+    //Remove listen to action bar controller event
+    this.actionBar.off("acknowledged", (e) => {
+      this.nextStep();
+    });
+    this.actionBar.off("action-button-clicked", (e) => { 
+      this.handleActionBarClicked(e.detail);
+    })
+
+    //Remove listen to global events
+    EventBus.off(Events.UPDATE_LANGUAGE, (e) => { this.onUpdateLanguage(e.detail); })
+    EventBus.off(Events.UPDATE_INPUTMODE, (e) => { this.onUpdateInputMode(e.detail); })
   }
 
   //Handle events for language and input mode 
@@ -51,39 +87,16 @@ export class OrientationPageController extends BasePageController {
 
   }
 
+  //Start orientation -> reset all variables
   start(){
     this.major = 0;
     this.minor = 0;
     this.nextQns = false;
+
     this.setupStep(appSettings.language);
-    
-    // const avatarSpeechesInChinese = this.getAvatarSpeechesByLanguage(appSettings.language);
-    // EventBus.emit(AvatarEvents.PRELOAD, avatarSpeechesInChinese);
-
-    this.actionBar.show();
   }
 
-  getAvatarSpeechesByLanguage(lang = 'en') {
-    const speeches = [];
-  
-    steps.forEach(majorStep => {
-      majorStep.substeps.forEach(substep => {
-        let speech = substep.avatarSpeech;
-  
-        // If language is not 'en' and a translation exists, override
-        if (lang !== 'en' && substep.translations?.[lang]?.avatarSpeech) {
-          speech = substep.translations[lang].avatarSpeech;
-        }
-  
-        if (speech) {
-          speeches.push({ message: speech, gesture: "" });
-        }
-      });
-    });
-  
-    return speeches;
-  }
-
+  //Get the next avatar speech to preload
   getNextAvatarSpeech(major, minor, lang = 'en') {
     // Calculate next step indices
     const currentStep = steps[major];
@@ -92,6 +105,7 @@ export class OrientationPageController extends BasePageController {
     let nextMajor = major;
     let nextMinor = minor + 1;
   
+    //if last substep in current major step -> move on to next major step
     if (isLastInSubsteps) {
       nextMajor = major + 1;
       nextMinor = 0;
@@ -113,12 +127,17 @@ export class OrientationPageController extends BasePageController {
     return speech ? { message: speech, gesture: "" } : null;
   }
 
-  setupStep(language){
+  //Setup the current step
+  setupStep(language)
+  {
+    //Ensure dont setup step if the page is not in focus
     if(!this.isActive) return;
 
+    //Update action bar status
     this.actionBar.update(this.major != 0 || this.minor != 0);
     this.actionBar.enableAcknowledge(false);
 
+    //Get the data ready for the view to display
     const curMajorStep = steps[this.major];
     const sub = curMajorStep.substeps[this.minor];
 
@@ -134,70 +153,49 @@ export class OrientationPageController extends BasePageController {
       ? { ...sub, ...sub.translations[lang] }
       : sub;
 
-    localizedSub.countdownMessage = this.getCountdownMessageFunction(language);
     localizedSub.language = language;
 
     this.view.renderStep(curMajorStep, localizedSub, this.major, this.minor);
-    if(localizedSub.avatarSpeech != "") EventBus.emit(AvatarEvents.SPEAK, {message: localizedSub.avatarSpeech, gesture: ""});
 
+    //Avatar
+    //Speak current step if not empty
+    if(localizedSub.avatarSpeech != "") EventBus.emit(AvatarEvents.SPEAK, {message: localizedSub.avatarSpeech, gesture: ""});
+    //Preload the next one
     const nextSpeech = this.getNextAvatarSpeech(this.major, this.minor, language);
     EventBus.emit(AvatarEvents.PRELOAD, nextSpeech);
-  }
 
-  onQuizAnswered(e){
-    this.nextQns = e.detail;
-  }
-
-  handleActionBarClicked(key){
-    if(!this.isActive) return;
-    console.log(key);
-    switch (key){
-      case "back":
-        this.previousStep();
-        break;
-      case "help":
-        break;
-      case "acknowledge":
-        this.actionBar.countdownAcknowledgeBtn(true);
-        break;
-    }
+    //Not fully tested - voice detection for quiz answering
+    // if(sub.type == "quiz" && appSettings.inputMode == "voice")
+    // {
+    //   this.setupTranscribeForVoiceCommmand(true);
+    // }
   }
 
   nextStep() {
     const curMajorStep = steps[this.major];
+    const isLastSubstep = this.minor >= curMajorStep.substeps.length - 1;
+    const isLastMajorStep = this.major >= steps.length - 1;
     const sub = curMajorStep.substeps[this.minor];
 
-    if(sub.type === "quiz")
-    {
-      if(this.nextQns){
-        if (this.minor < curMajorStep.substeps.length - 1) {
-          this.minor++;
-        } else {
-          if (this.major < steps.length - 1) {
-            this.major++;
-            this.minor = 0;
-          } else {
-            EventBus.emit(Events.HOME_PRESS);
-            return;
-          }
-        }
-      }
-      else{
-        //To change
+    if (sub.type === "quiz" && !this.nextQns) {
+      // Skip to next major step -> logic to be updated
+      if (!isLastMajorStep) {
         this.major++;
-        this.minor = 0;   
+        this.minor = 0;
+      } else {
+        EventBus.emit(Events.HOME_PRESS);
+        return;
       }
     } else {
-      if (this.minor < curMajorStep.substeps.length - 1) {
+      // Proceed to next substep or next major step
+      if (!isLastSubstep) {
         this.minor++;
+      } else if (!isLastMajorStep) {
+        this.major++;
+        this.minor = 0;
       } else {
-        if (this.major < steps.length - 1) {
-          this.major++;
-          this.minor = 0;
-        } else {
-          EventBus.emit(Events.HOME_PRESS);
-          return;
-        }
+        EventBus.emit(Events.HOME_PRESS);
+        return;
       }
     }
 
@@ -217,6 +215,7 @@ export class OrientationPageController extends BasePageController {
         return;
       }
   
+      //Don't go back if it's a quiz step
       const currentSubstep = steps[this.major].substeps[this.minor];
       if (currentSubstep.type !== 'quiz') {
         break;
@@ -226,27 +225,94 @@ export class OrientationPageController extends BasePageController {
     this.setupStep(appSettings.language);
   }
 
-  getCountdownMessageFunction(language) {
-    const texts = {
-      en: "Video is starting in",
-      zh: "视频将在"
-    };
-    const prefix = texts[language] || texts.en;
-  
-    return function(count) {
-      return `${prefix} ${count}`;
-    };
-  }
-  
+  //Handle quiz answer -> to determine whether to proceed or skip
+  onQuizAnswered(e){
+    this.nextQns = e.detail;
 
-  onEnter() {
-    super.onEnter();
-    console.log('Orientation page initialized');
+    //Not fully tested - voice detection for quiz answering
+    // if(appSettings.inputMode == "voice")
+    //   this.setupTranscribeForVoiceCommmand(false);
   }
 
-  onExit() {
-    super.onExit();
-    console.log('Leaving Orientation page');
-    this.actionBar.hide();
+  //Handle action bar buttons -> proceed or back
+  handleActionBarClicked(key)
+  {
+    if(!this.isActive) return;
+
+    switch (key){
+      case "back":
+        this.previousStep();
+        break;
+      case "help":
+        break;
+      case "acknowledge":
+        this.actionBar.countdownAcknowledgeBtn(true);
+        break;
+    }
+  }
+
+  //Not in used -     //Not fully tested - voice detection for quiz answering
+  setupTranscribeForVoiceCommmand(enabled){
+    if(enabled)
+    {
+      console.log("action-bar: start listen for command");
+      //Listen to transcribe event
+      document.addEventListener("aws-transcribe-update", (e) => this.handleTranscribeEvent(e));
+      //Start transcribing
+      document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
+        detail: { language: appSettings.language, timeout: false }
+      }));
+    }
+    else
+    {
+      console.log("action-bar: stop listen for command");
+      //Remove transcribe listener
+      document.removeEventListener("aws-transcribe-update", (e) => this.handleTranscribeEvent(e));
+      //Stop transcribing
+      document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
+        detail: { language: appSettings.language }
+      }));
+    }
+  }
+
+   async handleTranscribeEvent(e){
+      console.log("transcribe" + e.detail);
+  
+      const curMajorStep = steps[this.major];
+      const sub = curMajorStep.substeps[this.minor];
+
+      if (sub.type === "quiz") {
+        const matched = this.findMatchingOption(e.detail, sub.content.options, appSettings.language);
+        console.log("orientation-page" + sub.content.options);
+        
+        if (matched) {
+          console.log("User selected option:", matched);
+      
+          // Optional: simulate click on the matching button
+          const allButtons = document.querySelectorAll('#quizSubstep .action-button');
+          allButtons.forEach(btn => {
+            if (btn.textContent.trim().toLowerCase() === matched.text.toLowerCase() ||
+                btn.textContent.trim().toLowerCase() === matched.translations?.[appSettings.language]?.toLowerCase()) {
+              btn.click();
+            }
+          });
+        }
+      }
+  }
+
+  findMatchingOption(transcript, options, lang = 'en') {
+    transcript = transcript.trim().toLowerCase();
+  
+    for (const option of options) {
+      // Match default text
+      if (option.text.toLowerCase() === transcript) return option;
+  
+      // Match translated text if available
+      if (lang !== 'en' && option.translations?.[lang]?.toLowerCase() === transcript) {
+        return option;
+      }
+    }
+  
+    return null; // No match
   }
 }

@@ -18,6 +18,10 @@ export class BasePageController {
     on(eventName, callback) {
         this.events.addEventListener(eventName, callback);
     }
+
+    off(eventName, callback) {
+      this.events.removeEventListener(eventName, callback);
+    }
   
     show() {
       this.view.show();

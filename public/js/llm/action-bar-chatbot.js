@@ -7,7 +7,7 @@ export class ActionBarChatbot {
     this.commandSets = {
       en: {
         back: ['go back', 'previous', 'return'],
-        help: ['help', 'i need help', 'try again'],
+        help: ['try again'],
         acknowledge: ['continue', 'next', 'proceed', 'acknowledge', 'done']
       },
       zh: {

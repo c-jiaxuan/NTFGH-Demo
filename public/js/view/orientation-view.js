@@ -79,21 +79,22 @@ export class OrientationView extends BaseView {
             // Countdown logic before full screen
             let countdown = 3;
             const countdownInterval = setInterval(() => {
-            countdown--;
-            if (minorStep.countdownMessage) {
-                countdownText.textContent = minorStep.countdownMessage(countdown);
-            } else {
-                countdownText.textContent = "Video is starting in " + countdown; // fallback
-            }     
+                countdown--;
+                const texts = {
+                    en: "Video is starting in",
+                    zh: "视频将在"
+                };
+                const prefix = texts[minorStep.language] || texts.en;
+                countdownText.textContent = `${prefix} ${countdown}`;
 
-            if (countdown <= 0) {
-                clearInterval(countdownInterval);
-                setTimeout(() => {
-                    video.requestFullscreen().catch(() => {});
-                    video.play();
-                    countdownText.style.display = 'none';
-                }, 500);
-            }
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    setTimeout(() => {
+                        video.requestFullscreen().catch(() => {});
+                        video.play();
+                        countdownText.style.display = 'none';
+                    }, 500);
+                }
             }, 1000);
 
             this.intervals.push(countdownInterval);

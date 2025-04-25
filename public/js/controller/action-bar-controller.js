@@ -40,8 +40,11 @@ export class ActionBarController extends BasePageController {
     //TO-UPDATE-BETTER-LOGIC: Command detection only enable when user can click acknowledge
     this.isReadyForCommand = enabled;
 
+    console.log('action-bar:' + enabled);
+
     //transcribe for using voice input mode
     if(appSettings.inputMode == 'voice'){
+      console.log('action-bar:' + enabled);
       //Start or Stop detecting for keyword
       this.setupTranscribeForVoiceCommmand(enabled);
     }
@@ -54,8 +57,8 @@ export class ActionBarController extends BasePageController {
       //Listen to transcribe event
       document.addEventListener("aws-transcribe-update", (e) => this.handleTranscribeEvent(e));
       //Start transcribing
-      document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
-        detail: { language: appSettings.language, timeout: false }
+      document.dispatchEvent(new CustomEvent('aws-reset-transcribe', {
+        detail: {  }
       }));
     }
     else
@@ -64,8 +67,11 @@ export class ActionBarController extends BasePageController {
       //Remove transcribe listener
       document.removeEventListener("aws-transcribe-update", (e) => this.handleTranscribeEvent(e));
       //Stop transcribing
-      document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
-        detail: { language: appSettings.language }
+      // document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
+      //   detail: { language: appSettings.language }
+      // }));
+      document.dispatchEvent(new CustomEvent('aws-reset-transcribe', {
+        detail: { }
       }));
     }
   }
@@ -76,7 +82,10 @@ export class ActionBarController extends BasePageController {
 
   handleActionBarClicked(key){
     //Upon any button clicked, disable the voice command detection
-    if(appSettings.inputMode == 'voice') this.setupTranscribeForVoiceCommmand(false);
+    if(appSettings.inputMode == 'voice') 
+    {
+      this.setupTranscribeForVoiceCommmand(false);
+    }
 
     this.emit("action-button-clicked", key);
   }

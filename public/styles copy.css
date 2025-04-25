@@ -625,4 +625,71 @@ button:hover {
     display: inline-block;
     min-width: 140px;
   }
+
+  .chat-container{
+    position: absolute;
+    width: 742px;
+    height: 400px;
+    left: 24px;
+    top: 646px;
+    display: flex;
+    flex-direction: column-reverse;
+    /* justify-content: flex-start; */
+    z-index: 6;
+    /* overflow: hidden; */
+  }
+  .chat-gap {
+    flex-grow: 1; /* 🪄 this will shrink as chat-bubbles grow */
+  }
   
+  .chat-bubbles {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* space between bubbles */
+  }
+  
+  .bubbleWrapper {
+    padding: 10px 10px;
+    display: flex;
+    align-items: flex-end; /* default left */
+    flex-direction: column;
+    color: #111;
+    font-size: 26px;
+  }
+  .bubbleWrapper.own {
+    align-items: flex-start;
+  }
+  .inlineContainer {
+    display: inline-flex;
+  }
+  .inlineContainer.own {
+    flex-direction: row-reverse;
+  }
+  
+  .ownBubble {
+    min-width: 60px;
+    max-width: 700px;
+    padding: 14px 18px;
+    margin: 6px 8px;
+    background-color: #ffffff;
+    border-radius: 16px 16px 16px 0;
+    border: 1px solid #ffffff;
+  }
+  
+  .otherBubble {
+    min-width: 60px;
+    max-width: 700px;
+    padding: 14px 18px;
+    margin: 6px 8px;
+    background-color: #003d99;
+    border-radius: 16px 16px 0 16px;
+    border: 1px solid #fff;
+    color: #fff;
+  }
+  
+  .own {
+    align-self: flex-start;
+  }
+  .other {
+    align-self: flex-end;
+  }

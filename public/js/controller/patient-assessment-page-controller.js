@@ -2,39 +2,23 @@ import { BasePageController } from './base-page-controller.js';
 import { PatientAssessmentView } from '../view/patient-assessment-view.js';
 import { AvatarEvents, EventBus, Events } from '../event-bus.js';
 import { steps } from './assessment-config.js';
-import { ActionBarView } from '../view/action-bar-view.js';
-import { ActionBarChatbot } from '../llm/action-bar-chatbot.js';
+import { ActionBarController } from './action-bar-controller.js';
+import { appSettings } from '../appSettings.js';
+
 
 export class PatientAssessmentPageController extends BasePageController {
   constructor(id){
     const view = new PatientAssessmentView(id);
     super(id, view);
 
-    this.actionBar = new ActionBarView('bottom-action-bar');
-    this.actionChatbot = new ActionBarChatbot(this.actionBar);
+    //action bar of the page
+    this.actionBar = new ActionBarController('bottom-action-bar');
 
     this.currentStepIndex = 0;
     this.currentStep = steps[this.currentStepIndex];
-    this.language = "en";
-    this.inputMode = "touch";
     this.isTranscribeActive = false;
     this.allStepSpeech = [];
     this.currentStepSpeak = false;
-    this.apiKey = "Bearer ";
-
-    this.view.on("readyForAcknowledge", (e) => {
-      this.onStepReadyForAcknowledge(e.detail);
-    });
-
-    this.actionBar.bindButtonClick(this.handleActionBarClicked.bind(this));
-    this.actionBar.on("acknowledgeCountdownComplete", (e) => {
-      EventBus.emit(AvatarEvents.STOP, {});
-      this.nextStep();
-    });
-
-    EventBus.on(Events.UPDATE_LANGUAGE, (e) => { this.onUpdateLanguage(e.detail); })
-    EventBus.on(Events.UPDATE_INPUTMODE, (e) => { this.onUpdateInputMode(e.detail); })
-    EventBus.on(AvatarEvents.SPEAK_COMPLETED, (e) => { this.onAvatarSpeakCompleted(e.detail); })
   }
 
   start(){
@@ -42,16 +26,14 @@ export class PatientAssessmentPageController extends BasePageController {
     this.currentStepSpeak = false;
     this.currentStep = steps[this.currentStepIndex];
 
-    this.showCurrentStep();
+    document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
+      detail: { language: appSettings.language, timeout: false }
+    }));
 
-    this.actionBar.show();
-    this.actionBar.showHelpBtn(true);
-    this.actionBar.showAcknowledgeBtn(true);
+    this.showCurrentStep();
   }
 
   onUpdateLanguage(language){
-    this.language = language;
-
     const step = steps[this.currentStepIndex];
     this.buildSpeechListFromSteps(steps);
     this.currentStepSpeak = false;
@@ -60,23 +42,18 @@ export class PatientAssessmentPageController extends BasePageController {
 
   onUpdateInputMode(mode){
     console.log(mode);
-    this.inputMode = mode;
 
     this.showCurrentStep();
 
-    if(this.inputMode == "voice")
+    if(appSettings.inputMode == "voice")
       {
-        document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
-          detail: { language: 'en-US', timeout: steps[this.currentStepIndex].type === "next-of-kin" || steps[this.currentStepIndex].type === "adl" }
-        }));
+        this.setupTranscribeForVoiceCommmand(true, steps[this.currentStepIndex].type === "next-of-kin" || steps[this.currentStepIndex].type === "adl");
         this.isTranscribeActive = true;     
       }
       else{
         if(this.isTranscribeActive)
         {
-          document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
-            detail: { language: 'en-US' }
-          }));
+          this.setupTranscribeForVoiceCommmand(false);
           this.isTranscribeActive = false;
         }
       }
@@ -88,19 +65,17 @@ export class PatientAssessmentPageController extends BasePageController {
     {
       this.currentStepSpeak = true;
 
-      if(this.inputMode == "voice")
+      if(appSettings.inputMode == "voice")
       {
-        document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
-          detail: { language: 'en-US', timeout: steps[this.currentStepIndex].type === "next-of-kin" || steps[this.currentStepIndex].type === "adl" }
-        }));
+        this.setupTranscribeForVoiceCommmand(true, steps[this.currentStepIndex].type === "next-of-kin" || steps[this.currentStepIndex].type === "adl");
+
         this.isTranscribeActive = true;     
       }
       else{
         if(this.isTranscribeActive)
         {
-          document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
-            detail: { language: 'en-US' }
-          }));
+          this.setupTranscribeForVoiceCommmand(false);
+
           this.isTranscribeActive = false;
         }
       }
@@ -108,29 +83,14 @@ export class PatientAssessmentPageController extends BasePageController {
   }
 
   onStepReadyForAcknowledge(e){
-    this.actionBar.enableAcknowledgeBtn(true);
-
-    //For video
-    if(this.language == "zh")
+    if(appSettings.inputMode == 'voice')
     {
-      if(this.currentStepIndex == 2)
-        {
-          EventBus.emit(AvatarEvents.SPEAK, { message: "用户表示他们可以独立进食，但有时需要帮助喝水，这表明他们在进食方面需要一些帮助，但不需要完全的协助。因此，选择的选项是“需要协助”。", gesture: "" } );
-        }
-    
-        if(this.currentStepIndex == 3)
-        {
-          EventBus.emit(AvatarEvents.SPEAK, { message: "用户表示他们的腿部无力，如果独自洗澡可能会跌倒，这表明他们需要完全的协助。因此，选择的选项是“依赖”。", gesture: "" } );
-        }
-    }
+      this.setupTranscribeForVoiceCommmand(false);
 
-    if(this.inputMode == 'voice')
-    {
-      document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
-        detail: { language: 'en-US', timeout: false }
-      }));
       this.isTranscribeActive = true;
     }
+
+    this.actionBar.enableAcknowledge(true);
   }
   
   handleActionBarClicked(key){
@@ -138,10 +98,9 @@ export class PatientAssessmentPageController extends BasePageController {
     
     switch (key){
       case "back":
-        if(this.inputMode == "voice"){
-          document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
-            detail: { language: 'en-US' }
-          }));
+        if(appSettings.inputMode == "voice"){
+          this.setupTranscribeForVoiceCommmand(false);
+
           this.isTranscribeActive = false;
         }
 
@@ -149,39 +108,40 @@ export class PatientAssessmentPageController extends BasePageController {
         break;
       case "help":
         this.showCurrentStep();
-        if(this.inputMode == "voice")
+        if(appSettings.inputMode == "voice")
           {
-            document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
-              detail: { language: 'en-US', timeout: steps[this.currentStepIndex].type === "next-of-kin" || steps[this.currentStepIndex].type === "adl" }
-            }));
+            this.setupTranscribeForVoiceCommmand(true, steps[this.currentStepIndex].type === "next-of-kin" || steps[this.currentStepIndex].type === "adl");
+
             this.isTranscribeActive = true;     
           }
           else{
             if(this.isTranscribeActive)
             {
-              document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
-                detail: { language: 'en-US' }
-              }));
+              this.setupTranscribeForVoiceCommmand(false);
+
               this.isTranscribeActive = false;
             }
           }
 
         break;
       case "acknowledge":
-        if(this.inputMode == "voice"){
-          document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
-            detail: { language: 'en-US' }
-          }));
+        if(appSettings.inputMode == "voice"){
+          this.setupTranscribeForVoiceCommmand(false);
+
           this.isTranscribeActive = false;
         }
 
-        this.actionBar.countdownAcknowledgeBtn(1, true);
+        this.actionBar.countdownAcknowledgeBtn(true);
         break;
     }
   }
 
   showCurrentStep() {
     if(!this.isActive) return;
+
+    //Clear user bubble to ready for next step
+    EventBus.emit(Events.CHAT_UPDATE, { otherText: "" });
+
 
     document.dispatchEvent(new CustomEvent('aws-reset-transcribe', {
 
@@ -191,10 +151,10 @@ export class PatientAssessmentPageController extends BasePageController {
     console.log(this.currentStepSpeak);
     if(!this.currentStepSpeak) this.speakStep(this.currentStepIndex);
 
-    this.actionBar.showBackBtn(this.currentStepIndex > 0);
-    this.actionBar.enableAcknowledgeBtn(false);
+    this.actionBar.update(this.currentStepIndex > 0, true, true);
+    this.actionBar.enableAcknowledge(false);
 
-    this.view.renderStep(this.language, step);
+    this.view.renderStep(appSettings.language, step);
   }
 
   nextStep() {
@@ -231,12 +191,12 @@ export class PatientAssessmentPageController extends BasePageController {
 
       // Find the matching option in current step
       const matched = step.options.find(option => {
-        const label = typeof option === 'object' ? option[this.language] : option;
+        const label = typeof option === 'object' ? option[appSettings.language] : option;
         return transcript.includes(this.normalize(label));
       });
 
       if (matched) {
-        const label = typeof matched === 'object' ? matched[this.language] : matched;
+        const label = typeof matched === 'object' ? matched[appSettings.language] : matched;
         
         // Find and click the matching button in DOM
         const buttons = document.querySelectorAll('.option-button');
@@ -244,13 +204,13 @@ export class PatientAssessmentPageController extends BasePageController {
           if (this.normalize(btn.textContent) === this.normalize(label)) {
             btn.click();
             console.log(`✅ Matched and selected: ${label}`);
+
+            this.setupTranscribeForVoiceCommmand(false);
             break;
           }
         }
       }
     }  
-
-    this.actionChatbot.handleTranscript(e.detail);
   }
 
   // Normalize strings
@@ -261,19 +221,64 @@ export class PatientAssessmentPageController extends BasePageController {
   onEnter() {
     super.onEnter();
     console.log('Patient Assessment page initialized');
+
     // Run animations, load data, start timers, etc.
     this.buildSpeechListFromSteps(steps);
+
+    //Show actionbar together with it
+    this.actionBar.show();
+
+    //Listen to its own view event
+    this.view.on("readyForAcknowledge", (e) => {
+      this.actionBar.enableAcknowledge(true);
+    });
+
+    this.view.on("quizAnswered", (e) => {
+      this.onQuizAnswered(e.detail);
+    })
+
+    //Listen to action bar controller event
+    this.actionBar.on("acknowledged", (e) => {
+      EventBus.emit(AvatarEvents.STOP, {});
+      this.nextStep();
+    });
+
+    this.actionBar.on("action-button-clicked", (e) => { 
+      this.handleActionBarClicked(e.detail);
+    })
 
     document.addEventListener("aws-transcribe-update", this.handleTranscribeEvent.bind(this));
     document.addEventListener("aws-transcribe-complete", this.handleTranscribeComplete.bind(this));
 
+    EventBus.on(Events.UPDATE_LANGUAGE, (e) => { this.onUpdateLanguage(e.detail); })
+    EventBus.on(Events.UPDATE_INPUTMODE, (e) => { this.onUpdateInputMode(e.detail); })
+    EventBus.on(AvatarEvents.SPEAK_COMPLETED, (e) => { this.onAvatarSpeakCompleted(e.detail); })
   }
 
   onExit() {
     super.onExit();
     console.log('Leaving Patient Assessment page');
-    // Cleanup, stop audio, etc.
+
+    //Hide the action bar together with it
     this.actionBar.hide();
+
+    //Remove listen to its own view event
+    this.view.off("readyForAcknowledge", (e) => {
+      this.actionBar.enableAcknowledge(true);
+    });
+
+    this.view.off("quizAnswered", (e) => {
+      this.onQuizAnswered(e.detail);
+    })
+
+    //Remove listen to action bar controller event
+    this.actionBar.off("acknowledged", (e) => {
+      this.nextStep();
+    });
+    this.actionBar.off("action-button-clicked", (e) => { 
+      this.handleActionBarClicked(e.detail);
+    })
+
     
     document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
       detail: { language: 'en-US' }
@@ -281,6 +286,10 @@ export class PatientAssessmentPageController extends BasePageController {
 
     document.removeEventListener("aws-transcribe-update", this.handleTranscribeEvent);
     document.removeEventListener("aws-transcribe-complete", this.handleTranscribeComplete);
+
+    EventBus.off(Events.UPDATE_LANGUAGE, (e) => { this.onUpdateLanguage(e.detail); })
+    EventBus.off(Events.UPDATE_INPUTMODE, (e) => { this.onUpdateInputMode(e.detail); })
+    EventBus.off(AvatarEvents.SPEAK_COMPLETED, (e) => { this.onAvatarSpeakCompleted(e.detail); })
   }
 
   async handleTranscribeComplete(e){
@@ -328,6 +337,8 @@ export class PatientAssessmentPageController extends BasePageController {
           if (this.normalize(btn.textContent) === this.normalize(data.output.choice)) {
             btn.click();
             console.log(`✅ Auto-selected: ${result}`);
+
+            this.setupTranscribeForVoiceCommmand(false);
             break;
           }
         }
@@ -365,8 +376,9 @@ export class PatientAssessmentPageController extends BasePageController {
         }
       });
   
-        // Trigger manual "keyup" event to check completeness
-        inputs.forEach(input => input.dispatchEvent(new Event('keyup')));
+      // Trigger manual "keyup" event to check completeness
+      inputs.forEach(input => input.dispatchEvent(new Event('keyup')));
+      this.setupTranscribeForVoiceCommmand(false);
     }
   }
 
@@ -393,7 +405,7 @@ export class PatientAssessmentPageController extends BasePageController {
     // Lowercase the first character if needed
     reason = reason.charAt(0).toLowerCase() + reason.slice(1);
 
-    return `You should select option ${choice} because ${reason}`;
+    return `I selected option '${choice}' because ${reason}`;
   }
 
   //To be put in a separated script
@@ -417,7 +429,7 @@ export class PatientAssessmentPageController extends BasePageController {
 
   buildSpeechListFromSteps(steps) {
     this.allStepSpeech = steps.map((step) => {
-      const lang = this.language;
+      const lang = appSettings.language;
       const q = step.question?.[lang] ?? "";
       
       if (Array.isArray(step.options)) {
@@ -439,4 +451,31 @@ export class PatientAssessmentPageController extends BasePageController {
     console.log(line.text);
     EventBus.emit(AvatarEvents.SPEAK, { message: line.text, gesture: line.gesture } );
   }
+
+  setupTranscribeForVoiceCommmand(enabled, timeout = false){
+    if(enabled)
+    {
+      //Listen to transcribe event
+      document.addEventListener("aws-transcribe-update", (e) => this.handleTranscribeEvent(e));
+      //Start transcribing
+
+
+      document.dispatchEvent(new CustomEvent('aws-update-timeout', {
+        detail: { timeout: timeout }
+      }));
+    }
+    else
+    {
+      //Remove transcribe listener
+      document.removeEventListener("aws-transcribe-update", (e) => this.handleTranscribeEvent(e));
+      //Stop transcribing
+      // document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
+      //   detail: { language: appSettings.language }
+      // }));
+      document.dispatchEvent(new CustomEvent('aws-reset-transcribe', {
+        detail: { }
+      }));
+    }
+  }
+  
 }

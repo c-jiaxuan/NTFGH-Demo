@@ -68,6 +68,7 @@ const PRELOAD_TIMEOUT = new Event('PRELOAD_TIMEOUT');
 const VOICE_TIMEOUT = new Event('VOICE_TIMEOUT');
 
 var currTimeout = null;
+let curSpeech = '';
 
 // Gender preset
 const female_Avatar = true;
@@ -112,6 +113,8 @@ function setupEventHandler(){
 
     EventBus.on(AvatarEvents.SPEAK, (e) => {
         console.log(e.detail);
+        curSpeech = e.detail["message"];
+        EventBus.emit(Events.CHAT_UPDATE, { ownText: `[Preparing speech]\n\n ${curSpeech}`});
         speak(e.detail["message"], e.detail["gesture"]);
     });
 
@@ -303,6 +306,8 @@ function initAIPlayerEvent() {
             break;
         case AIEventType.AICLIPSET_PLAY_STARTED:
             typeName = 'AICLIPSET_PLAY_STARTED';
+
+            EventBus.emit(Events.CHAT_UPDATE, { ownText: curSpeech });
 
             if(isNextSpeakRegistered){
                 isNextSpeakRegistered = false;

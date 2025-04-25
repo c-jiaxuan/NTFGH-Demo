@@ -16,6 +16,10 @@ export class BaseView {
         this.events.addEventListener(eventName, callback);
     }
 
+    off(eventName, callback) {
+        this.events.removeEventListener(eventName, callback);
+    }
+
     clearAllIntervals() {
         this.intervals.forEach(id => clearInterval(id));
         this.intervals = [];

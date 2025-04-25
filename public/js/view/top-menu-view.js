@@ -1,106 +1,87 @@
-import { EventBus, Events } from "../event-bus.js";
+import { BaseView } from './base-view.js';
+import { appSettings } from '../appSettings.js';
 
 const languageOptions = {
-    en: { 
-        label: "English", 
-        icon: "./img/icon/lang_en.png", 
-        homeLabel: "Home", 
-        inputModeLabels: { touch: "Touch", voice: "Voice" }
-    },
-    zh: { 
-        label: "中文", 
-        icon: "./img/icon/lang_zh.png", 
-        homeLabel: "主页", 
-        inputModeLabels: { touch: "触控", voice: "语音" }
-    },
+  en: {
+    label: "English",
+    icon: "./img/icon/lang_en.png",
+    homeLabel: "Home",
+    inputModeLabels: { touch: "Touch", voice: "Voice" },
+  },
+  zh: {
+    label: "中文",
+    icon: "./img/icon/lang_zh.png",
+    homeLabel: "主页",
+    inputModeLabels: { touch: "触控", voice: "语音" },
+  },
 };
 
 const inputModeOptions = {
-    touch: { icon: "./img/icon/tap_icon.png" },
-    voice: { icon: "./img/icon/speaking-icon.png" },
+  touch: { icon: "./img/icon/tap_icon.png" },
+  voice: { icon: "./img/icon/speaking-icon.png" },
 };
 
-let currentLanguage = 'en';
-let currentInputMode = 'voice';
+export class TopMenuView extends BaseView {
+  constructor(id) {
+    super(id);
 
-const homeButton        = document.getElementById('home-button');
-const languageStatus    = document.getElementById('language-status');
-const modeStatus        = document.getElementById('mode-status');
+    this.homeButton = document.getElementById('home-button');
+    this.languageStatus = document.getElementById('language-status');
+    this.modeStatus = document.getElementById('mode-status');
 
-function showHomeButton(isShown){
-    homeButton.style.visibility = isShown ? "visible" : "hidden";
-}
+    this.bindUI();
+  }
 
-function updateLanguageStatus(language){
-    currentLanguage = language;
+  bindUI() {
+    this.homeButton.addEventListener('click', () => this.emit("homeClicked"));
+    this.languageStatus.addEventListener('click', () => this.handleLanguageToggle());
+    this.modeStatus.addEventListener('click', () => this.handleInputModeToggle());
+  }
 
-    const langData = languageOptions[language];
+  showHomeButton(isShown) {
+    this.homeButton.style.visibility = isShown ? "visible" : "hidden";
+  }
 
-    // Update language icon and label
-    const img = languageStatus.querySelector(".button-icon");
-    const text = languageStatus.querySelector(".button-text");
+  updateLanguageStatus(lang) {
+    const langData = languageOptions[lang];
 
-    if (img)
-        img.src = langData.icon;
-    if (text)
-        text.innerHTML = langData.label;
+    // Icon + label
+    const icon = this.languageStatus.querySelector('.button-icon');
+    const text = this.languageStatus.querySelector('.button-text');
+    if (icon) icon.src = langData.icon;
+    if (text) text.innerHTML = langData.label;
 
-    // Update Home button text
-    const homeText = homeButton.querySelector(".button-text");
-    if (homeText)
-        homeText.innerHTML = langData.homeLabel;
+    // Home label
+    const homeText = this.homeButton.querySelector('.button-text');
+    if (homeText) homeText.innerHTML = langData.homeLabel;
 
-    // Update Input mode text
-    updateInputModeStatus(currentInputMode); // to refresh label in current language
-}
+    // Refresh input mode label in new language
+    this.updateInputModeStatus(appSettings.inputMode);
+  }
 
-function updateInputModeStatus(mode){
-    currentInputMode = mode;
-
-    const img = modeStatus.querySelector(".button-icon");
-    const text = modeStatus.querySelector(".button-text");
-
+  updateInputModeStatus(mode) {
     const modeData = inputModeOptions[mode];
-    const label = languageOptions[currentLanguage].inputModeLabels[mode];
+    const label = languageOptions[appSettings.language].inputModeLabels[mode];
 
-    if (img)
-        img.src = modeData.icon;
-    if (text)
-        text.innerHTML = label;
-}
+    const icon = this.modeStatus.querySelector('.button-icon');
+    const text = this.modeStatus.querySelector('.button-text');
+    if (icon) icon.src = modeData.icon;
+    if (text) text.innerHTML = label;
+  }
 
-homeButton.addEventListener('click', () => {
-    EventBus.emit(Events.HOME_PRESS);
-});
-
-languageStatus.addEventListener('click', () => { 
-    toggleLanguage();
-});
-
-function toggleLanguage()
-{
+  handleLanguageToggle() {
     const keys = Object.keys(languageOptions);
-    const index = keys.indexOf(currentLanguage);
+    const index = keys.indexOf(appSettings.language);
     const nextLang = keys[(index + 1) % keys.length];
-    updateLanguageStatus(nextLang);
-    EventBus.emit(Events.UPDATE_LANGUAGE, nextLang);
-}
+    this.updateLanguageStatus(nextLang);
+    this.emit("languageChanged", nextLang);
+  }
 
-modeStatus.addEventListener('click', () => { 
-    toggleInput();
-});
-
-function toggleInput()
-{
+  handleInputModeToggle() {
     const keys = Object.keys(inputModeOptions);
-    const index = keys.indexOf(currentInputMode);
+    const index = keys.indexOf(appSettings.inputMode);
     const nextMode = keys[(index + 1) % keys.length];
-    updateInputModeStatus(nextMode);
-    EventBus.emit(Events.UPDATE_INPUTMODE, nextMode);
+    this.updateInputModeStatus(nextMode);
+    this.emit("inputModeChanged", nextMode);
+  }
 }
-
-export default {
-    showHomeButton,
-    updateInputModeStatus,
-    updateLanguageStatus
-};

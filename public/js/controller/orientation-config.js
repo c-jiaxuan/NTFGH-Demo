@@ -28,7 +28,7 @@ export const steps = [
                 <li>When we issue documents to you</li>
             </ul>`,
         imgSrc: './img/orientation/ID_Card.png',
-        avatarSpeech: 'Here’s how we verify your identity using two identifiers.',
+        avatarSpeech: 'Here’s how we verify your identity using two-patient identifiers.',
         translations: {
           zh: {
             title: '使用双重身份验证',

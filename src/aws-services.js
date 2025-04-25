@@ -163,7 +163,7 @@ class AwsController {
 
     onTranscribeComplete = async (finalTranscribedText) => {
       console.log(`onTranscribeComplete ${finalTranscribedText}`);
-      transcriber.stopTranscribe();
+      //transcriber.stopTranscribe();
 
       document.dispatchEvent(new CustomEvent("aws-transcribe-complete", {
         detail: finalTranscribedText
@@ -171,6 +171,7 @@ class AwsController {
 
       this.transcribingText = '';
       this.partialText = '';
+      this.hasTimeout = false;
 
       clearTimeout(this.timeout);
     }
@@ -209,6 +210,11 @@ document.addEventListener('aws-start-transcribe', async (e) => {
   const { language, timeout } = e.detail;
   awsController.hasTimeout = timeout;
   await transcriber.startTranscribe(languageMap[language]);
+});
+
+document.addEventListener('aws-update-timeout', async (e) => {
+  const { timeout } = e.detail;
+  awsController.hasTimeout = timeout;
 });
 
 document.addEventListener('aws-reset-transcribe', async (e) => {

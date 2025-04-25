@@ -25,6 +25,7 @@ const SAMPLE_RATE = 44100;
 let microphoneStream = undefined;
 /** @type {TranscribeStreamingClient | undefined} */
 let transcribeClient = undefined;
+let streamingActive = false;
 
 export const startRecording = async (language, callback) => {
   if (!language) {
@@ -34,18 +35,27 @@ export const startRecording = async (language, callback) => {
     stopRecording();
   }
   createTranscribeClient();
-  createMicrophoneStream();
+  try {
+    await createMicrophoneStream(); // Wait for this to finish successfully
+  } catch (err) {
+    console.error("Failed to initialize mic:", err.message);
+    throw err; // Or notify UI with a friendly message
+  }
+
   await startStreaming(language, callback);
 };
 
 export const stopRecording = function () {
+  streamingActive = false;
+
   if (microphoneStream) {
     microphoneStream.stop();
     microphoneStream.destroy();
     microphoneStream = undefined;
   }
+
   if (transcribeClient) {
-    transcribeClient.destroy();
+    transcribeClient.destroy(); // closes WebSocket
     transcribeClient = undefined;
   }
 };
@@ -95,12 +105,19 @@ const handleMicrophoneError = (error) => {
 };
 
 const startStreaming = async (language, callback) => {
+  if (!microphoneStream) {
+    throw new Error("Cannot get audio stream. Microphone not initialized.");
+  }
+
   const command = new StartStreamTranscriptionCommand({
     LanguageCode: language,
     MediaEncoding: "pcm",
     MediaSampleRateHertz: SAMPLE_RATE,
     AudioStream: getAudioStream(),
   });
+  
+  streamingActive = true;
+
   const data = await transcribeClient.send(command);
   // for await (const event of data.TranscriptResultStream) {
   //   for (const result of event.TranscriptEvent.Transcript.Results || []) {
@@ -130,7 +147,8 @@ const getAudioStream = async function* () {
     );
   }
 
-  for await (const chunk of /** @type {[][]} */ (microphoneStream)) {
+  for await (const chunk of microphoneStream) {
+    if (!streamingActive) break; // Stop if user called stopRecording()
     if (chunk.length <= SAMPLE_RATE) {
       yield {
         AudioEvent: {

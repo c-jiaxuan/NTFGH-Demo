@@ -7,7 +7,8 @@ export const Events = {
     GETTING_START_PRESS: 'app:getting-started-pressed',
     START_ORIENTATION: 'main:start-orientation',
     START_PATIENT_ASSESSMENT: 'main:start-assessment',
-    START_DELIVERY: 'main:start-deliver',    
+    START_DELIVERY: 'main:start-deliver',
+    CHAT_UPDATE: 'chat:update',
 };
 
 export const AvatarEvents = {
