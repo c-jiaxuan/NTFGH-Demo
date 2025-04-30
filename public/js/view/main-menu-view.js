@@ -8,13 +8,13 @@ export class MainMenuView extends BaseView {
 
         this.labels = {
             en: { 
-                title: "Welcome to Ng Teng Fong General Hospital", 
+                title: "Welcome", 
                 guide: "What can i do for you today?", 
                 chat: "Chat", 
                 gettingStarted: "Getting Started", 
                 delivery: "Delivery" },
             zh: {
-                title: "欢迎来到黄廷方综合医院",
+                title: "欢迎",
                 guide: "我今天可以为您做些什么？",
                 chat: "聊天",
                 gettingStarted: "入门指南",

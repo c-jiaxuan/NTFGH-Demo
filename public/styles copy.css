@@ -9,7 +9,7 @@ body {
 
 body::before {
     content: "";
-    background: url('./img/ntfgh_lobby.png') no-repeat center center;
+    background: url('./img/HTX.jpg') no-repeat center center;
     background-size: cover;
     position: absolute;
     top: 0;
@@ -42,7 +42,7 @@ body::before {
 }
 
 .logo-container img {
-    width: 300px;
+    width: 125px;
     height: auto;
     pointer-events: none; 
 }
