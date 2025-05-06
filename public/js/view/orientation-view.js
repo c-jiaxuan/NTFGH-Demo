@@ -162,5 +162,11 @@ export class OrientationView extends BaseView {
             quizContainer.appendChild(optionsWrapper);
             this.contentBlock.appendChild(quizContainer);
         }
+
+        setCurrentStep(minorStep.type, major, minor);
     }
+}
+
+function setCurrentStep(type, stepIndex, substepIndex) {
+    localStorage.setItem('currentStep', JSON.stringify({type, stepIndex, substepIndex}));
 }

@@ -41,7 +41,7 @@
 <body>
   <div id="container">
     <img id="stepImage" class="hidden" />
-    <video id="stepVideo" class="hidden" autoplay muted playsinline></video>
+    <video id="stepVideo" class="hidden" muted playsinline></video>
   </div>
 
   <script type="module">
@@ -67,10 +67,11 @@
 
         let countdown = 3;
         const countdownInterval = setInterval(() => {
+          console.log('countdown = ' + countdown);
           countdown--;
           //countdownText.textContent = "Video is starting in " + countdown;
-    
-          if (countdown <= 0) {
+          
+          if (countdown <= 1) {
             clearInterval(countdownInterval);
             setTimeout(() => {
                 //stepVideo.requestFullscreen().catch(() => {});
