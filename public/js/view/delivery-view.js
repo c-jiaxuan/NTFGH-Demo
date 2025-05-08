@@ -25,8 +25,10 @@ export class DeliveryView extends BaseView {
 
     showSelection(){
         this.selectionView.style.display = 'grid';
-        this.deliveringView.style.display = 'none';
-        this.deliveredView.style.display = 'none';
+        // this.deliveringView.style.display = 'none';
+        // this.deliveredView.style.display = 'none';
+        this.deliveringView.classList.add('hidden');
+        this.deliveredView.classList.add('hidden');
         this.deliveryStatus.innerHTML = 'Please select what you require to be delivered.';
 
         this.buttons.forEach(button => button.classList.remove("selected"));
@@ -34,13 +36,17 @@ export class DeliveryView extends BaseView {
 
     showDelivering(){
         this.deliveryStatus.innerHTML = 'Please while your items are being delivered.';
-        this.selectionView.style.display = 'none';
-        this.deliveringView.style.display = 'block';
+        // this.selectionView.style.display = 'none';
+        // this.deliveringView.style.display = 'flex';
+        this.selectionView.classList.add('hidden');
+        this.deliveringView.classList.remove('hidden');
     }
 
     showDelivered(){
         this.deliveryStatus.innerHTML = 'Items are delivered. Please check and confirm.';
-        this.deliveringView.style.display = 'none';
-        this.deliveredView.style.display = 'block';
+        // this.deliveringView.style.display = 'none';
+        // this.deliveredView.style.display = 'flex';
+        this.deliveringView.classList.add('hidden');
+        this.deliveredView.classList.remove('hidden');
     }
 }
