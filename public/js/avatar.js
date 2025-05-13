@@ -45,7 +45,7 @@ class AI_Message {
 }
   
 let botMessages = {};   // Dictionary to store all preset bot messages
-botMessages["start_msg"] = [new AI_Message("Welcome to Ng Teng Fong General Hospital! How can I help you today?", "G05")
+botMessages["start_msg"] = [new AI_Message("Welcome to Panasonic! How can I help you today?", "G05")
 ];
 // botMessages["orientation"] = [new AI_Message("We would like to introduce to you the Care Team.", "G02"),
 //     new AI_Message("Please watch this video")
