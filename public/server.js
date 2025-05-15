@@ -2,17 +2,22 @@ import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { handler } from '../pages/api/extract.js'
 import crypto from 'crypto';
+// import dotenv from 'dotenv';
+// dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const clients = [];
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
     if (req.url === '/test') {
       serveFile('test.html', 'text/html', res);
     } else if (req.url === '/hosPi') {
       serveFile('hosPi-body.html', 'text/html', res);
+    } else if (req.url === '/api/extract') {
+      return await handler(req, res);
     } else {
       serveStaticFile(req, res);
     }

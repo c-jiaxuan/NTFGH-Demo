@@ -8,7 +8,7 @@ export const steps = [
       {
         title: 'Introduction',
         type: 'video',
-        src: './vid/stock_video_1.mp4',
+        src: './vid/step1-1.mp4',
         avatarSpeech: '',
         translations: {
           zh: {

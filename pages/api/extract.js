@@ -1,42 +1,60 @@
-import OpenAI from "openai";
+import https from "https";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; // dev only
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; // 👈 Add this at the top ONLY for development
+const agent = new https.Agent({ rejectUnauthorized: false });
 
-export default async function handler(req, res) {
+export async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const { transcript } = req.body;
+  let body = '';
+  req.on('data', chunk => {
+    body += chunk;
+  });
 
-  if (!process.env.OPENAI_API_KEY) {
-    return res.status(500).json({ error: "Missing OpenAI API key" });
-  }
+  req.on('end', async () => {
+    try {
+      const parsedBody = JSON.parse(body);
+      const { transcript } = parsedBody;
 
-  try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content:
-            "Extract name, relationship, phone number, and address from the user’s sentence. Return a JSON object with keys: name, relationship, phone_number, address.",
+      const agent = new https.Agent({ rejectUnauthorized: false });
+
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
         },
-        {
-          role: "user",
-          content: transcript,
-        },
-      ],
-    });
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            {
+              role: "system",
+              content:
+                "Extract name, relationship, phone number, and address from the user’s sentence. Return a JSON object with keys: name, relationship, phone_number, address.",
+            },
+            {
+              role: "user",
+              content: transcript,
+            },
+          ],
+        }),
+        agent,
+      });
 
-    const content = completion.choices[0].message.content;
-    res.status(200).json(JSON.parse(content));
-  } catch (err) {
-    console.error("🔥 OpenAI Error:", err);
-    res.status(500).json({ error: "OpenAI request failed" });
-  }
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content || "{}";
+      const extracted = JSON.parse(content);
+
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(extracted));
+    } catch (err) {
+      console.error("🔥 Handler error:", err);
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Internal Server Error" }));
+    }
+  });
 }
+
