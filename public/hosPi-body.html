@@ -115,6 +115,8 @@
             console.log(type, stepIndex, substepIndex);
             updateDisplay(type, stepIndex, substepIndex);
           } else if (data.eventType === 'DEFAULT' || data === 'DEFAULT') {
+            stepVideo.classList.add('hidden');
+            stepImage.classList.remove('hidden');
             stepImage.src = "./img/idle-poster.png";
           }
         } catch (err) {
