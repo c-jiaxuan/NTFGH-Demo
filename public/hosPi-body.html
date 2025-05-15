@@ -110,20 +110,12 @@
               if (!stepVideo.classList.contains('hidden')) {
                 stepVideo.play();
               }
-          }
-        } catch (err) {
-          console.error('Failed to parse WebSocket message:', event.data, err);
-        }
-    });
-
-    ws.addEventListener('message', (event) => {
-      try {
-          const stepData = JSON.parse(event.data);
-          console.log('Recieved: ' + stepData);
-          if (stepData.eventType === 'STEP') {
-            const { type, stepIndex, substepIndex } = stepData;
+          } else if (data.eventType === 'STEP') {
+            const { type, stepIndex, substepIndex } = data;
             console.log(type, stepIndex, substepIndex);
             updateDisplay(type, stepIndex, substepIndex);
+          } else if (data.eventType === 'DEFAULT' || data === 'DEFAULT') {
+            stepImage.src = "./img/idle-poster.png";
           }
         } catch (err) {
           console.error('Failed to parse WebSocket message:', event.data, err);

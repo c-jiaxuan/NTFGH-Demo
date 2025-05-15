@@ -31,32 +31,6 @@ export const steps = [
       ]
     },
     {
-      type: "adl",
-      question: {
-        en: "Do you need any help with meals or feeding?",
-        zh: "您是否需要在进餐或喂食方面的协助？"
-      },
-      options: [
-        { en: "Independant", zh: "独立" },
-        { en: "Needs assistance", zh: "需要协助" },
-        { en: "Dependant", zh: "完全依赖" },
-        { en: "Unable to assess", zh: "无法评估" }
-      ]
-    },
-    {
-      type: "adl",
-      question: {
-        en: "Do you need any help with toileting/bathing?",
-        zh: "您是否需要如厕或洗澡方面的协助？"
-      },
-      options: [
-        { en: "Independant", zh: "独立" },
-        { en: "Needs assistance", zh: "需要协助" },
-        { en: "Dependant", zh: "完全依赖" },
-        { en: "Unable to assess", zh: "无法评估" }
-      ]
-    },
-    {
       type: "next-of-kin",
       question: {
         en: "Please provide details for your next-of-kin.",
