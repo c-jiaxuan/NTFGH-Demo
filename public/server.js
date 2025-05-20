@@ -2,7 +2,7 @@ import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { handler } from '../pages/api/extract.js'
+import { handler, gramanerHandler } from '../pages/api/extract.js'
 import crypto from 'crypto';
 // import dotenv from 'dotenv';
 // dotenv.config();
@@ -18,6 +18,8 @@ const server = http.createServer(async (req, res) => {
       serveFile('hosPi-body.html', 'text/html', res);
     } else if (req.url === '/api/extract') {
       return await handler(req, res);
+    } else if (req.url === '/api/gramanerHandler') {
+      return await gramanerHandler(req, res);
     } else {
       serveStaticFile(req, res);
     }

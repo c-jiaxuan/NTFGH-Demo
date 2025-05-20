@@ -427,6 +427,29 @@ export class PatientAssessmentPageController extends BasePageController {
     }
   }
 
+  async callGramanerHandler(transcript) {
+  const response = await fetch('/api/gramanerHandler', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      entities: ['name', 'age', 'location', 'relationship', 'phone_number'],
+      input: transcript
+    }),
+  });
+
+  if (!response.ok) {
+    console.error('Gramaner extract API call failed');
+    EventBus.emit(AvatarEvents.SPEAK, {message:"I am not sure what you have sent, please try again.", gesture: ""});
+    return null;
+  }
+
+  const data = await response.json();
+  console.log('Extracted Entities:', data);
+}
+
+
   buildSpeechListFromSteps(steps) {
     this.allStepSpeech = steps.map((step) => {
       const lang = appSettings.language;
