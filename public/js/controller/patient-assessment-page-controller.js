@@ -452,6 +452,13 @@ export class PatientAssessmentPageController extends BasePageController {
 
     const data = await response.json();
     console.log('Extracted Entities:', data);
+
+    // If any entries are empty, flag response as failed, so Avatar can prompt for another input
+    if (data.name == null || data.relationship == null || data.address == 'null' || data.phone_number == 'null') {
+      console.error('Gramaner extract API call failed');
+      EventBus.emit(AvatarEvents.SPEAK, {message:"I am not sure what you have sent, please try again.", gesture: ""});
+      return null;
+    }
     return data;
   }
 
