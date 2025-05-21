@@ -352,8 +352,12 @@ export class PatientAssessmentPageController extends BasePageController {
     }
     else if (step.type == "next-of-kin")
     {
-      const result = await this.extractInfoFromSpeech(transcript);
-      if (!result) return;
+      //const result = await this.extractInfoFromSpeech(transcript);
+      const result = await this.callGramanerHandler(transcript);
+      if (!result) {
+        console.log('Error: GramanerHandler No results recieved');
+        return;
+      };
 
       console.log("✅ Extracted Next-of-Kin Info:", result);
 
@@ -409,6 +413,7 @@ export class PatientAssessmentPageController extends BasePageController {
   }
 
   //To be put in a separated script
+  // UNUSED
   async extractInfoFromSpeech(transcript) {
     try {
       const res = await fetch("/api/extract", {
@@ -425,6 +430,29 @@ export class PatientAssessmentPageController extends BasePageController {
       EventBus.emit(AvatarEvents.SPEAK, {message:"I am not sure what you have sent, please try again.", gesture: ""});
       return null;
     }
+  }
+
+  async callGramanerHandler(transcript) {
+    const response = await fetch('/api/gramanerExtract', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        entities: ['name', 'address', 'relationship', 'phone_number'],
+        input: transcript
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Gramaner extract API call failed');
+      EventBus.emit(AvatarEvents.SPEAK, {message:"I am not sure what you have sent, please try again.", gesture: ""});
+      return null;
+    }
+
+    const data = await response.json();
+    console.log('Extracted Entities:', data);
+    return data;
   }
 
   buildSpeechListFromSteps(steps) {
