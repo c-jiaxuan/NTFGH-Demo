@@ -18,7 +18,7 @@ const server = http.createServer(async (req, res) => {
       serveFile('hosPi-body.html', 'text/html', res);
     } else if (req.url === '/api/extract') {
       return await handler(req, res);
-    } else if (req.url === '/api/gramanerHandler') {
+    } else if (req.url === '/api/gramanerExtract') {
       return await gramanerHandler(req, res);
     } else {
       serveStaticFile(req, res);
