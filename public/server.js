@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { handler, gramanerHandler } from '../pages/api/extract.js'
+import { gramanerSimilarity, gramanerSummarize } from '../pages/api/llm.js';
 import crypto from 'crypto';
 // import dotenv from 'dotenv';
 // dotenv.config();
@@ -20,6 +21,12 @@ const server = http.createServer(async (req, res) => {
       return await handler(req, res);
     } else if (req.url === '/api/gramanerExtract') {
       return await gramanerHandler(req, res);
+    } else if (req.url === '/api/gramanerSimilarity') {
+      return await gramanerSimilarity(req, res);
+    } else if (req.url === '/api/gramanerSummarize') {
+      return await gramanerSummarize(req, res);
+    } else if (req.url === '/api/gramanerClassify') {
+      // Gramaner classify function call
     } else {
       serveStaticFile(req, res);
     }

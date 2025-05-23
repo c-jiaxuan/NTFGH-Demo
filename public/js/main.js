@@ -7,6 +7,7 @@ import { OrientationPageController } from './controller/orientation-page-control
 import { GettingStartedPageController } from "./controller/getting-started-controller.js";
 import { PatientAssessmentPageController } from './controller/patient-assessment-page-controller.js';
 import { DeliverPageController } from './controller/deliver-page-controller.js';
+import { ChatbotPageController } from "./controller/chatbot-page-controller.js";
 
 import { TopMenuView } from "./view/top-menu-view.js";
 
@@ -19,7 +20,8 @@ const pages = {
   gettingStarted : new GettingStartedPageController("getting-started-page"),
   orientation: new OrientationPageController("orientation-page"),
   assessment: new PatientAssessmentPageController("patient-assessment-page"),
-  delivery: new DeliverPageController("delivery-page")
+  delivery: new DeliverPageController("delivery-page"),
+  chatbot: new ChatbotPageController("chatbot-page"),
 };
 
 const topMenuView = new TopMenuView('top-bar-container');
@@ -70,6 +72,10 @@ EventBus.on(Events.HOME_PRESS, () => {
 EventBus.on(Events.SETTING_PRESS, () => {
   switchPage("settings");
   pages["settings"].init(appSettings.inputMode, appSettings.language);
+});
+EventBus.on(Events.CHATBOT_PRESS, () => {
+  switchPage("chatbot");
+  pages["chatbot"].start();
 });
 EventBus.on(Events.GETTING_START_PRESS, () => {
   switchPage("gettingStarted");

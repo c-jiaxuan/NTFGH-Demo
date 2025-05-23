@@ -25,6 +25,7 @@ export class MainMenuPageController extends BasePageController {
   handleSubpageSwitch(key) {
     switch (key){
       case "chat":
+        EventBus.emit(Events.CHATBOT_PRESS);
         break;
       case "gettingStarted":
         EventBus.emit(Events.GETTING_START_PRESS);

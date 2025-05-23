@@ -7,7 +7,7 @@ import { appSettings } from '../appSettings.js';
 export class ActionBarController extends BasePageController {
   constructor(id){
     const view = new ActionBarView(id);
-    super(id, view);    
+    super(id, view);
 
     this.actionChatbot = new ActionBarChatbot(this.view);
 

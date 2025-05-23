@@ -9,6 +9,7 @@ export const Events = {
     START_PATIENT_ASSESSMENT: 'main:start-assessment',
     START_DELIVERY: 'main:start-deliver',
     CHAT_UPDATE: 'chat:update',
+    CHATBOT_PRESS: 'app:chatbot-pressed',
 };
 
 export const AvatarEvents = {
