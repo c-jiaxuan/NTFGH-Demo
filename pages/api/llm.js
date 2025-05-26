@@ -92,7 +92,7 @@ async function sendToSummarize(message, result) {
     //Setup request body
     const payload = {
         "app": bot_app,
-        "q": message + ". Answer in 2 full and very short sentences. Don't put the title in front.",
+        "q": message + ". Answer in 2 full and very short sentences. Don't put the title in front. Add followup questions",
         "context": result.matches
                 .slice(0, maxSelected)
                 .map((d, i) => `DOC_ID: ${i + 1}\nTITLE: ${d.metadata.h1}\n${d.page_content}\n`)

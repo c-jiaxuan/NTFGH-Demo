@@ -43,26 +43,82 @@ export class ChatbotView extends BaseView {
         });
     }
 
-    displayMessage(sender, text) {
-        const messageWrapper = document.createElement("div");
-        messageWrapper.classList.add("message", sender.toLowerCase());
+    //
+    // content is in JSON format
+    //
+    displayMessage(sender, content = {}) {
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("message", sender.toLowerCase());
 
         const bubble = document.createElement("span");
-        bubble.textContent = text;
+
+        if (content.image) {
+            const img = document.createElement("img");
+            img.src = content.image;
+            img.classList.add("chat-image");
+            bubble.appendChild(img);
+        }
+
+        if (content.video) {
+            const video = document.createElement("video");
+            video.src = content.video;
+            video.controls = true;
+            video.classList.add("chat-media");
+            bubble.appendChild(video);
+        }
+
+        if (content.audio) {
+            const audio = document.createElement("audio");
+            audio.src = content.audio;
+            audio.controls = true;
+            audio.classList.add("chat-media");
+            bubble.appendChild(audio);
+        }
+
+        if (content.file) {
+            const fileLink = document.createElement("a");
+            fileLink.href = content.file;
+            fileLink.textContent = "📎 Download File";
+            fileLink.classList.add("chat-file");
+            bubble.appendChild(fileLink);
+        }
+
+        if (content.text) {
+            const text = document.createElement("div");
+            text.classList.add("chat-text");
+            text.innerHTML = marked.parse(content.text);
+            bubble.appendChild(text);
+        }
+
+        if (content.buttons) {
+            const buttonContainer = document.createElement("div");
+            buttonContainer.classList.add("chat-buttons");
+
+            // Add listening logic inside
+            content.buttons.forEach((btn) => {
+                const button = document.createElement("button");
+                button.textContent = btn.label;
+                button.classList.add("chat-button");
+                button.onclick = () => {
+                    this.handleUserInput(btn.label);
+                };
+                buttonContainer.appendChild(button);
+            });
+            bubble.appendChild(buttonContainer);
+        }
 
         const timestamp = document.createElement("div");
         timestamp.className = "message-time";
-        const now = new Date();
-        const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const date = now.toLocaleDateString();
-        timestamp.textContent = `${date} ${time}`;
+        timestamp.textContent = new Date().toLocaleString();
 
-
-        messageWrapper.appendChild(bubble);
-        messageWrapper.appendChild(timestamp);
-
-        this.chatLog.appendChild(messageWrapper);
+        messageElement.appendChild(bubble);
+        messageElement.appendChild(timestamp);
+        this.chatLog.appendChild(messageElement);
         this.chatLog.scrollTop = this.chatLog.scrollHeight;
+    }
+
+    setUserInputHandler(handler) {
+        this.handleUserInput = handler;
     }
 
     displayBotLoading() {
@@ -89,7 +145,6 @@ export class ChatbotView extends BaseView {
             this.loadingElement = null;
         }
     }
-
 
     setLanguage(language) {
         console.log('Setting Language: ' + language);

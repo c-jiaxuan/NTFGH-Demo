@@ -102,7 +102,7 @@ export class ChatModel {
                 results: this.result
             };
 
-            console.log('Sending to Summarize: ' + JSON.stringify(payload));
+            // console.log('Sending to Summarize: ' + JSON.stringify(payload));
 
             const response = await fetch('/api/gramanerSummarize', {
                 method: 'POST',
@@ -143,7 +143,7 @@ export class ChatModel {
             console.log("Cleaned Summary Content:", messageContent);
             console.log("Extracted Follow-Up Questions:", followUpQuestions);
 
-            return messageContent;
+            return { content: messageContent, followUp: followUpQuestions };
         } catch (error) {
             console.error('Summarize API Error:', error);
             return "An error occurred while summarizing.";

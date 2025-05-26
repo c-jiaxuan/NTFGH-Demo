@@ -758,27 +758,103 @@ button:hover {
   font-size: 32px;
   margin-bottom: 10px;
 }
+
 .message.user {
   text-align: right;
 }
+
 .message.bot {
   text-align: left;
 }
+
 .message span {
   display: inline-block;
   padding: 10px;
   border-radius: 10px;
 }
+
 .message.user span {
   background: #ffffff;
   color: rgb(32, 32, 32);
 }
+
 .message.bot span {
   background: #003d99;
   color: rgb(255, 255, 255);
 }
+
 .message-time {
   font-size: 18px;
   color: #888;
-  margin-top: 2px;
+  margin-top: 8px;
+}
+
+.chat-text {
+  font-size: 32px;
+  line-height: 1.5;
+  color: inherit;
+}
+
+.chat-text strong {
+  font-weight: bold;
+}
+
+.chat-text em {
+  font-style: italic;
+}
+
+.chat-text a {
+  color: #ffd369;
+  text-decoration: underline;
+}
+
+.chat-text ul, .chat-text ol {
+  padding-left: 20px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.chat-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.chat-media {
+  max-width: 100%;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  display: block;
+}
+
+.chat-file {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #fff;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.chat-buttons {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chat-button {
+  padding: 8px 16px;
+  font-size: 24px;
+  border: none;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #000000;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.chat-button:hover {
+  background-color: #e6f7fc;
 }

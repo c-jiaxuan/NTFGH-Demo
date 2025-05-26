@@ -14,6 +14,10 @@ export class ChatbotPageController extends BasePageController {
         this.view.setLanguage(appSettings.language);
     
         this.view.bindSend(this.handleSend.bind(this));
+
+        this.view.setUserInputHandler(this.handleSend.bind(this));
+
+        this.isTranscribeActive = false;
     
         EventBus.on(Events.UPDATE_LANGUAGE, (e) => { this.onUpdateLanguage(e.detail); })
     }
@@ -31,22 +35,33 @@ export class ChatbotPageController extends BasePageController {
 
     async handleSend(userInput) {
         // Show user message
-        this.model.addMessage("User", userInput);
-        this.view.displayMessage("User", userInput);
+        this.model.addMessage("User", { text: userInput });
+        this.view.displayMessage("User", { text: userInput });
 
         // Show typing/loading bubble
         this.view.displayBotLoading();
 
         // Wait for LLM reply
-        const botText = await this.model.getBotResponse(userInput);
+        const { content, followUp} = await this.model.getBotResponse(userInput);
+
+        // Map followUp items to button objects
+        var buttons = followUp.map((label, index) => ({
+            label: label,
+            value: `option_${index}` // You can customize this value as needed
+        }));
+
+        var messageContent = {
+            text: content,
+            image: "../../img/gmaps_panasonic.png",
+            buttons: buttons
+        }
 
         // Remove loading
         this.view.removeBotLoading();
 
         // Show actual bot response
-        this.view.displayMessage("Bot", botText);
+        this.view.displayMessage("Bot", messageContent);
     }
-
 
     onEnter() {
         super.onEnter();
@@ -66,8 +81,9 @@ export class ChatbotPageController extends BasePageController {
 
     start() {
         const welcomeMsg = this.getTranslatedMessage('start_msg', 'en'); // or 'zh'
-        this.model.addMessage("Bot", welcomeMsg);
-        this.view.displayMessage("Bot", welcomeMsg);
+
+        this.model.addMessage("Bot", { text: welcomeMsg });
+        this.view.displayMessage("Bot", { text: welcomeMsg });
     }
 
     onUpdateLanguage(language) {
