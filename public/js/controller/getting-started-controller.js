@@ -1,7 +1,7 @@
 import { BasePageController } from './base-page-controller.js';
 import { GettingStartedView } from '../view/getting-started-view.js';
 import { EventBus, Events } from '../event-bus.js';
-import { appSettings } from '../appSettings.js';
+import { appSettings } from '../config/appSettings.js';
 
 export class GettingStartedPageController extends BasePageController {
   constructor(id){

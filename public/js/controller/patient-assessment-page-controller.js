@@ -3,7 +3,7 @@ import { PatientAssessmentView } from '../view/patient-assessment-view.js';
 import { AvatarEvents, EventBus, Events } from '../event-bus.js';
 import { steps } from './assessment-config.js';
 import { ActionBarController } from './action-bar-controller.js';
-import { appSettings } from '../appSettings.js';
+import { appSettings } from '../config/appSettings.js';
 
 
 export class PatientAssessmentPageController extends BasePageController {

@@ -1,7 +1,7 @@
 import { BasePageController } from './base-page-controller.js';
 import { MainMenuView } from '../view/main-menu-view.js';
 import { EventBus, Events } from '../event-bus.js';
-import { appSettings } from '../appSettings.js';
+import { appSettings } from '../config/appSettings.js';
 import { send } from '../client.js'
 
 export class MainMenuPageController extends BasePageController {

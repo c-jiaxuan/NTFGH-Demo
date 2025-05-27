@@ -1,15 +1,6 @@
-import https from "https";
+import { llm_config } from '../../public/js/config/llm-config.js'
 
-var bot_app = "sgroots"; // Don't change this
-var bot_tone = "Succinct"; // Professional, Casual, Enthusiastic, Informational, Funny, Succinct
-var bot_format = "Summary"; // Summary, Report, Bullet Points, LinkedIn Post, Email
 var bot_language = "English";
-var bot_followup = true;
-
-var llm_summarise_api_url = 'https://gramener.com/docsearch/summarize';
-var llm_similarity_api_url = 'https://gramener.com/docsearch/similarity';
-
-const maxSelected = 10;
 
 export async function gramanerSimilarity(req, res) {
     let body = '';
@@ -17,6 +8,7 @@ export async function gramanerSimilarity(req, res) {
     req.on('end', async () => {
         try {
             const { input } = JSON.parse(body);
+
             const response = await sendToSimilarity(input);
 
             res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -33,8 +25,8 @@ export async function gramanerSummarize(req, res) {
     req.on('data', chunk => body += chunk);
     req.on('end', async () => {
         try {
-            const { input, results } = JSON.parse(body);
-            const response = await sendToSummarize(input, results);
+            const { input, results, lang } = JSON.parse(body);
+            const response = await sendToSummarize(input, results, lang);
 
             res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ response }));
@@ -55,7 +47,7 @@ async function sendToSimilarity(message) {
         return;
     }
 
-    var queryString = llm_similarity_api_url + "?app=" + bot_app + "&q=" + message + "&k=" + maxSelected;
+    var queryString = llm_config.llm_similarity_api_url + "?app=" + llm_config.bot_app + "&q=" + message + "&k=" + llm_config.maxSelected;
     console.log("LLM API: Similarity queryString = " + queryString);
 
     try {
@@ -82,7 +74,7 @@ async function sendToSimilarity(message) {
 // Send user question to LLMs => retrieve and process the response
 // message = user's message
 // result = result from the similarity API call used to build a context to the user's message
-async function sendToSummarize(message, result) {
+async function sendToSummarize(message, result, lang) {
 
     // Display processing status
 
@@ -91,21 +83,21 @@ async function sendToSummarize(message, result) {
 
     //Setup request body
     const payload = {
-        "app": bot_app,
+        "app": llm_config.bot_app,
         "q": message + ". Answer in 2 full and very short sentences. Don't put the title in front. Add followup questions",
         "context": result.matches
-                .slice(0, maxSelected)
+                .slice(0, llm_config.maxSelected)
                 .map((d, i) => `DOC_ID: ${i + 1}\nTITLE: ${d.metadata.h1}\n${d.page_content}\n`)
                 .join("\n"),
-        "Followup": bot_followup,
-        "Tone": bot_tone,
-        "Format": bot_format,
-        "Language": bot_language
+        "Followup": llm_config.bot_followup,
+        "Tone": llm_config.bot_tone,
+        "Format": llm_config.bot_format,
+        "Language": lang
     };
     
     try {
         console.log("LLM API: Summarize fetching API...");
-        const response = await fetch(llm_summarise_api_url, {
+        const response = await fetch(llm_config.llm_summarise_api_url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

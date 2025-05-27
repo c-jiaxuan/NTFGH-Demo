@@ -1,5 +1,5 @@
 import { BaseView } from './base-view.js';
-import { appSettings } from '../appSettings.js';
+import { appSettings } from '../config/appSettings.js';
 
 const languageOptions = {
   en: {

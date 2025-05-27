@@ -858,3 +858,38 @@ button:hover {
 .chat-button:hover {
   background-color: #e6f7fc;
 }
+
+.image-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7); /* Black translucent overlay */
+}
+
+.image-modal.hidden {
+  display: none;
+}
+
+.image-modal .modal-content {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.6);
+}
+
+.image-modal .close-btn {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 128px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+}
+

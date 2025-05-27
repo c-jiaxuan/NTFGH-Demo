@@ -22,6 +22,8 @@ export class ChatbotView extends BaseView {
         this.chatLog = document.getElementById("chat-log");
         this.chatInput = document.getElementById("chat-input");
         this.sendButton = document.getElementById("send-button");
+
+        this.setListeners();
         
     }
 
@@ -148,5 +150,26 @@ export class ChatbotView extends BaseView {
 
     setLanguage(language) {
         console.log('Setting Language: ' + language);
+    }
+
+    // For popping up images from within chat bubble
+    setListeners() {
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('popupImage');
+            const closeBtn = modal.querySelector('.close-btn');
+
+            document.body.addEventListener('click', (e) => {
+                if (e.target.classList.contains('chat-image')) {
+                modalImg.src = e.target.src;
+                modal.classList.remove('hidden');
+                }
+            });
+
+            closeBtn.onclick = () => {
+                modal.classList.add('hidden');
+                modalImg.src = '';
+            };
+        });
     }
 }

@@ -1,5 +1,5 @@
 import { EventBus, Events } from "./event-bus.js";
-import { appSettings } from "./appSettings.js";
+import { appSettings } from "./config/appSettings.js";
 import avatar from './avatar.js';
 import { MainMenuPageController } from './controller/main-menu-controller.js';
 import { SettingsPageController } from './controller/settings-page-controller.js';
@@ -9,9 +9,10 @@ import { PatientAssessmentPageController } from './controller/patient-assessment
 import { DeliverPageController } from './controller/deliver-page-controller.js';
 import { ChatbotPageController } from "./controller/chatbot-page-controller.js";
 
-import { TopMenuView } from "./view/top-menu-view.js";
+import { TopMenuView } from './view/top-menu-view.js';
 
 import { updateOwnBubble, updateOtherBubble } from './view/chat-bubble-view.js';
+import { llm_config } from "./config/llm-config.js";
 
 // import other page controllers as needed
 const pages = {
@@ -29,6 +30,7 @@ const topMenuView = new TopMenuView('top-bar-container');
 //Initialise
 appSettings.language = 'en';
 appSettings.inputMode = 'touch';
+
 
 //Hide all pages at start
 Object.values(pages).forEach(controller => {
@@ -127,6 +129,14 @@ function onUpdateLanguage(newLanguage){
   avatar.setLanguage(newLanguage);
   
   topMenuView.updateLanguageStatus(newLanguage);
+
+  if (llm_config.bot_language === "English") {
+    llm_config.bot_language = "Chinese";
+  } else {
+    llm_config.bot_language = "English";
+  }
+  //llm_config.bot_language = (llm_config.bot_language == "English") ? "English" : "Chinese";
+  console.log('llm_config.bot_language: ' + llm_config.bot_language);
 
   EventBus.emit(Events.UPDATE_LANGUAGE, newLanguage);
 }

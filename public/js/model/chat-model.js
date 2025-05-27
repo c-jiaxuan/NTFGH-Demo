@@ -17,20 +17,20 @@ export class ChatModel {
         return this.messages;
     }
 
-    async getBotResponse(userInput) {
-        const response = await this.getSimilarity(userInput);
+    async getBotResponse(userInput, language) {
+        const response = await this.getSimilarity(userInput, language);
         console.log('getBotResponse = ' + response);
 
-        // Optional: validate response
+        // Validate response
         if (!response) {
-            return "Sorry, I didn't understand that.";
+            return null;
         }
 
         return response;
     }
 
     // Updates this.result
-    async getSimilarity(userInput) {
+    async getSimilarity(userInput, language) {
         try {
             const response = await fetch('/api/gramanerSimilarity', {
                 method: 'POST',
@@ -87,19 +87,20 @@ export class ChatModel {
             // console.log("result = ", result);
 
             // Trigger summarize
-            return await this.getSummarize(userInput);
+            return await this.getSummarize(userInput, language);
 
         } catch (error) {
             console.error('Fetch or processing error:', error);
         }
     }
 
-    async getSummarize(userInput) {
+    async getSummarize(userInput, language) {
         try {
 
             const payload = {
                 input: userInput,
-                results: this.result
+                results: this.result,
+                lang: language
             };
 
             // console.log('Sending to Summarize: ' + JSON.stringify(payload));
