@@ -10,8 +10,8 @@ const AI_PLAYER = new AIPlayer(wrapper);
 // const appId = 'deepbrain.io';
 // const userKey = 'bb872cb0-c6da-4c32-b68d-15ff95679837';
 
-const appId = "demo-637l.onrender.com";
-const userKey = "e7612a63-0da4-479b-8a7d-a7ab363c4d2a";
+const appId = "avataruat.sg.panasonic.com";
+const userKey = "dd842877-2f52-4dde-be63-8e4370ea47e4";
 
 AI_PLAYER.setConfig({
     authServer: authServer,
