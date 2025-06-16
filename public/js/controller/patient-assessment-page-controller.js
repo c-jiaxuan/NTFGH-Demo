@@ -512,5 +512,4 @@ export class PatientAssessmentPageController extends BasePageController {
       }));
     }
   }
-  
 }

@@ -123,13 +123,17 @@ export class ChatbotView extends BaseView {
         this.handleUserInput = handler;
     }
 
+    setTranscribeInput(input) {
+        this.chatInput.value = input;
+    }
+
     displayBotLoading() {
         // Create placeholder bot message
         this.loadingElement = document.createElement("div");
         this.loadingElement.classList.add("message", "bot");
 
         const bubble = document.createElement("span");
-        bubble.textContent = "Typing...";
+        bubble.textContent = "Processing...";
 
         const timestamp = document.createElement("div");
         timestamp.className = "message-time";

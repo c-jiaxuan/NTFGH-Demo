@@ -18,6 +18,8 @@ export class ChatbotPageController extends BasePageController {
 
         this.view.setUserInputHandler(this.handleSend.bind(this));
 
+
+
         this.isTranscribeActive = false;
     }
 
@@ -80,6 +82,9 @@ export class ChatbotPageController extends BasePageController {
         EventBus.on(Events.UPDATE_INPUTMODE, (e) => { this.onUpdateInputMode(e.detail); })
         EventBus.on(AvatarEvents.SPEAK_COMPLETED, (e) => { this.onAvatarSpeakCompleted(e.detail); })
 
+        document.addEventListener("aws-transcribe-update", this.handleTranscribeEvent.bind(this));
+        document.addEventListener("aws-transcribe-complete", this.handleTranscribeComplete.bind(this));
+
         // EventBus.emit(AvatarEvents.PRELOAD, { detail: speechTexts });
     }
 
@@ -91,6 +96,13 @@ export class ChatbotPageController extends BasePageController {
         EventBus.off(Events.UPDATE_LANGUAGE, (e) => { this.onUpdateLanguage(e.detail); })
         EventBus.off(Events.UPDATE_INPUTMODE, (e) => { this.onUpdateInputMode(e.detail); })
         EventBus.off(AvatarEvents.SPEAK_COMPLETED, (e) => { this.onAvatarSpeakCompleted(e.detail); })
+
+        document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
+        detail: { language: 'en-US' }
+        }));
+
+        document.removeEventListener("aws-transcribe-update", this.handleTranscribeEvent);
+        document.removeEventListener("aws-transcribe-complete", this.handleTranscribeComplete);
     }
 
     start() {
@@ -113,6 +125,20 @@ export class ChatbotPageController extends BasePageController {
 
     onUpdateInputMode(input) {
         console.log('Chatbot input mode changed to ' + input);
+
+        if (appSettings.inputMode == 'voice') {
+            document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
+                detail: { language: appSettings.language, timeout: true }
+            }));
+            // this.setupTranscribeForVoiceCommmand(true);
+            this.isTranscribeActive = true;   
+        } else {
+            document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
+                 detail: { language: appSettings.language }
+            }));
+            //this.setupTranscribeForVoiceCommmand(false);
+            this.isTranscribeActive = false;   
+        }
     }
 
     getTranslatedMessage(title, lang = 'en') {
@@ -121,5 +147,51 @@ export class ChatbotPageController extends BasePageController {
 
     onAvatarSpeakCompleted(e) {
         
+    }
+
+    // Normalize strings
+    normalize(str) {
+        return str.toLowerCase().replace(/\s+/g, '');
+    }
+
+    async handleTranscribeEvent(e) {
+        console.log("transcribe" + e.detail);
+    }
+
+    async handleTranscribeComplete(e) {
+        const transcript = this.normalize(e.detail);
+        if(transcript == "") {
+            return;
+        }
+        
+        console.log("transcribe complete = " + transcript);
+        
+        this.view.setTranscribeInput(transcript);
+
+        document.dispatchEvent(new CustomEvent('aws-reset-transcribe', {
+            detail: { }
+        }));
+    }
+
+    setupTranscribeForVoiceCommmand(enabled, timeout = false) {
+        if(enabled) {
+            //Listen to transcribe event
+            document.addEventListener("aws-transcribe-update", (e) => this.handleTranscribeEvent(e));
+            //Start transcribing
+
+            document.dispatchEvent(new CustomEvent('aws-update-timeout', {
+                detail: { timeout: timeout }
+            }));
+        } else {
+            //Remove transcribe listener
+            document.removeEventListener("aws-transcribe-update", (e) => this.handleTranscribeEvent(e));
+            //Stop transcribing
+            // document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
+            //   detail: { language: appSettings.language }
+            // }));
+            document.dispatchEvent(new CustomEvent('aws-reset-transcribe', {
+                    detail: { }
+            }));
+        }
     }
 }
