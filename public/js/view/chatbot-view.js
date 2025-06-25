@@ -48,11 +48,22 @@ export class ChatbotView extends BaseView {
     //
     // content is in JSON format
     //
-    displayMessage(sender, content = {}) {
+    displayMessage(sender, content = {}, messageId = null) {
         const messageElement = document.createElement("div");
         messageElement.classList.add("message", sender.toLowerCase());
 
+        if (messageId) {
+            messageElement.dataset.messageId = messageId;
+        }
+        
         const bubble = document.createElement("span");
+
+        if (content.text) {
+            const text = document.createElement("div");
+            text.classList.add("chat-text");
+            text.innerHTML = marked.parse(content.text);
+            bubble.appendChild(text);
+        }
 
         if (content.image) {
             const img = document.createElement("img");
@@ -85,13 +96,6 @@ export class ChatbotView extends BaseView {
             bubble.appendChild(fileLink);
         }
 
-        if (content.text) {
-            const text = document.createElement("div");
-            text.classList.add("chat-text");
-            text.innerHTML = marked.parse(content.text);
-            bubble.appendChild(text);
-        }
-
         if (content.buttons) {
             const buttonContainer = document.createElement("div");
             buttonContainer.classList.add("chat-buttons");
@@ -118,6 +122,34 @@ export class ChatbotView extends BaseView {
         this.chatLog.appendChild(messageElement);
         this.chatLog.scrollTop = this.chatLog.scrollHeight;
     }
+
+    // To update the image in a chat bubble once the image is generated
+    updateMessageImage(messageId, newImageSrc, newText = null) {
+        const messageElement = this.chatLog.querySelector(`[data-message-id="${messageId}"]`);
+        if (!messageElement) return;
+
+        // Update image source
+        const img = messageElement.querySelector("img.chat-image");
+        if (img && newImageSrc) {
+            img.src = newImageSrc;
+        }
+
+        // Update text content (if provided)
+        if (newText !== null) {
+            const textElement = messageElement.querySelector(".chat-text");
+            if (textElement) {
+                textElement.innerHTML = marked.parse(newText); // assumes markdown support
+            } else {
+                // Create a new text element if it doesn't exist
+                const newTextElement = document.createElement("div");
+                newTextElement.classList.add("chat-text");
+                newTextElement.innerHTML = marked.parse(newText);
+                const bubble = messageElement.querySelector("span");
+                if (bubble) bubble.appendChild(newTextElement);
+            }
+        }
+    }
+
 
     setUserInputHandler(handler) {
         this.handleUserInput = handler;

@@ -10,5 +10,32 @@ export const chatbot_config = {
     wait_msg: {
         en: 'Please wait while I am processing the response.',
         zh: '请稍等，我正在处理响应。'
+    },
+    image_msg: {
+        en: 'Please wait while the image is generating.',
+        zh: '请稍等，图片正在生成中。'
+    },
+    success_image_msg: {
+        en: 'Here is the generated image.',
+        zh: '这是生成的图像。'
+    },
+    failed_image_msg: {
+        en: 'Failed to generate the image, please try again later.',
+        zh: '生成图像失败，请稍后再试。'
     }
 };
+
+export const imageKeywords = [
+    "draw",
+    "generate an image",
+    "create a picture",
+    "show me",
+    "illustrate",
+    "visualize",
+    "make a diagram",
+    "can you make a picture",
+    "sketch",
+    "render",
+    "image of",
+    "picture of"
+];

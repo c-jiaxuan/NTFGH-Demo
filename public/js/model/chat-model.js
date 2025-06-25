@@ -29,6 +29,36 @@ export class ChatModel {
         return response;
     }
 
+    async generateImage(userInput) {
+        try {
+            const res = await fetch("/api/generateImg", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ input: userInput })
+            });
+
+            const response = await res.json();
+            const data = response.response;
+            console.log('/api/generateImg data: ' + JSON.stringify(data));
+
+            // chatbotView.displayMessage("Bot", {
+            //     image: imageSrc,
+            //     text: "Here's the generated image:"
+            // });
+
+            if (data.artifacts && data.artifacts.length > 0 && data.artifacts[0].base64) {
+                const base64 = data.artifacts[0].base64;
+                const imageSrc = `data:image/png;base64,${base64}`;
+                return imageSrc;
+            } else {
+                throw new Error("No image returned from API");
+            }
+        } catch (err) {
+            console.error('❌ Sorry, something went wrong while generating the image.' + err);
+            return null;
+        }
+    }
+
     // Updates this.result
     async getSimilarity(userInput, language) {
         try {

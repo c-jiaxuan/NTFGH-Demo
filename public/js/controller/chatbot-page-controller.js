@@ -1,7 +1,7 @@
 import { BasePageController } from './base-page-controller.js';
 import { ChatbotView } from '../view/chatbot-view.js';
 import { ChatModel } from '../model/chat-model.js';
-import { chatbot_config } from "../config/chatbot-config.js";
+import { chatbot_config, imageKeywords } from "../config/chatbot-config.js";
 import { AvatarEvents, EventBus, Events } from '../event-bus.js';
 import { appSettings } from '../config/appSettings.js';
 import { llm_config } from '../config/llm-config.js';
@@ -35,42 +35,60 @@ export class ChatbotPageController extends BasePageController {
     // }
 
     async handleSend(userInput) {
-        // Show user message
         this.model.addMessage("User", { text: userInput });
         this.view.displayMessage("User", { text: userInput });
 
         EventBus.emit(AvatarEvents.SPEAK, { message: this.getTranslatedMessage('wait_msg', appSettings.language) });
 
-        // Show typing/loading bubble
         this.view.displayBotLoading();
 
-        // Wait for LLM reply
-        const { content, followUp } = await this.model.getBotResponse(userInput, llm_config.bot_language);
+        let content, followUp;
 
-        if (content === null) {
-            content = this.getTranslatedMessage('error_msg', appSettings.language);
+        let img = null;
+        let placeholderImage = "../../img/mri_scan.png";
+        let messageId = null;
+        // Detects if user has intention to generate an image
+        if (this.isImageIntent(userInput)) {
+            // Display a placeholder image with a unique messageId
+            console.log('Detected Image generation intent');
+            content = this.getTranslatedMessage('image_msg', appSettings.language)
+            img = placeholderImage;
+            messageId = `image-${Date.now()}`;
+        } else {
+            ({ content, followUp } = await this.model.getBotResponse(userInput, llm_config.bot_language));
         }
 
-        EventBus.emit(AvatarEvents.SPEAK, { message: content } );
+        console.log('img: ' + img);
+        const messageContent = this.buildMessageContent({
+            text: content ?? this.getTranslatedMessage('error_msg', appSettings.language),
+            image: img,
+            followUp
+        });
 
-        // Map followUp items to button objects
-        var buttons = followUp.map((label, index) => ({
-            label: label,
-            value: `option_${index}` // You can customize this value as needed
-        }));
+        this.view.displayMessage("Bot", messageContent, messageId);
 
-        var messageContent = {
-            text: content,
-            image: "../../img/mri_scan.png",
-            buttons: buttons
+        // Update image in place
+        if (img != null) {
+            let updateMsg = null;
+            // Wait for image to generate
+            img = await this.model.generateImage(userInput);
+            if (img != null) {
+                console.log('image generated successfully');
+                updateMsg = this.getTranslatedMessage('success_image_msg', appSettings.language);
+            } else {
+                console.log('image failed to generate');
+                updateMsg = this.getTranslatedMessage('failed_image_msg', appSettings.language);
+            }
+            
+            this.view.updateMessageImage(messageId, img, updateMsg);
+            EventBus.emit(AvatarEvents.SPEAK, { message: updateMsg });
         }
 
-        // Remove loading
+        EventBus.emit(AvatarEvents.SPEAK, { message: content });
+
         this.view.removeBotLoading();
-
-        // Show actual bot response
-        this.view.displayMessage("Bot", messageContent);
     }
+
 
     onEnter() {
         super.onEnter();
@@ -193,5 +211,44 @@ export class ChatbotPageController extends BasePageController {
                     detail: { }
             }));
         }
+    }
+
+    isImageIntent(userMessage) {
+        const message = userMessage.toLowerCase();
+        return imageKeywords.some(keyword => message.includes(keyword));
+    }
+
+    buildMessageContent({ text, image, video, audio, file, followUp = [] }) {
+        const messageContent = {};
+
+        if (text) {
+            messageContent.text = text;
+        }
+
+        if (image) {
+            messageContent.image = image;
+        }
+
+        if (video) {
+            messageContent.video = video;
+        }
+
+        if (audio) {
+            messageContent.audio = audio;
+        }
+
+        if (file) {
+            messageContent.file = file;
+        }
+
+        if (followUp.length > 0) {
+            messageContent.buttons = followUp.map((label, index) => ({
+                label,
+                value: `option_${index}`
+            }));
+        }
+
+        console.log('built messageContent: ' + JSON.stringify(messageContent));
+        return messageContent;
     }
 }
