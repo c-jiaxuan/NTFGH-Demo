@@ -1,8 +1,7 @@
 import { isNumberObject } from "util/types";
-
-//const STABILITY_AI_ENDPOINT = "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image";
-const STABILITY_AI_ENDPOINT = "https://api.stability.ai/v1/generation/stable-diffusion-v1-6/text-to-image";
-const STABILITY_AI_TOKEN = "Bearer sk-q0IgQDG2W2ZI20gFMuf2Yugsdrx1EPdKkVb9xZv7VjjdP0Up";
+import fs from 'fs';
+import path from 'path';
+import { stabilityAI_config } from "../../public/js/config/stabilityAI-config.js";
 
 export async function generateImage(req, res) {
   let body = '';
@@ -25,17 +24,17 @@ export async function generateImage(req, res) {
 
 async function stabilityAI_generateImg(requestPrompt){
   var body = {
-    steps: 40,
-    width: 1024,
-    height: 1024,
-    seed: 0,
-    cfg_scale: 5,
-    samples: 1,
-    style_preset: "photographic", 
+    steps: stabilityAI_config.requestBody.steps,
+    width: stabilityAI_config.requestBody.width,
+    height: stabilityAI_config.requestBody.height,
+    seed: stabilityAI_config.requestBody.seed,
+    cfg_scale: stabilityAI_config.requestBody.cfg_scale,
+    samples: stabilityAI_config.requestBody.samples,
+    style_preset: stabilityAI_config.requestBody.style_preset, 
     text_prompts: [
       {
         "text": requestPrompt,
-        "weight": 1
+        "weight": stabilityAI_config.requestBody.weight
       }
     ],
   };
@@ -45,8 +44,7 @@ async function stabilityAI_generateImg(requestPrompt){
     headers: {
       Accept: "application/json",
       'content-type': 'application/json',
-      Authorization: "Bearer sk-q0IgQDG2W2ZI20gFMuf2Yugsdrx1EPdKkVb9xZv7VjjdP0Up" //James key
-      //Authorization: "Bearer sk-UwHznwoRM3f7hmEbplGVCVf8HVpp6osePYAzBEefoFXSXKLz" //Alvin key
+      Authorization: stabilityAI_config.STABILITY_AI_TOKEN
     },
     body: JSON.stringify(body),
   };
@@ -54,7 +52,7 @@ async function stabilityAI_generateImg(requestPrompt){
   try {
     console.log('Stability AI fetching...');
 
-    const response = await fetch(STABILITY_AI_ENDPOINT, options);
+    const response = await fetch(stabilityAI_config.STABILITY_AI_ENDPOINT, options);
 
     if (!response.ok) {
       throw new Error(`Fetch error: ${response.status}`);
@@ -62,6 +60,13 @@ async function stabilityAI_generateImg(requestPrompt){
 
     const data = await response.json();
     console.log('StabilityAI API: Success:', data);
+
+    if (data.artifacts && data.artifacts.length > 0 && data.artifacts[0].base64) {
+      const base64 = data.artifacts[0].base64;
+      const savedPath = saveBase64Image(base64);
+      console.log('Image saved at: ' + savedPath);
+    }
+
     return data;
   } catch (error) {
     console.error('StabilityAI API: Error:', error);
@@ -69,6 +74,25 @@ async function stabilityAI_generateImg(requestPrompt){
   }
 }
 
-export async function saveImage() {
-  
+// Saves the images generated into the servers local storage
+function saveBase64Image(base64, baseName = stabilityAI_config.baseName, folder = stabilityAI_config.saveFolder, extension = stabilityAI_config.extension) {
+    const base64Data = base64.replace(/^data:image\/\w+;base64,/, '');
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    if (!fs.existsSync(folder)) {
+        fs.mkdirSync(folder, { recursive: true });
+    }
+
+    const filename = getTimestampedFilename(baseName, extension);
+    const filePath = path.join(folder, filename);
+    fs.writeFileSync(filePath, buffer);
+
+    return filePath;
+}
+
+// Dynamically generates the file names for the images generated
+function getTimestampedFilename(baseName = stabilityAI_config.baseName, extension = stabilityAI_config.extension) {
+  const now = new Date();
+  const timestamp = now.toISOString().replace(/[-:T.]/g, '').slice(0, 14);
+  return `${baseName}_${timestamp}${extension}`;
 }
