@@ -4,10 +4,13 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import http from 'http';
 import { WebSocketServer } from 'ws';
-import { handler, gramanerHandler } from '../pages/api/extract.js';
-import { gramanerSimilarity, gramanerSummarize } from '../pages/api/llm.js';
-import { stabilityAI_generateImage } from '../pages/api/stability-ai.js';
-import { klingAI_generateImage } from '../pages/api/klingAI.js';
+// import { gramanerHandler } from '../pages/api/extract.js';
+// import { gramanerSimilarity, gramanerSummarize } from '../pages/api/llm.js';
+import gramanerHandler from '../pages/api/gramaner/extract.js';
+import gramanerSimilarity from '../pages/api/gramaner/similarity.js';
+import gramanerSummarize from '../pages/api/gramaner/summarize.js';
+import stabilityAI_generateImage from '../pages/api/stability-ai.js';
+import klingAI_generateImage from '../pages/api/klingAI.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,7 +33,7 @@ app.get('/hosPi', (req, res) => {
 });
 
 // API routes
-app.post('/api/extract', handler);
+// app.post('/api/extract', handler);
 app.post('/api/generateImg', stabilityAI_generateImage);
 //app.post('/api/generateImg', klingAI_generateImage);
 app.post('/api/gramanerExtract', gramanerHandler);

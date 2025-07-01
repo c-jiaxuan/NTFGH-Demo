@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { stabilityAI_config } from "../../public/js/config/stabilityAI-config.js";
 
-export async function stabilityAI_generateImage(req, res) {
+export default async function stabilityAI_generateImage(req, res) {
   let body = '';
   req.on('data', chunk => body += chunk);
   req.on('end', async () => {

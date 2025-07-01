@@ -1,6 +1,6 @@
 import { klingAI_config } from "../../public/js/config/klingAI-config.js";
 
-export async function klingAI_generateImage(req, res) {
+export default async function klingAI_generateImage(req, res) {
   let body = '';
   req.on('data', chunk => body += chunk);
   req.on('end', async () => {
@@ -19,7 +19,7 @@ export async function klingAI_generateImage(req, res) {
   });
 }
 
-export async function createTask(userInput) {
+async function createTask(userInput) {
     const url = klingAI_config.KLING_AI_ENDPOINT;
     const headers = {
         'Content-Type': 'application/json',
