@@ -4,7 +4,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { handler, gramanerHandler } from '../pages/api/extract.js'
 import { gramanerSimilarity, gramanerSummarize } from '../pages/api/llm.js';
-import { generateImage } from '../pages/api/stability-ai.js';
+import { stabilityAI_generateImage } from '../pages/api/stability-ai.js';
+import { klingAI_generateImage } from '../pages/api/klingAI.js';
 import crypto from 'crypto';
 // import dotenv from 'dotenv';
 // dotenv.config();
@@ -21,7 +22,8 @@ const server = http.createServer(async (req, res) => {
     } else if (req.url === '/api/extract') {
       return await handler(req, res);
     } else if (req.url === '/api/generateImg') {
-      return await generateImage(req, res);
+      //return await klingAI_generateImage(req, res);
+      return await stabilityAI_generateImage(req, res);
     } else if (req.url === '/api/gramanerExtract') {
       return await gramanerHandler(req, res);
     } else if (req.url === '/api/gramanerSimilarity') {

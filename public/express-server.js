@@ -6,7 +6,8 @@ import http from 'http';
 import { WebSocketServer } from 'ws';
 import { handler, gramanerHandler } from '../pages/api/extract.js';
 import { gramanerSimilarity, gramanerSummarize } from '../pages/api/llm.js';
-import { generateImage } from '../pages/api/stability-ai.js';
+import { stabilityAI_generateImage } from '../pages/api/stability-ai.js';
+import { klingAI_generateImage } from '../pages/api/klingAI.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,7 +31,8 @@ app.get('/hosPi', (req, res) => {
 
 // API routes
 app.post('/api/extract', handler);
-app.post('/api/generateImg', generateImage);
+app.post('/api/generateImg', stabilityAI_generateImage);
+//app.post('/api/generateImg', klingAI_generateImage);
 app.post('/api/gramanerExtract', gramanerHandler);
 app.post('/api/gramanerSimilarity', gramanerSimilarity);
 app.post('/api/gramanerSummarize', gramanerSummarize);
