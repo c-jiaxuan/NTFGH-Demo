@@ -34,8 +34,8 @@ app.get('/hosPi', (req, res) => {
 
 // API routes
 // app.post('/api/extract', handler);
-app.post('/api/generateImg', stabilityAI_generateImage);
-//app.post('/api/generateImg', klingAI_generateImage);
+// app.post('/api/generateImg', stabilityAI_generateImage);
+app.post('/api/generateImg', klingAI_generateImage);
 app.post('/api/gramanerExtract', gramanerHandler);
 app.post('/api/gramanerSimilarity', gramanerSimilarity);
 app.post('/api/gramanerSummarize', gramanerSummarize);

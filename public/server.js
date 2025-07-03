@@ -25,8 +25,8 @@ const server = http.createServer(async (req, res) => {
     } else if (req.url === '/api/extract') {
       return await handler(req, res);
     } else if (req.url === '/api/generateImg') {
-      //return await klingAI_generateImage(req, res);
-      return await stabilityAI_generateImage(req, res);
+      return await klingAI_generateImage(req, res);
+      //return await stabilityAI_generateImage(req, res);
     } else if (req.url === '/api/gramanerExtract') {
       return await gramanerHandler(req, res);
     } else if (req.url === '/api/gramanerSimilarity') {

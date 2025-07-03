@@ -1,17 +1,13 @@
 //import LanguageController from './language.js';
-
+import { avatar_KEYS } from "./env/avatar-keys.js";
 import { EventBus, Events, AvatarEvents } from "./event-bus.js";
 
 const wrapper = document.getElementById('AIPlayerWrapper');
 const authServer = 'https://account.aistudios.com';
 const AI_PLAYER = new AIPlayer(wrapper);
-// const appId = 'c-jiaxuan.github.io';
-// const userKey = '5979244e-7071-444a-a9fe-81217af1cbef';
-// const appId = 'deepbrain.io';
-// const userKey = 'bb872cb0-c6da-4c32-b68d-15ff95679837';
 
-const appId = "avataruat.sg.panasonic.com";
-const userKey = "0653e52c-cc3f-45bc-92cf-400f1cd2ac37";
+const appId = avatar_KEYS.appID;
+const userKey = avatar_KEYS.userKey;
 
 AI_PLAYER.setConfig({
     authServer: authServer,

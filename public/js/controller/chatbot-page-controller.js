@@ -71,7 +71,7 @@ export class ChatbotPageController extends BasePageController {
         if (img != null) {
             let updateMsg = null;
             // Wait for image to generate
-            img = await this.model.generateImage(userInput);
+            img = await this.model.generateImage_KlingAI(userInput);
             if (img != null) {
                 console.log('image generated successfully');
                 updateMsg = this.getTranslatedMessage('success_image_msg', appSettings.language);
