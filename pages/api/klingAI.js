@@ -23,21 +23,24 @@ export default async function klingAI_generateImage(req, res) {
 
 async function createTask(userInput) {
     const token = generateToken(klingAI_KEYS.access_key, klingAI_KEYS.secret_key);
+    if (token != null) {
+        console.log('Successfully generated token: ' + `Bearer ${token}`);
+    }
     const url = klingAI_config.KLING_AI_ENDPOINT;
     const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
     };
     const body = {
         model_name: klingAI_config.requestBody.model_name,
         prompt: userInput,
         // negative_prompt: 'Your negative text prompt',
         // image: 'Base64 encoded image string or image URL',
-        image_reference: klingAI_config.requestBody.image_reference,
+        // image_reference: klingAI_config.requestBody.image_reference,
         // image_fidelity: klingAI_config.requestBody.image_fidelity,
         // human_fidelity: klingAI_config.requestBody.human_fidelity,
-        n: klingAI_config.requestBody.n,
-        aspect_ratio: klingAI_config.requestBody.aspect_ratio,
+        // n: klingAI_config.requestBody.n,
+        // aspect_ratio: klingAI_config.requestBody.aspect_ratio,
         // callback_url: klingAI_config.requestBody.callback_url
     };
 
@@ -48,13 +51,16 @@ async function createTask(userInput) {
             body: JSON.stringify(body)
         });
 
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
+        const data = await response.json();
 
-    const data = await response.json();
-    console.log(data);
-    return data;
+        if (!response.ok) {
+            console.error(`Error ${response.status}: ${data.message}`);
+            console.error(`Service Code: ${data.code}`);
+            console.error(`Request ID: ${data.request_id}`);
+            return null;
+        }
+        
+        return data;
     } catch (error) {
         console.error('Error:', error);
     }

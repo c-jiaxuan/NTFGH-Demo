@@ -2,6 +2,7 @@ import { isNumberObject } from "util/types";
 import fs from 'fs';
 import path from 'path';
 import { stabilityAI_config } from "../../public/js/config/stabilityAI-config.js";
+import { stabilityAI_KEYS } from "../../public/js/env/stabilityAI-keys.js";
 
 export default async function stabilityAI_generateImage(req, res) {
   let body = '';
@@ -44,7 +45,7 @@ async function stabilityAI_generateImg(requestPrompt){
     headers: {
       Accept: "application/json",
       'content-type': 'application/json',
-      Authorization: stabilityAI_config.STABILITY_AI_TOKEN
+      Authorization: stabilityAI_KEYS.STABILITY_AI_TOKEN
     },
     body: JSON.stringify(body),
   };
@@ -52,7 +53,7 @@ async function stabilityAI_generateImg(requestPrompt){
   try {
     console.log('Stability AI fetching...');
 
-    const response = await fetch(stabilityAI_config.STABILITY_AI_ENDPOINT, options);
+    const response = await fetch(stabilityAI_KEYS.STABILITY_AI_ENDPOINT, options);
 
     if (!response.ok) {
       throw new Error(`Fetch error: ${response.status}`);
