@@ -45,7 +45,7 @@ export class ChatbotPageController extends BasePageController {
         let content, followUp;
 
         let img = null;
-        let placeholderImage = "../../img/mri_scan.png";
+        let placeholderImage = "../../img/generating.png";
         let messageId = null;
         // Detects if user has intention to generate an image
         if (this.isImageIntent(userInput)) {

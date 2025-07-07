@@ -32,7 +32,7 @@ async function hmacSha256(secret, data) {
 }
 
 // Encode JWT
-export async function encodeJWT(payloadObj, secret) {
+async function encodeJWT(payloadObj, secret) {
   const header = { alg: 'HS256', typ: 'JWT' };
   const headerStr = base64UrlEncode(JSON.stringify(header));
   const payloadStr = base64UrlEncode(JSON.stringify(payloadObj));
@@ -49,3 +49,13 @@ export function decodeJWT(token) {
   return { header, payload, signature };
 }
 
+export async function generateJWT_native(accessKey, secretKey) {
+  console.log('jwt-native, generating JWT');
+  const payload = {
+    iss: accessKey,
+    nbf: Math.floor(Date.now() / 1000) - 5,
+    exp: Math.floor(Date.now() / 1000) + 1800,
+  };
+  const token = await encodeJWT(payload, secretKey);
+  return token;
+}

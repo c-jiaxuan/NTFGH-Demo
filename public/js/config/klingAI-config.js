@@ -1,5 +1,5 @@
 export const klingAI_config = {
-    KLING_AI_ENDPOINT: 'https://api.klingai.com/v1/images/generations',
+    KLING_AI_ENDPOINT: 'https://api-singapore.klingai.com/v1/images/generations',
     requestBody: {
         model_name: 'kling-v1',  // Enum values：kling-v1, kling-v1-5, kling-v2
         image: 'Base64 encoded image string or image URL',
