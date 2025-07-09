@@ -39,3 +39,21 @@ export const imageKeywords = [
     "image of",
     "picture of"
 ];
+
+export const videoKeywords = [
+    "make a video",
+    "generate a video",
+    "create a video",
+    "show me a video",
+    "animate",
+    "render a video",
+    "can you make a video",
+    "visualize this in motion",
+    "video of",
+    "motion version",
+    "animated version",
+    "short video",
+    "clip of",
+    "film this",
+    "turn this into a video"
+];

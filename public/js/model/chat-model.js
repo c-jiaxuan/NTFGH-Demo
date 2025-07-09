@@ -63,15 +63,37 @@ export class ChatModel {
             });
 
             const response = await res.json();
+            const taskID = this.klingAI_processTask(response);
+
+            if (taskID != null) {
+                return taskID;
+            } else {
+                throw new Error("Task not created in KlingAI API");
+            }
+        } catch (err) {
+            console.error('❌ Sorry, something went wrong while creating the task.' + err);
+            return null;
+        }
+    }
+
+    async queryTask_KlingAI(taskID) {
+        try {
+            const res = await fetch("/api/queryTask", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ input: taskID })
+            });
+
+            const response = await res.json();
             const imgs = this.klingAI_processResponse(response);
 
             if (imgs != null) {
                 return imgs;
             } else {
-                throw new Error("No image returned from KlingAI API");
+                throw new Error("No task returned from KlingAI API");
             }
         } catch (err) {
-            console.error('❌ Sorry, something went wrong while generating the image.' + err);
+            console.error('❌ Sorry, something went wrong while fetching the task.' + err);
             return null;
         }
     }
@@ -198,7 +220,29 @@ export class ChatModel {
         }
     }
 
-    async klingAI_processResponse(response) {
+    async klingAI_processTask(_response) {
+        const response = _response.response;
+        if (response.code != 0) {
+            console.error(`Error [${response.code}]: ${response.message}`);
+            return null;
+        }
+
+        const data = response.data;
+        console.log('🆔 Request ID:', response.request_id);
+        console.log('📌 Task ID:', data.task_id);
+        console.log('📄 Task Status:', data.task_status);
+        console.log('📣 Status Message:', data.task_status_msg || 'No error');
+
+        const createdAt = new Date(data.created_at).toLocaleString();
+        const updatedAt = new Date(data.updated_at).toLocaleString();
+        console.log('📅 Created At:', createdAt);
+        console.log('🔄 Updated At:', updatedAt);
+
+        return data.task_id;
+    }
+
+    async klingAI_processResponse(_response) {
+        const response = _response.response;
         if (response.code !== 0) {
             console.error(`Error [${response.code}]: ${response.message}`);
             return null;

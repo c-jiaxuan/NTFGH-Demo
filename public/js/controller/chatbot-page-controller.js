@@ -70,17 +70,36 @@ export class ChatbotPageController extends BasePageController {
         // Update image in place
         if (img != null) {
             let updateMsg = null;
+            let images = null;
             // Wait for image to generate
-            img = await this.model.generateImage_KlingAI(userInput);
-            if (img != null) {
-                console.log('image generated successfully');
-                updateMsg = this.getTranslatedMessage('success_image_msg', appSettings.language);
-            } else {
-                console.log('image failed to generate');
-                updateMsg = this.getTranslatedMessage('failed_image_msg', appSettings.language);
+            const taskID = await this.model.generateImage_KlingAI(userInput);
+
+            // Repeatedly query for the task process
+            if (taskID != null) {
+                try {
+                    images = await this.pollKlingAITask(taskID, {
+                        intervalMs: 2000,
+                        maxWaitMs: 120000
+                    });
+
+                    console.log('image generated successfully');
+                    updateMsg = this.getTranslatedMessage('success_image_msg', appSettings.language);
+                    //return res.json({ success: true, images });
+                } catch (err) {
+                    console.log('image failed to generate');
+                    updateMsg = this.getTranslatedMessage('failed_image_msg', appSettings.language);
+                }
             }
+
+            // if (img != null) {
+            //     console.log('image generated successfully');
+            //     updateMsg = this.getTranslatedMessage('success_image_msg', appSettings.language);
+            // } else {
+            //     console.log('image failed to generate');
+            //     updateMsg = this.getTranslatedMessage('failed_image_msg', appSettings.language);
+            // }
             
-            this.view.updateMessageImage(messageId, img, updateMsg);
+            this.view.updateMessageImage(messageId, images, updateMsg);
             EventBus.emit(AvatarEvents.SPEAK, { message: updateMsg });
         }
 
@@ -250,5 +269,40 @@ export class ChatbotPageController extends BasePageController {
 
         console.log('built messageContent: ' + JSON.stringify(messageContent));
         return messageContent;
+    }
+    /**
+     * Controller function to poll KlingAI task until it's done.
+     * Returns image results once task completes.
+     */
+    async pollKlingAITask(taskID, options = {}) {
+
+        console.log('Polling created KlingAI task: ' + taskID);
+        const intervalMs = options.intervalMs || 3000;
+        const maxWaitMs = options.maxWaitMs || 5 * 60 * 1000;
+
+        let totalWait = 0;
+
+        return new Promise((resolve, reject) => {
+            const intervalId = setInterval(async () => {
+                try {
+                    const result = await this.model.queryTask_KlingAI(taskID);
+
+                    if (result) {
+                        clearInterval(intervalId);
+                        return resolve(result); // Images returned
+                    }
+
+                    totalWait += intervalMs;
+                    if (totalWait >= maxWaitMs) {
+                        clearInterval(intervalId);
+                        return reject(new Error('Polling timed out.'));
+                    }
+
+                } catch (err) {
+                    clearInterval(intervalId);
+                    return reject(err);
+                }
+            }, intervalMs);
+        });
     }
 }

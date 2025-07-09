@@ -1,3 +1,5 @@
+import { llm_config } from "../../../public/js/config/llm-config.js";
+
 export default async function gramanerHandler(req, res) {
 
     let body = '';
@@ -13,7 +15,7 @@ export default async function gramanerHandler(req, res) {
         console.log('➡️ Sent to extractor:', { entities, input });
 
         // Prepare the fetch request
-        const response = await fetch('https://llmentityextractor.sanand.workers.dev/extract', {
+        const response = await fetch(llm_config.llm_extract_api_url, {
           method: 'POST',
           headers: {
             'accept': 'application/json',

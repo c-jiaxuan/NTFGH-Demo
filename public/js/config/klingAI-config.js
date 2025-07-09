@@ -1,4 +1,4 @@
-export const klingAI_config = {
+export const klingAI_Img_config = {
     KLING_AI_ENDPOINT: 'https://api-singapore.klingai.com/v1/images/generations',
     requestBody: {
         model_name: 'kling-v1',  // Enum values：kling-v1, kling-v1-5, kling-v2
@@ -16,3 +16,18 @@ export const klingAI_config = {
     saveFolder: './klingAI/images',
     extension: '.png'
 };
+
+export const klingAI_Vid_config = {
+    KLING_AI_ENDPOINT: 'https://api-singapore.klingai.com/v1/videos/text2video',
+    requestBody: {
+        model_name: 'kling-v1',  // Enum values：kling-v1, kling-v1-5, kling-v2
+        negative_prompt: '',
+        mode: 'std',
+        duration: '5',
+        aspect_ratio: '16:9', // Aspect ratio of the generated images (width:height) - Enum values：16:9, 9:16, 1:1, 4:3, 3:4, 3:2, 2:3, 21:9
+        callback_url: 'Your callback URL'
+    },
+    baseName: 'video',
+    saveFolder: './klingAI/videos',
+    extension: '.mp4'
+}

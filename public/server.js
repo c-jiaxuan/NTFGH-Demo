@@ -8,8 +8,11 @@ import gramanerHandler from '../pages/api/gramaner/extract.js';
 import gramanerSimilarity from '../pages/api/gramaner/similarity.js';
 import gramanerSummarize from '../pages/api/gramaner/summarize.js';
 import stabilityAI_generateImage from '../pages/api/stability-ai.js';
-import klingAI_generateImage from '../pages/api/klingAI.js';
+import klingAI_generateImage from '../pages/api/klingAI/klingAI_generateImg.js';
+import klingAI_generateVideo from '../pages/api/klingAI/klingAI_generateVideo.js';
+import klingAI_queryTask from '../pages/api/klingAI/klingAI_queryTask.js';
 import crypto from 'crypto';
+
 // import dotenv from 'dotenv';
 // dotenv.config();
 
@@ -27,6 +30,10 @@ const server = http.createServer(async (req, res) => {
     } else if (req.url === '/api/generateImg') {
       return await klingAI_generateImage(req, res);
       //return await stabilityAI_generateImage(req, res);
+    } else if (req.url === '/api/generateVid') {
+      return await klingAI_generateVideo(req, res);
+    } else if (req.url === '/api/queryTask') {
+      return await klingAI_queryTask(req, res);
     } else if (req.url === '/api/gramanerExtract') {
       return await gramanerHandler(req, res);
     } else if (req.url === '/api/gramanerSimilarity') {
