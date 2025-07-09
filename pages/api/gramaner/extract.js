@@ -1,4 +1,4 @@
-import { llm_config } from "../../../public/js/config/llm-config";
+import { llm_config } from "../../../public/js/config/llm-config.js";
 
 export default async function gramanerHandler(req, res) {
 
