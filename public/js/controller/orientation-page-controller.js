@@ -3,7 +3,7 @@ import { OrientationView } from '../view/orientation-view.js';
 import { AvatarEvents, EventBus, Events } from '../event-bus.js';
 import { steps } from './orientation-config.js'
 import { ActionBarController } from './action-bar-controller.js';
-import { appSettings } from '../appSettings.js';
+import { appSettings } from '../config/appSettings.js';
 
 export class OrientationPageController extends BasePageController {
   constructor(id){

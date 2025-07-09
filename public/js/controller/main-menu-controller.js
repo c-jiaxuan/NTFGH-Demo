@@ -1,7 +1,8 @@
 import { BasePageController } from './base-page-controller.js';
 import { MainMenuView } from '../view/main-menu-view.js';
 import { EventBus, Events } from '../event-bus.js';
-import { appSettings } from '../appSettings.js';
+import { appSettings } from '../config/appSettings.js';
+import { send } from '../client.js'
 
 export class MainMenuPageController extends BasePageController {
   constructor(id){
@@ -24,6 +25,7 @@ export class MainMenuPageController extends BasePageController {
   handleSubpageSwitch(key) {
     switch (key){
       case "chat":
+        EventBus.emit(Events.CHATBOT_PRESS);
         break;
       case "gettingStarted":
         EventBus.emit(Events.GETTING_START_PRESS);
@@ -39,6 +41,7 @@ export class MainMenuPageController extends BasePageController {
     console.log('Main Menu page initialized');
     // Run animations, load data, start timers, etc.
     this.view.setLanguage(appSettings.language);
+    send('DEFAULT');
   }
 
   onExit() {

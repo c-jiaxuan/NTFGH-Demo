@@ -1,17 +1,13 @@
 //import LanguageController from './language.js';
-
+import { avatar_KEYS } from "./env/avatar-keys.js";
 import { EventBus, Events, AvatarEvents } from "./event-bus.js";
 
 const wrapper = document.getElementById('AIPlayerWrapper');
 const authServer = 'https://account.aistudios.com';
 const AI_PLAYER = new AIPlayer(wrapper);
-// const appId = 'c-jiaxuan.github.io';
-// const userKey = '5979244e-7071-444a-a9fe-81217af1cbef';
-// const appId = 'deepbrain.io';
-// const userKey = 'bb872cb0-c6da-4c32-b68d-15ff95679837';
 
-const appId = "demo-637l.onrender.com";
-const userKey = "e7612a63-0da4-479b-8a7d-a7ab363c4d2a";
+const appId = avatar_KEYS.appID;
+const userKey = avatar_KEYS.userKey;
 
 AI_PLAYER.setConfig({
     authServer: authServer,
@@ -45,7 +41,7 @@ class AI_Message {
 }
   
 let botMessages = {};   // Dictionary to store all preset bot messages
-botMessages["start_msg"] = [new AI_Message("Welcome to Ng Teng Fong General Hospital! How can I help you today?", "G05")
+botMessages["start_msg"] = [new AI_Message("Welcome to Panasonic! How can I help you today?", "G05")
 ];
 // botMessages["orientation"] = [new AI_Message("We would like to introduce to you the Care Team.", "G02"),
 //     new AI_Message("Please watch this video")

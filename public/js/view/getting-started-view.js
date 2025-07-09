@@ -6,12 +6,12 @@ export class GettingStartedView extends BaseView {
         super(id);
 
         this.labels = {
-            en: { title: "Getting Started", guide: "Services required for patient onboarding into our Hospital", orientation: "Orientation", assessment: "Patient Assessment" },
+            en: { title: "Getting Started", guide: "Services required for onboarding", orientation: "Orientation", assessment: "Registration" },
             zh: {
                 title: "入门指南",
-                guide: "入院所需的服务说明",
+                guide: "入职所需服务",
                 orientation: "入院导览",
-                assessment: "病患评估"
+                assessment: "注册"
               }
         };
 

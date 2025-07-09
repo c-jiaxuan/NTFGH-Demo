@@ -1,9 +1,10 @@
 import { AvatarEvents, EventBus } from "../event-bus.js";
 
 export class BasePageController {
-    constructor(id, view) {
+    constructor(id, view, model = null) {
       this.id = id;
       this.view = view;
+      this.model = model;
       this.isActive = false;
 
       this.events = new EventTarget();

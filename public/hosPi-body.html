@@ -45,6 +45,7 @@
   </div>
 
   <script type="module">
+    const ws = new WebSocket('ws://localhost:3000');
     const stepImage = document.getElementById('stepImage');
     const stepVideo = document.getElementById('stepVideo');
 
@@ -65,21 +66,21 @@
 
         stepVideo.classList.remove('hidden');
 
-        let countdown = 3;
-        const countdownInterval = setInterval(() => {
-          console.log('countdown = ' + countdown);
-          countdown--;
-          //countdownText.textContent = "Video is starting in " + countdown;
+        // let countdown = 3;
+        // const countdownInterval = setInterval(() => {
+        //   console.log('countdown = ' + countdown);
+        //   countdown--;
+        //   //countdownText.textContent = "Video is starting in " + countdown;
           
-          if (countdown <= 1) {
-            clearInterval(countdownInterval);
-            setTimeout(() => {
-                //stepVideo.requestFullscreen().catch(() => {});
-                stepVideo.play();
-              //countdownText.style.display = 'none';
-            }, 500);
-          }
-        }, 1000);
+        //   if (countdown <= 0) {
+        //     clearInterval(countdownInterval);
+        //     setTimeout(() => {
+        //         //stepVideo.requestFullscreen().catch(() => {});
+        //         stepVideo.play();
+        //       //countdownText.style.display = 'none';
+        //     }, 500);
+        //   }
+        // }, 1000);
 
         stepVideo.onended = () => {
             // if (document.fullscreenElement) {
@@ -97,14 +98,30 @@
       }
     }
 
-    // Listen for changes from the orientation page
-    window.addEventListener('storage', (event) => {
-      if (event.key === 'currentStep') {
-        const stepData = JSON.parse(event.newValue);
-        const { type, stepIndex, substepIndex } = stepData;
-        console.log(type, stepIndex, substepIndex);
-        updateDisplay(type, stepIndex, substepIndex);
-      }
+    ws.addEventListener('open', () => {
+      console.log('Connected to server');
+    });
+
+    ws.addEventListener('message', (event) => {
+      try {
+          const data = JSON.parse(event.data);
+          if (data === 'PLAY' || data.type === 'PLAY') {
+              console.log('Received PLAY message');
+              if (!stepVideo.classList.contains('hidden')) {
+                stepVideo.play();
+              }
+          } else if (data.eventType === 'STEP') {
+            const { type, stepIndex, substepIndex } = data;
+            console.log(type, stepIndex, substepIndex);
+            updateDisplay(type, stepIndex, substepIndex);
+          } else if (data.eventType === 'DEFAULT' || data === 'DEFAULT') {
+            stepVideo.classList.add('hidden');
+            stepImage.classList.remove('hidden');
+            stepImage.src = "./img/idle-poster.png";
+          }
+        } catch (err) {
+          console.error('Failed to parse WebSocket message:', event.data, err);
+        }
     });
   </script>
 </body>

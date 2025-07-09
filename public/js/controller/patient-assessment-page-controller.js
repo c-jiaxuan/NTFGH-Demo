@@ -3,7 +3,7 @@ import { PatientAssessmentView } from '../view/patient-assessment-view.js';
 import { AvatarEvents, EventBus, Events } from '../event-bus.js';
 import { steps } from './assessment-config.js';
 import { ActionBarController } from './action-bar-controller.js';
-import { appSettings } from '../appSettings.js';
+import { appSettings } from '../config/appSettings.js';
 
 
 export class PatientAssessmentPageController extends BasePageController {
@@ -352,8 +352,12 @@ export class PatientAssessmentPageController extends BasePageController {
     }
     else if (step.type == "next-of-kin")
     {
-      const result = await this.extractInfoFromSpeech(transcript);
-      if (!result) return;
+      //const result = await this.extractInfoFromSpeech(transcript);
+      const result = await this.callGramanerHandler(transcript);
+      if (!result) {
+        console.log('Error: GramanerHandler No results recieved');
+        return;
+      };
 
       console.log("✅ Extracted Next-of-Kin Info:", result);
 
@@ -409,6 +413,7 @@ export class PatientAssessmentPageController extends BasePageController {
   }
 
   //To be put in a separated script
+  // UNUSED
   async extractInfoFromSpeech(transcript) {
     try {
       const res = await fetch("/api/extract", {
@@ -425,6 +430,36 @@ export class PatientAssessmentPageController extends BasePageController {
       EventBus.emit(AvatarEvents.SPEAK, {message:"I am not sure what you have sent, please try again.", gesture: ""});
       return null;
     }
+  }
+
+  async callGramanerHandler(transcript) {
+    const response = await fetch('/api/gramanerExtract', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        entities: ['name', 'address', 'relationship', 'phone_number'],
+        input: transcript
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Gramaner extract API call failed');
+      EventBus.emit(AvatarEvents.SPEAK, {message:"I am not sure what you have sent, please try again.", gesture: ""});
+      return null;
+    }
+
+    const data = await response.json();
+    console.log('Extracted Entities:', data);
+
+    // If any entries are empty, flag response as failed, so Avatar can prompt for another input
+    if (data.name == null || data.relationship == null || data.address == 'null' || data.phone_number == 'null') {
+      console.error('Gramaner extract API call failed');
+      EventBus.emit(AvatarEvents.SPEAK, {message:"I am not sure what you have sent, please try again.", gesture: ""});
+      return null;
+    }
+    return data;
   }
 
   buildSpeechListFromSteps(steps) {
@@ -477,5 +512,4 @@ export class PatientAssessmentPageController extends BasePageController {
       }));
     }
   }
-  
 }

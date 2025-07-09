@@ -1,4 +1,5 @@
 import { BaseView } from './base-view.js';
+import { send, sendStep } from '../client.js'
 
 export class OrientationView extends BaseView {
     constructor(id)
@@ -92,6 +93,7 @@ export class OrientationView extends BaseView {
                     setTimeout(() => {
                         video.requestFullscreen().catch(() => {});
                         video.play();
+                        send('PLAY');
                         countdownText.style.display = 'none';
                     }, 500);
                 }
@@ -163,10 +165,11 @@ export class OrientationView extends BaseView {
             this.contentBlock.appendChild(quizContainer);
         }
 
-        setCurrentStep(minorStep.type, major, minor);
+        // setCurrentStep(minorStep.type, major, minor);
+        sendStep(minorStep.type, major, minor);
     }
 }
 
-function setCurrentStep(type, stepIndex, substepIndex) {
-    localStorage.setItem('currentStep', JSON.stringify({type, stepIndex, substepIndex}));
-}
+// function setCurrentStep(type, stepIndex, substepIndex) {
+//     localStorage.setItem('currentStep', JSON.stringify({type, stepIndex, substepIndex}));
+// }
