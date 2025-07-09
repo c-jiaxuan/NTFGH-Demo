@@ -1,7 +1,7 @@
 import { BasePageController } from './base-page-controller.js';
 import { PatientAssessmentView } from '../view/patient-assessment-view.js';
 import { AvatarEvents, EventBus, Events } from '../event-bus.js';
-import { steps } from './assessment-config.js';
+import { steps } from '../config/assessment-config.js';
 import { ActionBarController } from './action-bar-controller.js';
 import { appSettings } from '../config/appSettings.js';
 

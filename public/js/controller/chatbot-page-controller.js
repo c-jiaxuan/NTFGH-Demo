@@ -1,7 +1,7 @@
 import { BasePageController } from './base-page-controller.js';
 import { ChatbotView } from '../view/chatbot-view.js';
 import { ChatModel } from '../model/chat-model.js';
-import { chatbot_config, imageKeywords } from "../config/chatbot-config.js";
+import { chatbot_config } from "../config/chatbot-config.js";
 import { AvatarEvents, EventBus, Events } from '../event-bus.js';
 import { appSettings } from '../config/appSettings.js';
 import { llm_config } from '../config/llm-config.js';
@@ -42,21 +42,7 @@ export class ChatbotPageController extends BasePageController {
 
         this.view.displayBotLoading();
 
-        let content, followUp;
-
-        let img = null;
-        let placeholderImage = "../../img/generating.png";
-        let messageId = null;
-        // Detects if user has intention to generate an image
-        if (this.isImageIntent(userInput)) {
-            // Display a placeholder image with a unique messageId
-            console.log('Detected Image generation intent');
-            content = this.getTranslatedMessage('image_msg', appSettings.language)
-            img = placeholderImage;
-            messageId = `image-${Date.now()}`;
-        } else {
-            ({ content, followUp } = await this.model.getBotResponse(userInput, llm_config.bot_language));
-        }
+        const { content, followUp } = await this.model.getBotResponse(userInput, llm_config.bot_language);
 
         console.log('img: ' + img);
         const messageContent = this.buildMessageContent({
@@ -66,23 +52,6 @@ export class ChatbotPageController extends BasePageController {
         });
 
         this.view.displayMessage("Bot", messageContent, messageId);
-
-        // Update image in place
-        if (img != null) {
-            let updateMsg = null;
-            // Wait for image to generate
-            img = await this.model.generateImage_KlingAI(userInput);
-            if (img != null) {
-                console.log('image generated successfully');
-                updateMsg = this.getTranslatedMessage('success_image_msg', appSettings.language);
-            } else {
-                console.log('image failed to generate');
-                updateMsg = this.getTranslatedMessage('failed_image_msg', appSettings.language);
-            }
-            
-            this.view.updateMessageImage(messageId, img, updateMsg);
-            EventBus.emit(AvatarEvents.SPEAK, { message: updateMsg });
-        }
 
         EventBus.emit(AvatarEvents.SPEAK, { message: content });
 
@@ -211,11 +180,6 @@ export class ChatbotPageController extends BasePageController {
                     detail: { }
             }));
         }
-    }
-
-    isImageIntent(userMessage) {
-        const message = userMessage.toLowerCase();
-        return imageKeywords.some(keyword => message.includes(keyword));
     }
 
     buildMessageContent({ text, image, video, audio, file, followUp = [] }) {

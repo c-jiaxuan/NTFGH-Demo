@@ -9,7 +9,7 @@ body {
 
 body::before {
   content: "";
-  background: url('./img/gmaps_panasonic.png') no-repeat center center;
+  background: url('./img/ntfgh_lobby.png') no-repeat center center;
   background-size: cover;
   position: absolute;
   top: 0;

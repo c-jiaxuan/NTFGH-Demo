@@ -2,13 +2,9 @@ import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-// import { gramanerHandler } from '../pages/api/extract.js';
-// import { gramanerSimilarity, gramanerSummarize } from '../pages/api/llm.js';
 import gramanerHandler from '../pages/api/gramaner/extract.js';
 import gramanerSimilarity from '../pages/api/gramaner/similarity.js';
 import gramanerSummarize from '../pages/api/gramaner/summarize.js';
-import stabilityAI_generateImage from '../pages/api/stability-ai.js';
-import klingAI_generateImage from '../pages/api/klingAI.js';
 import crypto from 'crypto';
 // import dotenv from 'dotenv';
 // dotenv.config();
@@ -24,9 +20,6 @@ const server = http.createServer(async (req, res) => {
       serveFile('hosPi-body.html', 'text/html', res);
     } else if (req.url === '/api/extract') {
       return await handler(req, res);
-    } else if (req.url === '/api/generateImg') {
-      return await klingAI_generateImage(req, res);
-      //return await stabilityAI_generateImage(req, res);
     } else if (req.url === '/api/gramanerExtract') {
       return await gramanerHandler(req, res);
     } else if (req.url === '/api/gramanerSimilarity') {

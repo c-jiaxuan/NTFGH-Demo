@@ -29,53 +29,6 @@ export class ChatModel {
         return response;
     }
 
-    async generateImage_stabilityAI(userInput) {
-        try {
-            const res = await fetch("/api/generateImg", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ input: userInput })
-            });
-
-            const response = await res.json();
-            const data = response.response;
-            console.log('/api/generateImg data: ' + JSON.stringify(data));
-
-            if (data.artifacts && data.artifacts.length > 0 && data.artifacts[0].base64) {
-                const base64 = data.artifacts[0].base64;
-                const imageSrc = `data:image/png;base64,${base64}`;
-                return imageSrc;
-            } else {
-                throw new Error("No image returned from StabilityAI API");
-            }
-        } catch (err) {
-            console.error('❌ Sorry, something went wrong while generating the image.' + err);
-            return null;
-        }
-    }
-
-    async generateImage_KlingAI(userInput) {
-        try {
-            const res = await fetch("/api/generateImg", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ input: userInput })
-            });
-
-            const response = await res.json();
-            const imgs = this.klingAI_processResponse(response);
-
-            if (imgs != null) {
-                return imgs;
-            } else {
-                throw new Error("No image returned from KlingAI API");
-            }
-        } catch (err) {
-            console.error('❌ Sorry, something went wrong while generating the image.' + err);
-            return null;
-        }
-    }
-
     // Updates this.result
     async getSimilarity(userInput, language) {
         try {
@@ -196,36 +149,5 @@ export class ChatModel {
             console.error('Summarize API Error:', error);
             return "An error occurred while summarizing.";
         }
-    }
-
-    async klingAI_processResponse(response) {
-        if (response.code !== 0) {
-            console.error(`Error [${response.code}]: ${response.message}`);
-            return null;
-        }
-
-        const data = response.data;
-        console.log('🆔 Request ID:', response.request_id);
-        console.log('📌 Task ID:', data.task_id);
-        console.log('📄 Task Status:', data.task_status);
-        console.log('📣 Status Message:', data.task_status_msg || 'No error');
-
-        const createdAt = new Date(data.created_at).toLocaleString();
-        const updatedAt = new Date(data.updated_at).toLocaleString();
-        console.log('📅 Created At:', createdAt);
-        console.log('🔄 Updated At:', updatedAt);
-
-        const images = data.task_result?.images || [];
-        if (images.length === 0) {
-            console.log('⚠️ No images returned.');
-            return null;
-        }
-
-        console.log('\n🖼️ Generated Images:');
-        images.forEach((img, index) => {
-            console.log(`  [${index}] URL: ${img.url}`);
-        });
-
-        return images.map(img => img.url);
     }
 }
