@@ -8,13 +8,13 @@ export class MainMenuView extends BaseView {
 
         this.labels = {
             en: { 
-                title: "Welcome to Panasonic", 
+                title: "Welcome to Ng Teng Fong General Hospital", 
                 guide: "What can i do for you today?", 
                 chat: "Chat", 
                 gettingStarted: "Getting Started", 
                 delivery: "Delivery" },
             zh: {
-                title: "欢迎来到松下",
+                title: "欢迎来到黄廷方综合医院",
                 guide: "我今天可以为您做些什么？",
                 chat: "聊天",
                 gettingStarted: "入门指南",
@@ -25,7 +25,7 @@ export class MainMenuView extends BaseView {
         this.buttons = {
             chat : this.element.querySelector('#chat-button'),
             gettingStarted : this.element.querySelector('#getting-started-button'),
-            delivery : this.element.querySelector('#delivery-button')
+            // delivery : this.element.querySelector('#delivery-button')
         }
 
         this.title = this.element.querySelector('#setup-title');
@@ -35,7 +35,7 @@ export class MainMenuView extends BaseView {
     setLanguage(lang) {
         this.buttons.chat.querySelector('.button-text').textContent = this.labels[lang].chat;
         this.buttons.gettingStarted.querySelector('.button-text').textContent = this.labels[lang].gettingStarted;
-        this.buttons.delivery.querySelector('.button-text').textContent = this.labels[lang].delivery;
+        // this.buttons.delivery.querySelector('.button-text').textContent = this.labels[lang].delivery;
         this.title.textContent = this.labels[lang].title;
         this.guide.textContent = this.labels[lang].guide;
     }

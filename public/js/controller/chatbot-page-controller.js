@@ -42,6 +42,10 @@ export class ChatbotPageController extends BasePageController {
 
         this.view.displayBotLoading();
 
+        let img = null;
+        let placeholderImage = "../../img/generating.png";
+        let messageId = `msg-${Date.now()}`;
+
         const { content, followUp } = await this.model.getBotResponse(userInput, llm_config.bot_language);
 
         console.log('img: ' + img);

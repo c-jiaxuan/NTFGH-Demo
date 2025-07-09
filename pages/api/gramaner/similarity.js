@@ -1,5 +1,7 @@
 import { llm_config } from '../../../public/js/config/llm-config.js'
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; // 👈 Add this at the top ONLY for development
+
 var bot_language = "English";
 
 export default async function gramanerSimilarity(req, res) {
