@@ -1,20 +1,53 @@
 export class ChatModel {
     constructor() {
 
+        const messageContentType = {
+            TEXT_ONLY: 1,
+            W_IMAGE: 2,
+            W_VIDEO: 3
+        };
+
         this.messages = [];
 
         this.result;
         this.followupQuestions = null;
     }
 
-    addMessage(sender, text) {
-        const message = { sender, text, timestamp: new Date() };
+    addMessage(sender, content, id) {
+        const timestamp = new Date(); // current date and time
+        const message = { sender, content ,id , timestamp};
+        console.log('\n(Chat-model) Pushing message: ');
+        console.log(JSON.stringify(message), '\n');
         this.messages.push(message);
         return message;
     }
 
     getMessages() {
         return this.messages;
+    }
+
+    getMessage(id) {
+        return this.messages.find(msg => msg.id === id);
+    }
+
+    isImageMessage(id) {
+        const message = this.getMessage(id);
+        return message && message.content && message.content.image !== undefined;
+    }
+
+    isVideoMessage(id) {
+        const message = this.getMessage(id);
+        return message && message.content && message.content.video !== undefined;
+    }
+
+    updateMessage(id, content) {
+        const message = this.getMessage(id);
+        if (message) {
+            message.content = content;
+            message.timestamp = new Date(); // update timestamp to reflect the edit time
+            return true;
+        }
+        return false;
     }
 
     async getBotResponse(userInput, language) {
@@ -76,12 +109,50 @@ export class ChatModel {
         }
     }
 
-    async queryTask_KlingAI(taskID) {
+    async generateVideo_KlingAI(userInput) {
+        try {
+            const res = await fetch("/api/generateVid", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ input: userInput })
+            });
+
+            const response = await res.json();
+            const taskID = this.klingAI_processTask(response);
+
+            if (taskID != null) {
+                return taskID;
+            } else {
+                throw new Error("Task not created in KlingAI API");
+            }
+        } catch (err) {
+            console.error('❌ Sorry, something went wrong while creating the task.' + err);
+            return null;
+        }
+    }
+
+    async queryTask_KlingAI(messageID, taskID) {
+        if (this.getMessage(messageID) == undefined) {
+            console.log('(chat-model) queryTask_KlingAI : no message with messageID found');
+            return null;
+        }
+
+        let type = null;
+        if (this.isImageMessage(messageID)) {
+            console.log('Querying image task');
+            type = 'img';
+        } else if (this.isVideoMessage) {
+            console.log('Querying video task');
+            type = 'video';
+        }
+        console.log('MessageID: ' + messageID);
+        console.log('taskID: ' + taskID);
+
         try {
             const res = await fetch("/api/queryTask", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ input: taskID })
+                body: JSON.stringify({ input: taskID, endpoint: type})
             });
 
             const response = await res.json();

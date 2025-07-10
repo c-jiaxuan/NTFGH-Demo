@@ -5,19 +5,6 @@ export class ChatbotView extends BaseView {
     constructor(id)
     {
         super(id);
-        // this.buttons = {
-        //     chat : this.element.querySelector('#chat-button'),
-        //     gettingStarted : this.element.querySelector('#getting-started-button'),
-        //     delivery : this.element.querySelector('#delivery-button')
-        // }
-
-        // this.title = this.element.querySelector('#setup-title');
-        // this.guide = this.element.querySelector('.orientation-guide');
-
-        // Set up button linkage
-        // Chat history
-        // Bot and user bubble
-        // Text input box, input settings
 
         this.chatLog = document.getElementById("chat-log");
         this.chatInput = document.getElementById("chat-input");
@@ -80,14 +67,6 @@ export class ChatbotView extends BaseView {
             bubble.appendChild(video);
         }
 
-        if (content.audio) {
-            const audio = document.createElement("audio");
-            audio.src = content.audio;
-            audio.controls = true;
-            audio.classList.add("chat-media");
-            bubble.appendChild(audio);
-        }
-
         if (content.file) {
             const fileLink = document.createElement("a");
             fileLink.href = content.file;
@@ -123,6 +102,87 @@ export class ChatbotView extends BaseView {
         this.chatLog.scrollTop = this.chatLog.scrollHeight;
     }
 
+    updateMessageContent(messageId, updates = {}) {
+        const messageElement = this.chatLog.querySelector(`[data-message-id="${messageId}"]`);
+        if (!messageElement) return;
+
+        const bubble = messageElement.querySelector("span");
+
+        if (updates.text !== undefined) {
+            let textElement = bubble.querySelector(".chat-text");
+            if (!textElement && updates.text) {
+                textElement = document.createElement("div");
+                textElement.classList.add("chat-text");
+                bubble.prepend(textElement);
+            }
+            if (textElement) {
+                textElement.innerHTML = marked.parse(updates.text);
+            }
+        }
+
+        if (updates.image !== undefined) {
+            let imgElement = bubble.querySelector("img.chat-image");
+            if (!imgElement && updates.image) {
+                imgElement = document.createElement("img");
+                imgElement.classList.add("chat-image");
+                bubble.appendChild(imgElement);
+            }
+            if (imgElement) {
+                imgElement.src = updates.image;
+            }
+        }
+
+        if (updates.video !== undefined) {
+            let videoElement = bubble.querySelector("video.chat-media");
+            if (!videoElement && updates.video) {
+                videoElement = document.createElement("video");
+                videoElement.controls = true;
+                videoElement.classList.add("chat-media");
+                bubble.appendChild(videoElement);
+            }
+            if (videoElement) {
+                videoElement.src = updates.video;
+            }
+        }
+
+        if (updates.file !== undefined) {
+            let fileLink = bubble.querySelector("a.chat-file");
+            if (!fileLink && updates.file) {
+                fileLink = document.createElement("a");
+                fileLink.classList.add("chat-file");
+                fileLink.textContent = "📎 Download File";
+                bubble.appendChild(fileLink);
+            }
+            if (fileLink) {
+                fileLink.href = updates.file;
+            }
+        }
+
+        if (updates.buttons !== undefined) {
+            let buttonContainer = bubble.querySelector(".chat-buttons");
+            if (buttonContainer) {
+                buttonContainer.remove(); // clear old buttons
+            }
+            if (updates.buttons && updates.buttons.length) {
+                buttonContainer = document.createElement("div");
+                buttonContainer.classList.add("chat-buttons");
+
+                updates.buttons.forEach((btn) => {
+                    const button = document.createElement("button");
+                    button.textContent = btn.label;
+                    button.classList.add("chat-button");
+                    button.onclick = () => {
+                        this.handleUserInput(btn.label);
+                    };
+                    buttonContainer.appendChild(button);
+                });
+
+                bubble.appendChild(buttonContainer);
+            }
+        }
+    }
+
+
     // To update the image in a chat bubble once the image is generated
     updateMessageImage(messageId, newImageSrc, newText = null) {
         const messageElement = this.chatLog.querySelector(`[data-message-id="${messageId}"]`);
@@ -135,6 +195,13 @@ export class ChatbotView extends BaseView {
         }
 
         // Update text content (if provided)
+        this.updateMessageText(messageIdnewText);
+    }
+
+    updateMessageText(messageId, newText) {
+        const messageElement = this.chatLog.querySelector(`[data-message-id="${messageId}"]`);
+        if (!messageElement) return;
+        
         if (newText !== null) {
             const textElement = messageElement.querySelector(".chat-text");
             if (textElement) {

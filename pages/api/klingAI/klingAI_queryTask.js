@@ -1,5 +1,6 @@
 import { klingAI_KEYS } from "../../../public/js/env/klingAI-keys.js";
 import { klingAI_Img_config } from "../../../public/js/config/klingAI-config.js";
+import { klingAI_Vid_config } from "../../../public/js/config/klingAI-config.js";
 import generateToken from "../generateJWT_KlingAI.js";
 import fs from 'fs';
 import path from 'path';
@@ -9,10 +10,10 @@ export default async function klingAI_queryTask(req, res) {
   req.on('data', chunk => body += chunk);
   req.on('end', async () => {
       try {
-        const { input } = JSON.parse(body);
-        console.log('KlingAI input recieved: ' + input);
+        const { input, endpoint } = JSON.parse(body);
+        console.log('KlingAI input recieved: ' + input, ', ' + endpoint);
 
-        const response = await queryTask(input);
+        const response = await queryTask(input, endpoint);
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ response }));
@@ -23,14 +24,20 @@ export default async function klingAI_queryTask(req, res) {
   });
 }
 
-async function queryTask(taskId) {
+async function queryTask(taskId, _endpoint) {
     const token = await generateToken(klingAI_KEYS.access_key, klingAI_KEYS.secret_key);
     if (token != null) {
         console.log('Successfully generated token: ' + `Bearer ${token}`);
     }
     // 【Image Generation】Query Task（Single) Request URL is : /v1/images/generations/{id}
     // 【Text to Video】Query Task（Single）Request URL is : /v1/videos/text2video/{id}
-    const url = `${klingAI_Img_config.KLING_AI_ENDPOINT}/${taskId}`;
+    let endpoint = null;
+    if (_endpoint == 'img') {
+        endpoint = klingAI_Img_config.KLING_AI_ENDPOINT
+    } else if (_endpoint == 'video') {
+        endpoint = klingAI_Vid_config.KLING_AI_ENDPOINT
+    }
+    const url = `${endpoint}/${taskId}`;
     const headers = {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'

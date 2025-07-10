@@ -20,8 +20,20 @@ export const chatbot_config = {
         zh: '这是生成的图像。'
     },
     failed_image_msg: {
-        en: 'Failed to generate the image, please try again later.',
-        zh: '生成图像失败，请稍后再试。'
+        en: 'Sorry, I am unable to generate the image, please try again later.',
+        zh: '抱歉，我无法生成图片，请稍后再试。'
+    },
+    video_msg: {
+        en: 'Please wait while the video is generating.',
+        zh: '请稍等，视频正在生成中。'
+    },
+    success_video_msg: {
+        en: 'Here is the generated video.',
+        zh: '这是生成的视频。'
+    },
+    failed_video_msg: {
+        en: 'Sorry, I am unable to generate the video, please try again later.',
+        zh: '抱歉，我无法生成视频，请稍后再试。'
     }
 };
 

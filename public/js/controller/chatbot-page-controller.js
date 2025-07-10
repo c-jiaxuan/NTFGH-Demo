@@ -1,7 +1,7 @@
 import { BasePageController } from './base-page-controller.js';
 import { ChatbotView } from '../view/chatbot-view.js';
 import { ChatModel } from '../model/chat-model.js';
-import { chatbot_config, imageKeywords } from "../config/chatbot-config.js";
+import { chatbot_config, imageKeywords, videoKeywords } from "../config/chatbot-config.js";
 import { AvatarEvents, EventBus, Events } from '../event-bus.js';
 import { appSettings } from '../config/appSettings.js';
 import { llm_config } from '../config/llm-config.js';
@@ -23,19 +23,9 @@ export class ChatbotPageController extends BasePageController {
         this.isTranscribeActive = false;
     }
 
-    // async handleSend(userInput) {
-    //     const userMessage = this.model.addMessage("User", userInput);
-    //     this.view.displayMessage(userMessage.sender, userMessage.text);
-
-    //     // Await the bot response
-    //     const botText = await this.model.getBotResponse(userInput);
-
-    //     const botMessage = this.model.addMessage("Bot", botText);
-    //     this.view.displayMessage(botMessage.sender, botMessage.text);
-    // }
-
     async handleSend(userInput) {
-        this.model.addMessage("User", { text: userInput });
+        const messageId = `msg-${Date.now()}`;
+        this.model.addMessage("User", { text: userInput }, messageId);
         this.view.displayMessage("User", { text: userInput });
 
         EventBus.emit(AvatarEvents.SPEAK, { message: this.getTranslatedMessage('wait_msg', appSettings.language) });
@@ -46,57 +36,72 @@ export class ChatbotPageController extends BasePageController {
 
         let img = null;
         let placeholderImage = "../../img/generating.png";
-        let messageId = null;
-        // Detects if user has intention to generate an image
+
+        let vid = null;
+
+        // This taskID is to store the ID of the created task from klingAI
+        let taskID = null;
+        
+        // Detects if user has intention to generate an image/video
+        // and adds in placeholder image
         if (this.isImageIntent(userInput)) {
             // Display a placeholder image with a unique messageId
             console.log('Detected Image generation intent');
             content = this.getTranslatedMessage('image_msg', appSettings.language)
-            img = placeholderImage;
-            messageId = `image-${Date.now()}`;
+            img = placeholderImage; 
+        } else if (this.isVideoIntent(userInput)) {
+            console.log('Detected Video generation intent');
+            content = this.getTranslatedMessage('video_msg', appSettings.language)
+            vid = 'video_placeholder';
         } else {
             ({ content, followUp } = await this.model.getBotResponse(userInput, llm_config.bot_language));
         }
 
-        console.log('img: ' + img);
-        const messageContent = this.buildMessageContent({
+        let messageContent = this.buildMessageContent({
             text: content ?? this.getTranslatedMessage('error_msg', appSettings.language),
             image: img,
+            video: vid,
             followUp
         });
 
-        this.view.displayMessage("Bot", messageContent, messageId);
+        const botMsgID = `msg-${Date.now()}`;
+        this.model.addMessage("Bot", messageContent, botMsgID);
+        this.view.displayMessage("Bot", messageContent, botMsgID);
 
-        // Update image in place
+        // Generate the image/video
         if (img != null) {
-            let updateMsg = null;
-            let images = null;
-            // Wait for image to generate
-            const taskID = await this.model.generateImage_KlingAI(userInput);
+            taskID = await this.model.generateImage_KlingAI(userInput);
+        } else if (vid != null) {
+            taskID = await this.model.generateVideo_KlingAI(userInput);
+        }
 
-            // Repeatedly query for the task process
-            if (taskID != null) {
-                try {
-                    images = await this.pollKlingAITask(taskID, {
-                        intervalMs: 2000,
-                        maxWaitMs: 120000
-                    });
+        // Repeatedly query for the task process
+        let updateMsg = null;
+        let result = null;      // To store the generated Images/Videos
+        if (taskID != null) {
+            try {
+                result = await this.pollKlingAITask(botMsgID, taskID, {
+                    intervalMs: 2000,
+                    maxWaitMs: 120000
+                });
 
-                    console.log('image generated successfully');
-                    updateMsg = this.getTranslatedMessage('success_image_msg', appSettings.language);
-                    //return res.json({ success: true, images });
-                } catch (err) {
-                    console.log('image failed to generate');
-                    updateMsg = this.getTranslatedMessage('failed_image_msg', appSettings.language);
-                }
+                console.log('Resource generated successfully');
+                updateMsg = this.getTranslatedMessage('success_image_msg', appSettings.language);
+            } catch (err) {
+                console.log('Resource failed to generate');
+                updateMsg = this.getTranslatedMessage('failed_image_msg', appSettings.language);
             }
-            
-            this.view.updateMessageImage(messageId, images, updateMsg);
+
+            // this.view.updateMessageImage(messageId, result, updateMsg);
+            this.view.updateMessageContent(botMsgID, {
+                text: updateMsg,
+                image: result
+            });
+
             EventBus.emit(AvatarEvents.SPEAK, { message: updateMsg });
         }
 
         EventBus.emit(AvatarEvents.SPEAK, { message: content });
-
         this.view.removeBotLoading();
     }
 
@@ -147,9 +152,6 @@ export class ChatbotPageController extends BasePageController {
 
     onUpdateLanguage(language) {
         console.log('Chatbot language changed to ' + language);
-
-
-
     }
 
     onUpdateInputMode(input) {
@@ -229,7 +231,12 @@ export class ChatbotPageController extends BasePageController {
         return imageKeywords.some(keyword => message.includes(keyword));
     }
 
-    buildMessageContent({ text, image, video, audio, file, followUp = [] }) {
+    isVideoIntent(userMessage) {
+        const message = userMessage.toLowerCase();
+        return videoKeywords.some(keyword => message.includes(keyword));
+    }
+
+    buildMessageContent({ text, image, video, file, followUp = [] }) {
         const messageContent = {};
 
         if (text) {
@@ -242,10 +249,6 @@ export class ChatbotPageController extends BasePageController {
 
         if (video) {
             messageContent.video = video;
-        }
-
-        if (audio) {
-            messageContent.audio = audio;
         }
 
         if (file) {
@@ -266,7 +269,7 @@ export class ChatbotPageController extends BasePageController {
      * Controller function to poll KlingAI task until it's done.
      * Returns image results once task completes.
      */
-    async pollKlingAITask(taskID, options = {}) {
+    async pollKlingAITask(messageID, taskID, options = {}) {
 
         console.log('Polling created KlingAI task: ' + taskID);
         const intervalMs = options.intervalMs || 3000;
@@ -277,7 +280,7 @@ export class ChatbotPageController extends BasePageController {
         return new Promise((resolve, reject) => {
             const intervalId = setInterval(async () => {
                 try {
-                    const result = await this.model.queryTask_KlingAI(taskID);
+                    const result = await this.model.queryTask_KlingAI(messageID, taskID);
 
                     if (result) {
                         clearInterval(intervalId);
