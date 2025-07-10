@@ -90,14 +90,6 @@ export class ChatbotPageController extends BasePageController {
                     updateMsg = this.getTranslatedMessage('failed_image_msg', appSettings.language);
                 }
             }
-
-            // if (img != null) {
-            //     console.log('image generated successfully');
-            //     updateMsg = this.getTranslatedMessage('success_image_msg', appSettings.language);
-            // } else {
-            //     console.log('image failed to generate');
-            //     updateMsg = this.getTranslatedMessage('failed_image_msg', appSettings.language);
-            // }
             
             this.view.updateMessageImage(messageId, images, updateMsg);
             EventBus.emit(AvatarEvents.SPEAK, { message: updateMsg });

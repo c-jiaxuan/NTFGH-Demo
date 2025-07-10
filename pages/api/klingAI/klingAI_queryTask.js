@@ -1,6 +1,8 @@
 import { klingAI_KEYS } from "../../../public/js/env/klingAI-keys.js";
 import { klingAI_Img_config } from "../../../public/js/config/klingAI-config.js";
 import generateToken from "../generateJWT_KlingAI.js";
+import fs from 'fs';
+import path from 'path';
 
 export default async function klingAI_queryTask(req, res) {
   let body = '';
@@ -26,7 +28,8 @@ async function queryTask(taskId) {
     if (token != null) {
         console.log('Successfully generated token: ' + `Bearer ${token}`);
     }
-    // 【Image Generation】Query Task（Single Request URL is : /v1/images/generations/{id}
+    // 【Image Generation】Query Task（Single) Request URL is : /v1/images/generations/{id}
+    // 【Text to Video】Query Task（Single）Request URL is : /v1/videos/text2video/{id}
     const url = `${klingAI_Img_config.KLING_AI_ENDPOINT}/${taskId}`;
     const headers = {
         'Authorization': `Bearer ${token}`,
@@ -54,8 +57,43 @@ async function queryTask(taskId) {
             throw new Error('Response not ok');
         }
 
+        const images = data.data.task_result?.images || [];
+        if (images.length !== 0) {
+            images.forEach(async (img, index) => {
+                const path = await saveURLImage(img.url);
+                console.log('Saved image: [' + img.url + '] at:');
+                console.log(path + '\n');
+            });
+        } else {
+            console.log('NO IMAGES');
+        }
+
         return data;
     } catch (error) {
         console.error('Error:', error);
     }
 };
+
+// Saves the images generated into the servers local storage
+async function saveURLImage(url, baseName = klingAI_Img_config.baseName, folder = klingAI_Img_config.saveFolder, extension = klingAI_Img_config.extension) {
+    const response = await fetch(url);
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer, 'binary');
+
+    if (!fs.existsSync(folder)) {
+        fs.mkdirSync(folder, { recursive: true });
+    }
+
+    const filename = getTimestampedFilename(baseName, extension);
+    const filePath = path.join(folder, filename);
+    fs.writeFileSync(filePath, buffer);
+
+    return filePath;
+}
+
+// Dynamically generates the file names for the images generated
+function getTimestampedFilename(baseName = klingAI_Img_config.baseName, extension = klingAI_Img_config.extension) {
+  const now = new Date();
+  const timestamp = now.toISOString().replace(/[-:T.]/g, '').slice(0, 14);
+  return `${baseName}_${timestamp}${extension}`;
+}
