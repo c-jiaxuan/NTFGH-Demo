@@ -86,26 +86,3 @@ async function createImgTask(userInput) {
         console.error('Error:', error);
     }
 };
-
-// Saves the images generated into the servers local storage
-function saveBase64Image(base64, baseName = klingAI_Img_config.baseName, folder = klingAI_Img_config.saveFolder, extension = klingAI_Img_config.extension) {
-    const base64Data = base64.replace(/^data:image\/\w+;base64,/, '');
-    const buffer = Buffer.from(base64Data, 'base64');
-
-    if (!fs.existsSync(folder)) {
-        fs.mkdirSync(folder, { recursive: true });
-    }
-
-    const filename = getTimestampedFilename(baseName, extension);
-    const filePath = path.join(folder, filename);
-    fs.writeFileSync(filePath, buffer);
-
-    return filePath;
-}
-
-// Dynamically generates the file names for the images generated
-function getTimestampedFilename(baseName = klingAI_Img_config.baseName, extension = klingAI_Img_config.extension) {
-  const now = new Date();
-  const timestamp = now.toISOString().replace(/[-:T.]/g, '').slice(0, 14);
-  return `${baseName}_${timestamp}${extension}`;
-}
