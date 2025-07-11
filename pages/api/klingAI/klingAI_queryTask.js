@@ -1,5 +1,7 @@
 import { klingAI_KEYS } from "../../../public/js/env/klingAI-keys.js";
 import { klingAI_Img_config } from "../../../public/js/config/klingAI-config.js";
+import { klingAI_Vid_config } from "../../../public/js/config/klingAI-config.js";
+import { saveURLMedia } from "./klingAI_helper.js"
 import { generateJWT_native, decodeJWT } from '../jwt-native.js';
 
 export default async function klingAI_queryTask(req, res) {

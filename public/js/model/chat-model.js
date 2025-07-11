@@ -316,6 +316,8 @@ export class ChatModel {
 
     async processResponse(_response) {
         const response = _response.response;
+        console.log('_response : ' + JSON.stringify(_response));
+        console.log('response : ' + response);
         if (!response || response.code !== 0) {
             console.error(`Error [${response?.code}]: ${response?.message || 'Unknown error'}`);
             return null;

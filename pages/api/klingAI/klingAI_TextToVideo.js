@@ -22,7 +22,7 @@ export default async function klingAI_TextToVideo(req, res) {
   });
 }
 
-async function createVidTask(userInput) {
+async function createTextToVidTask(userInput) {
     const token = await generateJWT_native(klingAI_KEYS.access_key, klingAI_KEYS.secret_key);
     if (token != null) {
         console.log('Successfully generated token: ' + `Bearer ${token}`);

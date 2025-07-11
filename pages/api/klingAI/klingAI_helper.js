@@ -2,7 +2,6 @@ import { klingAI_Img_config } from "../../../public/js/config/klingAI-config.js"
 import { klingAI_Vid_config } from "../../../public/js/config/klingAI-config.js";
 import fs from 'fs';
 import path from 'path';
-import fetch from 'node-fetch';
 
 export async function saveURLMedia(url, baseName = 'klingAI_generation_') {
     const response = await fetch(url);
