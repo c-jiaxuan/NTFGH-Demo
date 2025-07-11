@@ -141,7 +141,7 @@ export class ChatModel {
         if (this.isImageMessage(messageID)) {
             console.log('Querying image task');
             type = 'img';
-        } else if (this.isVideoMessage) {
+        } else if (this.isVideoMessage(messageID)) {
             console.log('Querying video task');
             type = 'video';
         }
@@ -156,7 +156,7 @@ export class ChatModel {
             });
 
             const response = await res.json();
-            const imgs = this.klingAI_processResponse(response);
+            const imgs = this.processResponse(response);
 
             if (imgs != null) {
                 return imgs;
@@ -293,6 +293,8 @@ export class ChatModel {
 
     async klingAI_processTask(_response) {
         const response = _response.response;
+        console.log('_response : ' + JSON.stringify(_response));
+        console.log('response : ' + response);
         if (response.code != 0) {
             console.error(`Error [${response.code}]: ${response.message}`);
             return null;
@@ -312,35 +314,62 @@ export class ChatModel {
         return data.task_id;
     }
 
-    async klingAI_processResponse(_response) {
+    async processResponse(_response) {
         const response = _response.response;
-        if (response.code !== 0) {
-            console.error(`Error [${response.code}]: ${response.message}`);
+        if (!response || response.code !== 0) {
+            console.error(`Error [${response?.code}]: ${response?.message || 'Unknown error'}`);
             return null;
         }
 
         const data = response.data;
-        console.log('🆔 Request ID:', response.request_id);
-        console.log('📌 Task ID:', data.task_id);
-        console.log('📄 Task Status:', data.task_status);
-        console.log('📣 Status Message:', data.task_status_msg || 'No error');
+        const {
+            task_id,
+            task_status,
+            task_status_msg,
+            task_info,
+            created_at,
+            updated_at,
+            task_result
+        } = data;
 
-        const createdAt = new Date(data.created_at).toLocaleString();
-        const updatedAt = new Date(data.updated_at).toLocaleString();
-        console.log('📅 Created At:', createdAt);
-        console.log('🔄 Updated At:', updatedAt);
+        console.log("=== Task Details ===");
+        console.log(`Request ID: ${response.request_id}`);
+        console.log(`Task ID: ${task_id}`);
+        console.log(`Status: ${task_status}`);
+        if (task_status_msg) console.log(`Status Message: ${task_status_msg}`);
+        if (task_info?.external_task_id) console.log(`External Task ID: ${task_info.external_task_id}`);
+        console.log(`Created At: ${new Date(created_at).toISOString()}`);
+        console.log(`Updated At: ${new Date(updated_at).toISOString()}`);
 
-        const images = data.task_result?.images || [];
-        if (images.length === 0) {
-            console.log('⚠️ No images returned.');
-            return null;
+        switch (task_status) {
+            case 'submitted':
+            case 'processing':
+                console.log("Task is still in progress...");
+                return null;
+
+            case 'failed':
+                console.error(`Task failed: ${task_status_msg || 'No reason provided.'}`);
+                return null;
+
+            case 'succeed':
+            if (task_result?.images?.length) {
+                const urls = task_result.images.map(img => img.url);
+                console.log("Generated Images:", urls);
+                return { type: 'image', urls };
+            }
+
+            if (task_result?.videos?.length) {
+                const urls = task_result.videos.map(video => video.url);
+                console.log("Generated Videos:", urls);
+                return { type: 'video', urls };
+            }
+
+                console.warn("Task succeeded but no media found.");
+                return null;
+
+            default:
+                console.warn(`Unhandled task status: ${task_status}`);
+                return null;
         }
-
-        console.log('\n🖼️ Generated Images:');
-        images.forEach((img, index) => {
-            console.log(`  [${index}] URL: ${img.url}`);
-        });
-
-        return images.map(img => img.url);
     }
 }

@@ -82,7 +82,7 @@ export class ChatbotPageController extends BasePageController {
             try {
                 result = await this.pollKlingAITask(botMsgID, taskID, {
                     intervalMs: 2000,
-                    maxWaitMs: 120000
+                    maxWaitMs: 1200000
                 });
 
                 console.log('Resource generated successfully');
@@ -92,11 +92,22 @@ export class ChatbotPageController extends BasePageController {
                 updateMsg = this.getTranslatedMessage('failed_image_msg', appSettings.language);
             }
 
+            if (result) {
+                const updateMsg = 'Here is your generated content:';
+                this.view.updateMessageContent(botMsgID, {
+                    text: updateMsg,
+                    image: result.type === 'image' ? result.urls : null,
+                    video: result.type === 'video' ? result.urls : null
+                });
+            } else {
+                console.warn("No result to update message with.");
+            }
+
             // this.view.updateMessageImage(messageId, result, updateMsg);
-            this.view.updateMessageContent(botMsgID, {
-                text: updateMsg,
-                image: result
-            });
+            // this.view.updateMessageContent(botMsgID, {
+            //     text: updateMsg,
+            //     image: result
+            // });
 
             EventBus.emit(AvatarEvents.SPEAK, { message: updateMsg });
         }
