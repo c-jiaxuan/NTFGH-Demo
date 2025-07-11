@@ -56,8 +56,9 @@ async function createVidTask(userInput) {
         });
 
         const data = await response.json();
+        console.log('klingAI video generation response: ' + JSON.stringify(data));
 
-        if (response.code !== 0) {
+        if (data.code !== 0) {
             console.error(`Error ${response.status}: ${data.message}`);
             console.error(`Service Code: ${data.code}`);
             console.error(`Request ID: ${data.request_id}`);

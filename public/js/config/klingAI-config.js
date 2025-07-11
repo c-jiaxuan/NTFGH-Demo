@@ -14,7 +14,6 @@ export const klingAI_Img_config = {
     },
     baseName: 'image',
     saveFolder: './klingAI/images',
-    extension: '.png'
 };
 
 export const klingAI_Vid_config = {
@@ -29,5 +28,4 @@ export const klingAI_Vid_config = {
     },
     baseName: 'video',
     saveFolder: './klingAI/videos',
-    extension: '.mp4'
 }
