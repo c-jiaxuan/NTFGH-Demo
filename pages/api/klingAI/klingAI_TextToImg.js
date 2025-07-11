@@ -24,7 +24,7 @@ export default async function klingAI_TextToImage(req, res) {
   });
 }
 
-async function createImgTask(userInput) {
+async function createTextToImgTask(userInput) {
     // const token = generateToken(klingAI_KEYS.access_key, klingAI_KEYS.secret_key);
     const token = await generateJWT_native(klingAI_KEYS.access_key, klingAI_KEYS.secret_key);
     console.log("\njwt-native generated token: " + token + "\n");

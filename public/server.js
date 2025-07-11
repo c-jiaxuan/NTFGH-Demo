@@ -2,8 +2,6 @@ import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-// import { gramanerHandler } from '../pages/api/extract.js';
-// import { gramanerSimilarity, gramanerSummarize } from '../pages/api/llm.js';
 import gramanerHandler from '../pages/api/gramaner/extract.js';
 import gramanerSimilarity from '../pages/api/gramaner/similarity.js';
 import gramanerSummarize from '../pages/api/gramaner/summarize.js';

@@ -24,7 +24,7 @@ export default async function klingAI_queryTask(req, res) {
   });
 }
 
-async function queryTask(taskId) {
+async function queryTask(taskId, _endpoint) {
     const token = await generateJWT_native(klingAI_KEYS.access_key, klingAI_KEYS.secret_key);
     if (token != null) {
         console.log('Successfully generated token: ' + `Bearer ${token}`);
