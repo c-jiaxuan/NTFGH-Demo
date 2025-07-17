@@ -11,11 +11,13 @@ export class ChatModel {
 
         this.result;
         this.followupQuestions = null;
+
+        this.uploadedFile = null;
     }
 
-    addMessage(sender, content, id) {
+    addMessage(sender, content, id, intent) {
         const timestamp = new Date(); // current date and time
-        const message = { sender, content ,id , timestamp};
+        const message = { sender, content , id, intent, timestamp};
         console.log('\n(Chat-model) Pushing message: ');
         console.log(JSON.stringify(message), '\n');
         this.messages.push(message);
@@ -28,6 +30,11 @@ export class ChatModel {
 
     getMessage(id) {
         return this.messages.find(msg => msg.id === id);
+    }
+
+    getMessageIntent(id) {
+        const message = this.getMessage(id);
+        return message.intent;
     }
 
     isImageMessage(id) {
@@ -48,6 +55,24 @@ export class ChatModel {
             return true;
         }
         return false;
+    }
+
+    getUploadedFile() {
+        return this.uploadedFile;
+    }
+
+    clearUploadedFile() {
+        this.uploadedFile = null;
+    }
+
+    getUploadedFileType() {
+        if (!this.uploadedFile) return null;
+        // Heuristic: check first few characters of base64 for file type
+        const base64Only = this.uploadedFile.replace(/^data:image\/\w+;base64,/, '');
+        if (base64Only.startsWith('iVBOR')) return 'image'; // PNG
+        if (base64Only.startsWith('/9j/')) return 'image'; // JPEG
+        if (base64Only.startsWith('AAAA')) return 'video'; // MP4 (base64 of ftyp)
+        return 'unknown';
     }
 
     async getBotResponse(userInput, language) {
@@ -131,22 +156,44 @@ export class ChatModel {
         }
     }
 
+    async generateImg2Video_KlingAI(userInput, image) {
+        try {
+            console.log('[chat-model] Receieved: ' + userInput + ', ' + image);
+            // Removes prefix for the API call
+            const base64Only = image.replace(/^data:image\/\w+;base64,/, '');
+            const res = await fetch("/api/generateImg2Vid", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ input: userInput, base64: base64Only})
+            });
+
+            const response = await res.json();
+            const taskID = this.klingAI_processTask(response);
+
+            if (taskID != null) {
+                return taskID;
+            } else {
+                throw new Error("Task not created in KlingAI API");
+            }
+        } catch (err) {
+            console.error('❌ Sorry, something went wrong while creating the task.' + err);
+            return null;
+        }
+    }
+
     async queryTask_KlingAI(messageID, taskID) {
-        if (this.getMessage(messageID) == undefined) {
+        const msg = this.getMessage(messageID);
+        if (msg == undefined) {
             console.log('(chat-model) queryTask_KlingAI : no message with messageID found');
             return null;
         }
 
-        let type = null;
-        if (this.isImageMessage(messageID)) {
-            console.log('Querying image task');
-            type = 'img';
-        } else if (this.isVideoMessage(messageID)) {
-            console.log('Querying video task');
-            type = 'video';
-        }
+        console.log('msg: ' + msg);
+        const type = msg.intent;
+
         console.log('MessageID: ' + messageID);
         console.log('taskID: ' + taskID);
+        console.log('Intent: ' + type);
 
         try {
             const res = await fetch("/api/queryTask", {
@@ -373,5 +420,25 @@ export class ChatModel {
                 console.warn(`Unhandled task status: ${task_status}`);
                 return null;
         }
+    }
+
+    async convertToBase64Img(image) {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+
+            fileReader.onload = (event) => {
+                const base64Full = event.target.result;
+                // const base64Only = base64Full.replace(/^data:image\/\w+;base64,/, '');
+                this.uploadedFile = base64Full;
+                console.log('[chat-model] Set uploaded file to be: ' + this.uploadedFile);
+                resolve(base64Full);
+            };
+
+            fileReader.onerror = (error) => {
+                reject(error);
+            };
+
+            fileReader.readAsDataURL(image);
+        });
     }
 }

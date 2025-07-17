@@ -37,6 +37,14 @@ export const chatbot_config = {
     }
 };
 
+export const messageIntent = {
+    NONE:    0,
+    TXT2IMG: 1,
+    TXT2VID: 2,
+    IMG2VID: 3,
+    EXTDVID: 4
+}
+
 export const imageKeywords = [
     "draw",
     "generate an image",
@@ -57,15 +65,42 @@ export const videoKeywords = [
     "generate a video",
     "create a video",
     "show me a video",
-    "animate",
     "render a video",
     "can you make a video",
-    "visualize this in motion",
-    "video of",
     "motion version",
     "animated version",
     "short video",
     "clip of",
     "film this",
-    "turn this into a video"
+];
+
+export const img2VidKeywords = [
+    "turn this image into a video",
+    "animate this picture",
+    "animate this image",
+    "make this image move",
+    "convert this image to video",
+    "bring this image to life",
+    "motion version of this image",
+    "make this still image dynamic",
+    "video from this image",
+    "loop this picture",
+    "motion effect on this image"
+];
+
+export const extdVideoKeywords = [
+    "longer video",
+    "extend the animation",
+    "make a full scene",
+    "add more scenes",
+    "continue the video",
+    "expand this into a story",
+    "storyline video",
+    "turn this into a film",
+    "narrative version",
+    "video with more detail",
+    "generate a full-length animation",
+    "make a detailed video",
+    "extend the clip",
+    "add a beginning and end"
 ];

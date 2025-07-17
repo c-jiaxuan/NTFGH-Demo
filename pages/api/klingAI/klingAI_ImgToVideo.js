@@ -1,17 +1,17 @@
-import { klingAI_Vid_config } from "../../../public/js/config/klingAI-config.js";
+import { klingAI_Img2Vid_Config } from "../../../public/js/config/klingAI-config.js";
 import { klingAI_KEYS } from "../../../public/js/env/klingAI-keys.js";
 // import generateToken from "../generateJWT_KlingAI.js";
 import { generateJWT_native, decodeJWT } from '../jwt-native.js';
 
-export default async function klingAI_TextToVideo(req, res) {
+export default async function klingAI_ImgToVideo(req, res) {
   let body = '';
   req.on('data', chunk => body += chunk);
   req.on('end', async () => {
       try {
-        const { input } = JSON.parse(body);
-        console.log('[TextToVideo] KlingAI input recieved: ' + input);
+        const { input, base64 } = JSON.parse(body);
+        console.log('[ImgToVideo] KlingAI input recieved: ' + input + ', ' + base64);
 
-        const response = await createTextToVidTask(input);
+        const response = await createImgToVidTask(input, base64);
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ response }));
@@ -22,29 +22,29 @@ export default async function klingAI_TextToVideo(req, res) {
   });
 }
 
-async function createTextToVidTask(userInput) {
+async function createImgToVidTask(userInput, image) {
     const token = await generateJWT_native(klingAI_KEYS.access_key, klingAI_KEYS.secret_key);
     if (token != null) {
         console.log('Successfully generated token: ' + `Bearer ${token}`);
     }
-    const url = klingAI_Vid_config.KLING_AI_ENDPOINT;
+    const url = klingAI_Img2Vid_Config.KLING_AI_ENDPOINT;
     const headers = {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
     };
     const body = {
-        model_name: klingAI_Vid_config.requestBody.model_name,
+        model_name: klingAI_Img2Vid_Config.requestBody.model_name,
+        image: `${image}`,  // Base64 encoded image string or image URL
         prompt: userInput,
         // negative_prompt: 'Your negative text prompt',
-        cfg_scale: klingAI_Vid_config.requestBody.cfg_scale, // Flexibility in video generation, The higher the value, the lower the model's degree of flexibility, and the stronger the relevance to the user's prompt. Value range: [0, 1]
-        mode: klingAI_Vid_config.requestBody.mode, // Video Generation mode, [std: Standard, pro: Professional]
-        duration: klingAI_Vid_config.requestBody.duration,   // Video length in seconds [5, 10]
-        aspect_ratio: klingAI_Vid_config.requestBody.aspect_ratio
+        cfg_scale: klingAI_Img2Vid_Config.requestBody.cfg_scale, // Flexibility in video generation, The higher the value, the lower the model's degree of flexibility, and the stronger the relevance to the user's prompt. Value range: [0, 1]
+        mode: klingAI_Img2Vid_Config.requestBody.mode, // Video Generation mode, [std: Standard, pro: Professional]
+        duration: klingAI_Img2Vid_Config.requestBody.duration,   // Video length in seconds [5, 10]
         // callback_url: klingAI_Vid_config.requestBody.callback_url
     };
 
     try {
-        console.log('\n[TextToVideo]');
+        console.log('\n[ImgToVideo]');
         console.log('Making FETCH request: ');
         console.log("Method:", 'POST');
         console.log("Headers:", headers);
@@ -57,7 +57,7 @@ async function createTextToVidTask(userInput) {
         });
 
         const data = await response.json();
-        console.log('klingAI video generation response: ' + JSON.stringify(data));
+        console.log('klingAI image2video generation response: ' + JSON.stringify(data));
 
         if (data.code !== 0) {
             console.error(`Error ${response.status}: ${data.message}`);

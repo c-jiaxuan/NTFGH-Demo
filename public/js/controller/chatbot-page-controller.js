@@ -1,7 +1,7 @@
 import { BasePageController } from './base-page-controller.js';
 import { ChatbotView } from '../view/chatbot-view.js';
 import { ChatModel } from '../model/chat-model.js';
-import { chatbot_config, imageKeywords, videoKeywords } from "../config/chatbot-config.js";
+import { chatbot_config, messageIntent, imageKeywords, img2VidKeywords, videoKeywords } from "../config/chatbot-config.js";
 import { AvatarEvents, EventBus, Events } from '../event-bus.js';
 import { appSettings } from '../config/appSettings.js';
 import { llm_config } from '../config/llm-config.js';
@@ -18,104 +18,161 @@ export class ChatbotPageController extends BasePageController {
 
         this.view.setUserInputHandler(this.handleSend.bind(this));
 
-
+        this.view.bindFileSelect(this.handleFileUpload.bind(this));
 
         this.isTranscribeActive = false;
     }
 
     async handleSend(userInput) {
-        const messageId = `msg-${Date.now()}`;
-        this.model.addMessage("User", { text: userInput }, messageId);
-        this.view.displayMessage("User", { text: userInput });
+        const uploadedFile = this.model.getUploadedFile(); 
+        const messageId = this.createMessageId();
+        this.addUserMessage( { text: userInput, image: uploadedFile }, messageId);
 
-        EventBus.emit(AvatarEvents.SPEAK, { message: this.getTranslatedMessage('wait_msg', appSettings.language) });
+        EventBus.emit(AvatarEvents.SPEAK, {
+            message: this.getTranslatedMessage('wait_msg', appSettings.language)
+        });
 
         this.view.displayBotLoading();
 
-        let content, followUp;
+        const intent = this.detectIntent(userInput);
+        const placeholder = this.getPlaceholder(intent);
 
-        let img = null;
-        let placeholderImage = "../../img/generating.png";
+        let botResponse = await this.getBotResponse(userInput, intent, placeholder);
+        const botMsgID = this.createMessageId();
 
-        let vid = null;
+        this.addBotMessage(botResponse, botMsgID, intent);
 
-        // This taskID is to store the ID of the created task from klingAI
-        let taskID = null;
-        
-        // Detects if user has intention to generate an image/video
-        // and adds in placeholder image
-        if (this.isImageIntent(userInput)) {
-            // Display a placeholder image with a unique messageId
-            console.log('Detected Image generation intent');
-            content = this.getTranslatedMessage('image_msg', appSettings.language)
-            img = placeholderImage; 
-        } else if (this.isVideoIntent(userInput)) {
-            console.log('Detected Video generation intent');
-            content = this.getTranslatedMessage('video_msg', appSettings.language)
-            vid = 'video_placeholder';
-        } else {
-            ({ content, followUp } = await this.model.getBotResponse(userInput, llm_config.bot_language));
-        }
+        if (intent !== messageIntent.NONE) {
+            console.log('[chat-controller] uploadedFile =  ' + uploadedFile);
+            if (uploadedFile !== null) {
+                await this.handleMediaGeneration(userInput, intent, botMsgID, uploadedFile);
+                this.model.clearUploadedFile();
 
-        let messageContent = this.buildMessageContent({
-            text: content ?? this.getTranslatedMessage('error_msg', appSettings.language),
-            image: img,
-            video: vid,
-            followUp
-        });
-
-        const botMsgID = `msg-${Date.now()}`;
-        this.model.addMessage("Bot", messageContent, botMsgID);
-        this.view.displayMessage("Bot", messageContent, botMsgID);
-
-        // Generate the image/video
-        if (img != null) {
-            taskID = await this.model.generateImage_KlingAI(userInput);
-        } else if (vid != null) {
-            taskID = await this.model.generateVideo_KlingAI(userInput);
-        }
-
-        // Repeatedly query for the task process
-        let updateMsg = null;
-        let result = null;      // To store the generated Images/Videos
-        if (taskID != null) {
-            try {
-                result = await this.pollKlingAITask(botMsgID, taskID, {
-                    intervalMs: 2000,
-                    maxWaitMs: 1200000
-                });
-
-                console.log('Resource generated successfully');
-                updateMsg = this.getTranslatedMessage('success_image_msg', appSettings.language);
-            } catch (err) {
-                console.log('Resource failed to generate');
-                updateMsg = this.getTranslatedMessage('failed_image_msg', appSettings.language);
-            }
-
-            if (result) {
-                const updateMsg = 'Here is your generated content:';
-                this.view.updateMessageContent(botMsgID, {
-                    text: updateMsg,
-                    image: result.type === 'image' ? result.urls : null,
-                    video: result.type === 'video' ? result.urls : null
-                });
+                // Give the DOM some time to update before clearing
+                setTimeout(() => {
+                    this.view.clearUploadedMediaPreview();
+                    this.view.clearFileInput();
+                    console.log('[chat-controller] Uploaded media preview cleared after sending.');
+                }, 50);
             } else {
-                console.warn("No result to update message with.");
-            }
-
-            // this.view.updateMessageImage(messageId, result, updateMsg);
-            // this.view.updateMessageContent(botMsgID, {
-            //     text: updateMsg,
-            //     image: result
-            // });
-
-            EventBus.emit(AvatarEvents.SPEAK, { message: updateMsg });
+                await this.handleMediaGeneration(userInput, intent, botMsgID);
+           }
         }
 
-        EventBus.emit(AvatarEvents.SPEAK, { message: content });
+        EventBus.emit(AvatarEvents.SPEAK, { message: botResponse.text });
         this.view.removeBotLoading();
     }
 
+    createMessageId() {
+        return `msg-${Date.now()}`;
+    }
+
+    addUserMessage(content, messageId) {
+        this.model.addMessage("User", content, messageId);
+        this.view.displayMessage("User", content);
+    }
+
+    // KEYWORDS ARE OVERLAPPING !!! NEED TO CHANGE
+    detectIntent(userInput) {
+        if (this.isImageIntent(userInput)) return messageIntent.TXT2IMG;
+        if (this.isVideoIntent(userInput)) return messageIntent.TXT2VID;
+        if (this.isImg2VideoIntent(userInput)) return messageIntent.IMG2VID;
+        return messageIntent.NONE;
+    }
+
+    getPlaceholder(intent) {
+        if (intent === messageIntent.TXT2IMG) return "../../img/generating.png";
+        if (intent === messageIntent.TXT2VID || intent === messageIntent.IMG2VID) return 'video_placeholder';
+        return null;
+    }
+
+    async getBotResponse(userInput, intent, placeholder) {
+        let content, followUp = null;
+
+        switch (intent) {
+            case messageIntent.TXT2IMG:
+                content = this.getTranslatedMessage('image_msg', appSettings.language);
+                break;
+            case messageIntent.TXT2VID:
+            case messageIntent.IMG2VID:
+                content = this.getTranslatedMessage('video_msg', appSettings.language);
+                break;
+            case messageIntent.NONE:
+                ({ content, followUp } = await this.model.getBotResponse(userInput, llm_config.bot_language));
+                break;
+            default:
+                ({ content, followUp } = await this.model.getBotResponse(userInput, llm_config.bot_language));
+                break;
+        }
+
+        return this.buildMessageContent({
+            text: content ?? this.getTranslatedMessage('error_msg', appSettings.language),
+            image: intent === messageIntent.TXT2IMG ? placeholder : null,
+            video: (intent === messageIntent.TXT2VID || intent === messageIntent.IMG2VID) ? placeholder : null,
+            followUp
+        });
+    }
+
+    addBotMessage(messageContent, messageId, intent = messageIntent.NONE) {
+        this.model.addMessage("Bot", messageContent, messageId, intent);
+        this.view.displayMessage("Bot", messageContent, messageId);
+    }
+
+    async handleMediaGeneration(userInput, intent, messageId, image = null) {
+        let taskID = null;
+
+        try {
+            if (intent === messageIntent.TXT2IMG) {
+                taskID = await this.model.generateImage_KlingAI(userInput);
+            } else if (intent === messageIntent.TXT2VID) {
+                taskID = await this.model.generateVideo_KlingAI(userInput);
+            } else if (intent === messageIntent.IMG2VID) {
+                taskID = await this.model.generateImg2Video_KlingAI(userInput, image);
+            }
+
+            const result = await this.pollKlingAITask(messageId, taskID, {
+                intervalMs: 2000,
+                maxWaitMs: 1200000
+            });
+
+            const updateMsg = result
+                ? this.getTranslatedMessage('success_image_msg', appSettings.language)
+                : this.getTranslatedMessage('failed_image_msg', appSettings.language);
+
+            if (result) {
+                this.view.updateMessageContent(messageId, {
+                    text: 'Here is your generated content:',
+                    image: result.type === 'image' ? result.urls : null,
+                    video: result.type === 'video' ? result.urls : null
+                });
+            }
+
+            EventBus.emit(AvatarEvents.SPEAK, { message: updateMsg });
+        } catch (err) {
+            const failMsg = this.getTranslatedMessage('failed_image_msg', appSettings.language);
+            EventBus.emit(AvatarEvents.SPEAK, { message: failMsg });
+            console.warn('[chat-controller] Media generation failed', err);
+        }
+    }
+
+    async handleFileUpload(file) {
+        try {
+            const base64Img = await this.model.convertToBase64Img(file);
+            const base64Only = base64Img.replace(/^data:image\/\w+;base64,/, '');
+
+            console.log('[chat-controller] Uploaded file in base64 is =', base64Only);
+
+            const type = this.model.getUploadedFileType();
+
+            this.view.renderUploadedMedia(base64Only, type, () => {
+                this.model.clearUploadedFile();
+                console.log('[chat-controller] File deleted, model cleared.');
+            });
+
+        } catch (error) {
+            console.error('[chat-controller] Failed to convert image to base64:', error);
+        }
+    }
 
     onEnter() {
         super.onEnter();
@@ -136,7 +193,7 @@ export class ChatbotPageController extends BasePageController {
     onExit() {
         super.onExit();
 
-        console.log('Leaving Chatbot page');
+        console.log('[chat-controller] Leaving Chatbot page');
 
         EventBus.off(Events.UPDATE_LANGUAGE, (e) => { this.onUpdateLanguage(e.detail); })
         EventBus.off(Events.UPDATE_INPUTMODE, (e) => { this.onUpdateInputMode(e.detail); })
@@ -151,7 +208,7 @@ export class ChatbotPageController extends BasePageController {
     }
 
     start() {
-        console.log('Chatbot page start');
+        console.log('[chat-controller] Chatbot page start');
 
         const welcomeMsg = this.getTranslatedMessage('start_msg', appSettings.language); // or 'zh'
 
@@ -162,11 +219,11 @@ export class ChatbotPageController extends BasePageController {
     }
 
     onUpdateLanguage(language) {
-        console.log('Chatbot language changed to ' + language);
+        console.log('[chat-controller] Chatbot language changed to ' + language);
     }
 
     onUpdateInputMode(input) {
-        console.log('Chatbot input mode changed to ' + input);
+        console.log('[chat-controller] Chatbot input mode changed to ' + input);
 
         if (appSettings.inputMode == 'voice') {
             document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
@@ -197,7 +254,7 @@ export class ChatbotPageController extends BasePageController {
     }
 
     async handleTranscribeEvent(e) {
-        console.log("transcribe" + e.detail);
+        console.log("[chat-controller] transcribe" + e.detail);
     }
 
     async handleTranscribeComplete(e) {
@@ -206,7 +263,7 @@ export class ChatbotPageController extends BasePageController {
             return;
         }
         
-        console.log("transcribe complete = " + transcript);
+        console.log("[chat-controller] transcribe complete = " + transcript);
         
         this.view.setTranscribeInput(transcript);
 
@@ -247,6 +304,11 @@ export class ChatbotPageController extends BasePageController {
         return videoKeywords.some(keyword => message.includes(keyword));
     }
 
+    isImg2VideoIntent(userMessage) {
+        const message = userMessage.toLowerCase();
+        return img2VidKeywords.some(keyword => message.includes(keyword));
+    }
+
     buildMessageContent({ text, image, video, file, followUp = [] }) {
         const messageContent = {};
 
@@ -266,14 +328,14 @@ export class ChatbotPageController extends BasePageController {
             messageContent.file = file;
         }
 
-        if (followUp.length > 0) {
+        if (followUp && followUp.length > 0) {
             messageContent.buttons = followUp.map((label, index) => ({
                 label,
                 value: `option_${index}`
             }));
         }
 
-        console.log('built messageContent: ' + JSON.stringify(messageContent));
+        console.log('[chat-controller] built messageContent: ' + JSON.stringify(messageContent));
         return messageContent;
     }
     /**
@@ -282,7 +344,7 @@ export class ChatbotPageController extends BasePageController {
      */
     async pollKlingAITask(messageID, taskID, options = {}) {
 
-        console.log('Polling created KlingAI task: ' + taskID);
+        console.log('[chat-controller] Polling created KlingAI task: ' + taskID);
         const intervalMs = options.intervalMs || 3000;
         const maxWaitMs = options.maxWaitMs || 5 * 60 * 1000;
 

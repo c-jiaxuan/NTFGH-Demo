@@ -1,6 +1,8 @@
+import { messageIntent } from "../../../public/js/config/chatbot-config.js";
 import { klingAI_KEYS } from "../../../public/js/env/klingAI-keys.js";
 import { klingAI_Img_config } from "../../../public/js/config/klingAI-config.js";
 import { klingAI_Vid_config } from "../../../public/js/config/klingAI-config.js";
+import { klingAI_Img2Vid_Config } from "../../../public/js/config/klingAI-config.js";
 import { saveURLMedia } from "./klingAI_helper.js"
 import { generateJWT_native, decodeJWT } from '../jwt-native.js';
 
@@ -10,7 +12,7 @@ export default async function klingAI_queryTask(req, res) {
   req.on('end', async () => {
       try {
         const { input, endpoint } = JSON.parse(body);
-        console.log('KlingAI input recieved: ' + input, ', ' + endpoint);
+        console.log('[queryTask] KlingAI input recieved: ' + input, ', ' + endpoint);
 
         const response = await queryTask(input, endpoint);
 
@@ -31,10 +33,12 @@ async function queryTask(taskId, _endpoint) {
     // 【Image Generation】Query Task（Single) Request URL is : /v1/images/generations/{id}
     // 【Text to Video】Query Task（Single）Request URL is : /v1/videos/text2video/{id}
     let endpoint = null;
-    if (_endpoint == 'img') {
+    if (_endpoint == messageIntent.TXT2IMG) {
         endpoint = klingAI_Img_config.KLING_AI_ENDPOINT
-    } else if (_endpoint == 'video') {
+    } else if (_endpoint == messageIntent.TXT2VID) {
         endpoint = klingAI_Vid_config.KLING_AI_ENDPOINT
+    } else if (_endpoint == messageIntent.IMG2VID) {
+        endpoint = klingAI_Img2Vid_Config.KLING_AI_ENDPOINT
     }
     const url = `${endpoint}/${taskId}`;
     const headers = {
@@ -43,7 +47,8 @@ async function queryTask(taskId, _endpoint) {
     };
 
     try {
-        console.log('\nMaking FETCH request: ');
+        console.log('\n[queryTask]');
+        console.log('Making FETCH request: ');
         console.log("Request URL:", url);
         console.log("Method:", 'GET');
         console.log("Headers:", headers);
@@ -71,6 +76,7 @@ async function queryTask(taskId, _endpoint) {
             console.log('NO MEDIA FOUND');
         } else {
             // Save images
+            console.log("Images received:", images.map(i => i.url));
             for (const img of images) {
                 try {
                     const path = await saveURLMedia(img.url, klingAI_Img_config.baseName);
@@ -81,6 +87,7 @@ async function queryTask(taskId, _endpoint) {
             }
 
             // Save videos
+            console.log("Videos received:", videos.map(i => i.url));
             for (const vid of videos) {
                 try {
                     const path = await saveURLMedia(vid.url, klingAI_Vid_config.baseName);

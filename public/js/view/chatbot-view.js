@@ -9,14 +9,15 @@ export class ChatbotView extends BaseView {
         this.chatLog = document.getElementById("chat-log");
         this.chatInput = document.getElementById("chat-input");
         this.sendButton = document.getElementById("send-button");
+        this.attachButton = document.getElementById("attach-button");
+        this.fileInput = document.getElementById("fileInput");
 
         this.setListeners();
-        
     }
 
     bindSend(handler) {
         this.sendButton.addEventListener("click", () => {
-            console.log('Chatbot send enter button input');
+            console.log('[chat-view] Chatbot send enter button input');
             const text = this.chatInput.value.trim();
             if (text) {
                 handler(text);
@@ -26,9 +27,25 @@ export class ChatbotView extends BaseView {
 
         this.chatInput.addEventListener("keypress", (e) => {
             if (e.key === "Enter") {
-                console.log('Chatbot send enter keypress input');
+                console.log('[chat-view] Chatbot send enter keypress input');
                 this.sendButton.click();
             }
+        });
+    }
+
+    bindFileSelect(handler) {
+        document.getElementById("fileInput").addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                console.log('[chat-view] fileName = ' + file.name);
+                handler(file);
+            } else {
+                console.log('[chat-view] No file selected.');
+            }
+        });
+
+        this.attachButton.addEventListener('click', function() {
+            document.getElementById("fileInput").click();
         });
     }
 
@@ -182,7 +199,6 @@ export class ChatbotView extends BaseView {
         }
     }
 
-
     // To update the image in a chat bubble once the image is generated
     updateMessageImage(messageId, newImageSrc, newText = null) {
         const messageElement = this.chatLog.querySelector(`[data-message-id="${messageId}"]`);
@@ -217,6 +233,55 @@ export class ChatbotView extends BaseView {
         }
     }
 
+    renderUploadedMedia(base64, type, onDelete) {
+        const previewArea = document.querySelector('#upload-preview-area');
+
+        // Clear previous preview
+        previewArea.innerHTML = '';
+
+        // Create new container
+        const container = document.createElement('div');
+        container.className = 'uploaded-media-container';
+
+        let mediaElement;
+        if (type === 'image') {
+            mediaElement = document.createElement('img');
+            mediaElement.src = `data:image/*;base64,${base64}`;
+        } else if (type === 'video') {
+            mediaElement = document.createElement('video');
+            mediaElement.src = `data:video/mp4;base64,${base64}`;
+            mediaElement.controls = true;
+        }
+
+        mediaElement.className = 'uploaded-preview';
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = '×';
+        deleteBtn.className = 'delete-upload-btn';
+        deleteBtn.onclick = () => {
+            container.remove();
+            onDelete(); // callback to controller to clear the model
+        };
+
+        container.appendChild(mediaElement);
+        container.appendChild(deleteBtn);
+        previewArea.appendChild(container);
+    }
+
+    clearUploadedMediaPreview() {
+        const previewArea = document.querySelector('#upload-preview-area');
+        if (previewArea) {
+            console.log('[chat-view] Cleared upload preview area');
+            previewArea.innerHTML = '';
+        }
+    }
+
+    clearFileInput() {
+        if (this.fileInput) {
+            this.fileInput.value = '';
+            console.log('[chat-view] Cleared file input');
+        }
+    }
 
     setUserInputHandler(handler) {
         this.handleUserInput = handler;
@@ -252,7 +317,7 @@ export class ChatbotView extends BaseView {
     }
 
     setLanguage(language) {
-        console.log('Setting Language: ' + language);
+        console.log('[chat-view] Setting Language: ' + language);
     }
 
     // For popping up images from within chat bubble
@@ -264,8 +329,8 @@ export class ChatbotView extends BaseView {
 
             document.body.addEventListener('click', (e) => {
                 if (e.target.classList.contains('chat-image')) {
-                modalImg.src = e.target.src;
-                modal.classList.remove('hidden');
+                    modalImg.src = e.target.src;
+                    modal.classList.remove('hidden');
                 }
             });
 
@@ -273,6 +338,11 @@ export class ChatbotView extends BaseView {
                 modal.classList.add('hidden');
                 modalImg.src = '';
             };
+
+            this.chatInput.addEventListener('input', function () {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+            });
         });
     }
 }

@@ -8,6 +8,7 @@ import gramanerSummarize from '../pages/api/gramaner/summarize.js';
 import stabilityAI_generateImage from '../pages/api/stability-ai.js';
 import klingAI_TextToImage from '../pages/api/klingAI/klingAI_TextToImg.js';
 import klingAI_TextToVideo from '../pages/api/klingAI/klingAI_TextToVideo.js';
+import klingAI_ImgToVideo from '../pages/api/klingAI/klingAI_ImgToVideo.js';
 import klingAI_queryTask from '../pages/api/klingAI/klingAI_queryTask.js';
 import crypto from 'crypto';
 
@@ -30,6 +31,8 @@ const server = http.createServer(async (req, res) => {
       //return await stabilityAI_generateImage(req, res);
     } else if (req.url === '/api/generateVid') {
       return await klingAI_TextToVideo(req, res);
+    } else if (req.url === '/api/generateImg2Vid') {
+      return await klingAI_ImgToVideo(req, res);
     } else if (req.url === '/api/queryTask') {
       return await klingAI_queryTask(req, res);
     } else if (req.url === '/api/gramanerExtract') {

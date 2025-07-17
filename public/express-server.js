@@ -12,6 +12,7 @@ import gramanerSummarize from '../pages/api/gramaner/summarize.js';
 import stabilityAI_generateImage from '../pages/api/stability-ai.js';
 import klingAI_TextToImage from '../pages/api/klingAI/klingAI_TextToImg.js';
 import klingAI_TextToVideo from '../pages/api/klingAI/klingAI_TextToVideo.js';
+import klingAI_ImgToVideo from '../pages/api/klingAI/klingAI_ImgToVideo.js';
 import klingAI_queryTask from '../pages/api/klingAI/klingAI_queryTask.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -38,8 +39,9 @@ app.get('/hosPi', (req, res) => {
 // app.post('/api/extract', handler);
 // app.post('/api/generateImg', stabilityAI_generateImage);
 app.post('/api/generateImg', klingAI_TextToImage);
-app.post('/api/generateVid', klingAI_TextToVideo)
-app.post('/api/queryTask', klingAI_queryTask)
+app.post('/api/generateVid', klingAI_TextToVideo);
+app.post('/api/generateImg2Vid', klingAI_ImgToVideo);
+app.post('/api/queryTask', klingAI_queryTask);
 app.post('/api/gramanerExtract', gramanerHandler);
 app.post('/api/gramanerSimilarity', gramanerSimilarity);
 app.post('/api/gramanerSummarize', gramanerSummarize);

@@ -81,12 +81,17 @@
       <div id="chat-log" class="chat-log-container">
         <!-- Messages appear here -->
       </div>
-        <div class="input-area-container">
-            <input id="chat-input" class="input-area" type="text" size="200" maxlength="200" placeholder="Type your message...">
-            <button id="send-button" class="send-button">
-            <img src="./img/icon/Send.png" alt="Snow">
-            </button>
-        </div>
+      <div id="upload-preview-area" class="uploaded-preview-area-container"></div>
+      <div class="input-area-container">
+        <textarea id="chat-input" class="input-area" maxlength="2000" placeholder="Type your message..."></textarea>
+        <button id="attach-button" class="icon-button attachment">
+          <input type="file" id="fileInput" style="display: none" />
+          <img src="./img/icon/attach.png" alt="Attach">
+        </button>
+        <button id="send-button" class="icon-button send">
+          <img src="./img/icon/Send.png" alt="Send">
+        </button>
+      </div>
     </div>
 
     <div id="setup-page" class="subpage">

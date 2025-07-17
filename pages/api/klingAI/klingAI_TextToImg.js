@@ -11,7 +11,7 @@ export default async function klingAI_TextToImage(req, res) {
   req.on('end', async () => {
       try {
         const { input } = JSON.parse(body);
-        console.log('KlingAI input recieved: ' + input);
+        console.log('[TextToImage] KlingAI input recieved: ' + input);
 
         const response = await createTextToImgTask(input);
 
@@ -44,13 +44,14 @@ async function createTextToImgTask(userInput) {
         // image_reference: klingAI_Img_config.requestBody.image_reference,
         // image_fidelity: klingAI_Img_config.requestBody.image_fidelity,
         // human_fidelity: klingAI_Img_config.requestBody.human_fidelity,
-        // n: klingAI_Img_config.requestBody.n,
-        // aspect_ratio: klingAI_Img_config.requestBody.aspect_ratio,
+        n: klingAI_Img_config.requestBody.n,
+        aspect_ratio: klingAI_Img_config.requestBody.aspect_ratio,
         // callback_url: klingAI_Img_config.requestBody.callback_url
     };
 
     try {
-        console.log('\nMaking FETCH request: ');
+        console.log('\n[TextToImg]');
+        console.log('Making FETCH request: ');
         console.log("Request URL:", url);
         console.log("Method:", 'POST');
         console.log("Headers:", headers);
