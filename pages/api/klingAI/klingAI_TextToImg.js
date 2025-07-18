@@ -1,7 +1,7 @@
 import { klingAI_Img_config } from '../../../public/js/config/klingAI-config.js';
 import { klingAI_KEYS } from '../../../public/js/env/klingAI-keys.js';
-// import generateToken from "./generateJWT_KlingAI.js";
-import { generateJWT_native, decodeJWT } from '../jwt-native.js';
+import generateToken from "../generateJWT_KlingAI.js";
+// import { generateJWT_native, decodeJWT } from '../jwt-native.js';
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; // ONLY FOR DEVELOPMENT, REMOVE BEFORE PRODUCTION
 
@@ -26,7 +26,7 @@ export default async function klingAI_TextToImage(req, res) {
 
 async function createTextToImgTask(userInput) {
     // const token = generateToken(klingAI_KEYS.access_key, klingAI_KEYS.secret_key);
-    const token = await generateJWT_native(klingAI_KEYS.access_key, klingAI_KEYS.secret_key);
+    const token = await generateToken(klingAI_KEYS.access_key, klingAI_KEYS.secret_key);
     console.log("\njwt-native generated token: " + token + "\n");
     if (token != null) {
         console.log('Successfully generated token: ' + `Bearer ${token}`);

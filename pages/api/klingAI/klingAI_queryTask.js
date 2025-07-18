@@ -4,7 +4,8 @@ import { klingAI_Img_config } from "../../../public/js/config/klingAI-config.js"
 import { klingAI_Vid_config } from "../../../public/js/config/klingAI-config.js";
 import { klingAI_Img2Vid_Config } from "../../../public/js/config/klingAI-config.js";
 import { saveURLMedia } from "./klingAI_helper.js"
-import { generateJWT_native, decodeJWT } from '../jwt-native.js';
+import generateToken from "../generateJWT_KlingAI.js";
+// import { generateJWT_native, decodeJWT } from '../jwt-native.js';
 
 export default async function klingAI_queryTask(req, res) {
   let body = '';
@@ -26,7 +27,7 @@ export default async function klingAI_queryTask(req, res) {
 }
 
 async function queryTask(taskId, _endpoint) {
-    const token = await generateJWT_native(klingAI_KEYS.access_key, klingAI_KEYS.secret_key);
+    const token = await generateToken(klingAI_KEYS.access_key, klingAI_KEYS.secret_key);
     if (token != null) {
         console.log('Successfully generated token: ' + `Bearer ${token}`);
     }
