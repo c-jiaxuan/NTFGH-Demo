@@ -116,7 +116,7 @@ export class ChatbotView extends BaseView {
         messageElement.appendChild(bubble);
         messageElement.appendChild(timestamp);
         this.chatLog.appendChild(messageElement);
-        this.chatLog.scrollTop = this.chatLog.scrollHeight;
+        this.chatLog.scrollTo({ top: this.chatLog.scrollHeight, behavior: 'smooth' });
     }
 
     updateMessageContent(messageId, updates = {}) {
@@ -197,6 +197,8 @@ export class ChatbotView extends BaseView {
                 bubble.appendChild(buttonContainer);
             }
         }
+
+        this.chatLog.scrollTo({ top: this.chatLog.scrollHeight, behavior: 'smooth' });
     }
 
     // To update the image in a chat bubble once the image is generated
@@ -307,6 +309,7 @@ export class ChatbotView extends BaseView {
         this.loadingElement.appendChild(timestamp);
         this.chatLog.appendChild(this.loadingElement);
         this.chatLog.scrollTop = this.chatLog.scrollHeight;
+        this.chatLog.scrollTo({ top: this.chatLog.scrollHeight, behavior: 'smooth' });
     }
 
     removeBotLoading() {

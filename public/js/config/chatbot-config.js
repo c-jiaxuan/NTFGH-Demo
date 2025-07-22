@@ -34,6 +34,10 @@ export const chatbot_config = {
     failed_video_msg: {
         en: 'Sorry, I am unable to generate the video, please try again later.',
         zh: '抱歉，我无法生成视频，请稍后再试。'
+    },
+    img2vid_prompt_msg: {
+        en: 'Sure! lets generate a video from an image! Please upload the image you want to use.',
+        zh: '当然，让我们从图片生成视频！请上传您想使用的图片。'
     }
 };
 

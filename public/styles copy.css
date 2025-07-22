@@ -721,11 +721,12 @@ button:hover {
   font-size: 28px;
   border: none;
   resize: none;
-  overflow-y: auto;
+  overflow-y: hidden;
   line-height: 1.4;
   font-family: inherit;
   box-sizing: border-box;
 }
+
 
 /* Base style for icon buttons */
 .icon-button {
@@ -919,12 +920,14 @@ button:hover {
   position: absolute;
   display: inline-block;
   margin-top: 10px;
+  pointer-events: none;
 }
 
 .uploaded-preview {
   width: 100%;
   border: 1px solid #ccc;
   border-radius: 8px;
+  pointer-events: none;
 }
 
 .delete-upload-btn {
@@ -946,12 +949,11 @@ button:hover {
   justify-content: center;
 }
 
-
-
 .uploaded-preview-area-container {
   position: fixed;
   height: 300px;
   width: 300px;
   right: 50px;
   bottom: 90px;
+  pointer-events: none;
 }

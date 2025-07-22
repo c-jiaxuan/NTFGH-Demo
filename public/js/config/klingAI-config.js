@@ -3,7 +3,7 @@ import { basename } from "path";
 export const klingAI_Img_config = {
     KLING_AI_ENDPOINT: 'https://api-singapore.klingai.com/v1/images/generations',
     requestBody: {
-        model_name: 'kling-v1',  // Enum values：kling-v1, kling-v1-5, kling-v2
+        model_name: 'kling-v1-5',  // Enum values：kling-v1, kling-v1-5, kling-v2
         prompt: '',
         image: 'Base64 encoded image string or image URL',
         image_reference: 'subject', // Enum values：subject(character feature reference), face(character appearance reference)
@@ -22,11 +22,11 @@ export const klingAI_Img_config = {
 export const klingAI_Vid_config = {
     KLING_AI_ENDPOINT: 'https://api-singapore.klingai.com/v1/videos/text2video',
     requestBody: {
-        model_name: 'kling-v1',  // Enum values：kling-v1, kling-v1-5, kling-v2
+        model_name: 'kling-v2-1-master',  // Enum values：kling-v1, kling-v1-5, kling-v2
         prompt: '',
         cfg_scale: '0.5',
         mode: 'std',
-        duration: '5',
+        duration: '10',
         aspect_ratio: '16:9', // Aspect ratio of the generated images (width:height) - Enum values：16:9, 9:16, 1:1, 4:3, 3:4, 3:2, 2:3, 21:9
         callback_url: 'Your callback URL'
     },
@@ -41,7 +41,7 @@ export const klingAI_Img2Vid_Config = {
         image: '',
         prompt: '',
         mode: 'std',
-        duration: '5',
+        duration: '10',
         cfg_scale: '0.5'
     },
     baseName: 'img2vid',
