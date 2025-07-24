@@ -697,7 +697,10 @@ button:hover {
 }
 
 .input-area-container {
-  position: relative;
+  position: absolute;
+  bottom: 15px;
+  left: 0;
+  right: 0;
   align-self: center;
   margin: 0 auto;
   width: 96%;
@@ -714,19 +717,27 @@ button:hover {
 }
 
 .input-area {
-  flex: 1;
-  min-height: 56px;
-  max-height: 320px;
-  padding: 10px 12px;
-  font-size: 28px;
-  border: none;
+  width: 100%;
   resize: none;
   overflow-y: hidden;
-  line-height: 1.4;
+  font-size: 28px;
+  line-height: 1.4em;
+  padding: 10px;
+  border: 1px solid #aaa;
+  border-radius: 8px;
   font-family: inherit;
+  min-height: 40px;
+  max-height: 200px; /* Limit height if you want scrolling */
   box-sizing: border-box;
+  transition: height 0.2s ease;
 }
 
+.textarea-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Anchor textarea to bottom */
+}
 
 /* Base style for icon buttons */
 .icon-button {

@@ -323,6 +323,21 @@ export class ChatbotView extends BaseView {
         console.log('[chat-view] Setting Language: ' + language);
     }
 
+    resizeTextarea() {
+        const textarea = this.chatInput;
+
+        textarea.style.height = 'auto';
+
+        // Force reflow — important in some layout bugs
+        textarea.offsetHeight; 
+
+        const newHeight = textarea.scrollHeight;
+        const maxHeight = 200;
+
+        textarea.style.overflowY = newHeight <= maxHeight ? 'hidden' : 'auto';
+        textarea.style.height = `${Math.min(newHeight, maxHeight)}px`;
+    }
+
     // For popping up images from within chat bubble
     setListeners() {
         document.addEventListener('DOMContentLoaded', () => {
@@ -342,10 +357,7 @@ export class ChatbotView extends BaseView {
                 modalImg.src = '';
             };
 
-            this.chatInput.addEventListener('input', function () {
-                this.style.height = 'auto';
-                this.style.height = this.scrollHeight + 'px';
-            });
+            this.chatInput.addEventListener('input', () => this.resizeTextarea());
         });
     }
 }
