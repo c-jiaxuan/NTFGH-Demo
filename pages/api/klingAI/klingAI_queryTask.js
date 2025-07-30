@@ -76,6 +76,7 @@ async function queryTask(taskId, _endpoint) {
         if (images.length === 0 && videos.length === 0) {
             console.log('NO MEDIA FOUND');
         } else {
+            var i = 0;
             // Save images
             console.log("Images received:", images.map(i => i.url));
             for (const img of images) {
@@ -93,6 +94,8 @@ async function queryTask(taskId, _endpoint) {
                 try {
                     const path = await saveURLMedia(vid.url, klingAI_Vid_config.baseName);
                     console.log(`🎬 Saved video: [${vid.url}]\n→ at: ${path}\n`);
+                    console.log('var i = ' + i);
+                    i = i + 1;
                 } catch (err) {
                     console.error(`❌ Failed to save video [${vid.url}]: ${err.message}`);
                 }

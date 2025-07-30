@@ -116,7 +116,7 @@ export class ChatbotView extends BaseView {
         messageElement.appendChild(bubble);
         messageElement.appendChild(timestamp);
         this.chatLog.appendChild(messageElement);
-        this.chatLog.scrollTop = this.chatLog.scrollHeight;
+        this.chatLog.scrollTo({ top: this.chatLog.scrollHeight, behavior: 'smooth' });
     }
 
     updateMessageContent(messageId, updates = {}) {
@@ -197,6 +197,8 @@ export class ChatbotView extends BaseView {
                 bubble.appendChild(buttonContainer);
             }
         }
+
+        this.chatLog.scrollTo({ top: this.chatLog.scrollHeight, behavior: 'smooth' });
     }
 
     // To update the image in a chat bubble once the image is generated
@@ -307,6 +309,7 @@ export class ChatbotView extends BaseView {
         this.loadingElement.appendChild(timestamp);
         this.chatLog.appendChild(this.loadingElement);
         this.chatLog.scrollTop = this.chatLog.scrollHeight;
+        this.chatLog.scrollTo({ top: this.chatLog.scrollHeight, behavior: 'smooth' });
     }
 
     removeBotLoading() {
@@ -318,6 +321,21 @@ export class ChatbotView extends BaseView {
 
     setLanguage(language) {
         console.log('[chat-view] Setting Language: ' + language);
+    }
+
+    resizeTextarea() {
+        const textarea = this.chatInput;
+
+        textarea.style.height = 'auto';
+
+        // Force reflow — important in some layout bugs
+        textarea.offsetHeight; 
+
+        const newHeight = textarea.scrollHeight;
+        const maxHeight = 200;
+
+        textarea.style.overflowY = newHeight <= maxHeight ? 'hidden' : 'auto';
+        textarea.style.height = `${Math.min(newHeight, maxHeight)}px`;
     }
 
     // For popping up images from within chat bubble
@@ -339,10 +357,7 @@ export class ChatbotView extends BaseView {
                 modalImg.src = '';
             };
 
-            this.chatInput.addEventListener('input', function () {
-                this.style.height = 'auto';
-                this.style.height = this.scrollHeight + 'px';
-            });
+            this.chatInput.addEventListener('input', () => this.resizeTextarea());
         });
     }
 }
