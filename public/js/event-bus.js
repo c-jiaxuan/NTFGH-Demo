@@ -10,6 +10,8 @@ export const Events = {
     START_DELIVERY: 'main:start-deliver',
     CHAT_UPDATE: 'chat:update',
     CHATBOT_PRESS: 'app:chatbot-pressed',
+    TEXT2IMG_PRESS: 'app:tex2img-pressed',
+    TEXT2VID_PRESS: 'app:text2vid-pressed',
 };
 
 export const AvatarEvents = {

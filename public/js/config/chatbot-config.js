@@ -1,43 +1,64 @@
+//GESTURES: 
+// Left Hand: G02
+// Right Hand: G03
+// Both Hands extend: G04
+// Both hands together: G05
+
 export const chatbot_config = {
     start_msg: {
         en: 'Hello, how can I help you today?',
-        zh: '你好，今天我能帮你什么？'
+        zh: '你好，今天我能帮你什么？',
+        gst: '',
     },
     error_msg: {
         en: 'Sorry, I did not understand that.',
-        zh: '抱歉，我不明白这个。'
+        zh: '抱歉，我不明白这个。',
+        gst: '',
     },
     wait_msg: {
         en: 'Please wait while I am processing the response.',
-        zh: '请稍等，我正在处理响应。'
+        zh: '请稍等，我正在处理响应。',
+        gst: '',
+    },
+    text2img_msg: {
+        en: 'Please let me assist you in generating your image.',
+        zh: '请让我协助您生成您的图像。',
+        gst: 'G02',
     },
     image_msg: {
         en: 'Please wait while the image is generating.',
-        zh: '请稍等，图片正在生成中。'
+        zh: '请稍等，图片正在生成中。',
+        gst: '',
     },
     success_image_msg: {
         en: 'Here is the generated image.',
-        zh: '这是生成的图像。'
+        zh: '这是生成的图像。',
+        gst: '',
     },
     failed_image_msg: {
         en: 'Sorry, I am unable to generate the image, please try again later.',
-        zh: '抱歉，我无法生成图片，请稍后再试。'
+        zh: '抱歉，我无法生成图片，请稍后再试。',
+        gst: '',
     },
     video_msg: {
         en: 'Please wait while the video is generating.',
-        zh: '请稍等，视频正在生成中。'
+        zh: '请稍等，视频正在生成中。',
+        gst: '',
     },
     success_video_msg: {
         en: 'Here is the generated video.',
-        zh: '这是生成的视频。'
+        zh: '这是生成的视频。',
+        gst: '',
     },
     failed_video_msg: {
         en: 'Sorry, I am unable to generate the video, please try again later.',
-        zh: '抱歉，我无法生成视频，请稍后再试。'
+        zh: '抱歉，我无法生成视频，请稍后再试。',
+        gst: '',
     },
     img2vid_prompt_msg: {
         en: 'Sure! lets generate a video from an image! Please upload the image you want to use.',
-        zh: '当然，让我们从图片生成视频！请上传您想使用的图片。'
+        zh: '当然，让我们从图片生成视频！请上传您想使用的图片。',
+        gst: '',
     }
 };
 

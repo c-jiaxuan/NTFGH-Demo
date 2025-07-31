@@ -177,7 +177,7 @@ export class ChatbotPageController extends BasePageController {
     onEnter() {
         super.onEnter();
         
-        console.log('Chatbot page initialized');
+        console.log('[chat-controller] Chatbot page initialized');
 
         //Listen to global events
         EventBus.on(Events.UPDATE_LANGUAGE, (e) => { this.onUpdateLanguage(e.detail); })
@@ -200,7 +200,7 @@ export class ChatbotPageController extends BasePageController {
         EventBus.off(AvatarEvents.SPEAK_COMPLETED, (e) => { this.onAvatarSpeakCompleted(e.detail); })
 
         document.dispatchEvent(new CustomEvent('aws-stop-transcribe', {
-        detail: { language: 'en-US' }
+            detail: { language: 'en-US' }
         }));
 
         document.removeEventListener("aws-transcribe-update", this.handleTranscribeEvent);

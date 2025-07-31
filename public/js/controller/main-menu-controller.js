@@ -5,48 +5,53 @@ import { appSettings } from '../config/appSettings.js';
 import { send } from '../client.js'
 
 export class MainMenuPageController extends BasePageController {
-  constructor(id){
-    const view = new MainMenuView(id);
-    super(id, view);
+	constructor(id){
+		const view = new MainMenuView(id);
+		super(id, view);
 
-    this.view.setLanguage(appSettings.language);
+		this.view.setLanguage(appSettings.language);
 
-    this.view.bindButtonClick(this.handleSubpageSwitch.bind(this));
+		this.view.bindButtonClick(this.handleSubpageSwitch.bind(this));
 
-    EventBus.on(Events.UPDATE_LANGUAGE, (e) => { this.onUpdateLanguage(e.detail); })
-  }
+		EventBus.on(Events.UPDATE_LANGUAGE, (e) => { this.onUpdateLanguage(e.detail); })
 
-  //Handle events for language and input mode 
-  onUpdateLanguage(language){
-    //update view to new language
-    this.view.setLanguage(language);
-  }
+		this.isTranscribeActive = false;
+	}
 
-  handleSubpageSwitch(key) {
-    switch (key){
-      case "chat":
-        EventBus.emit(Events.CHATBOT_PRESS);
-        break;
-      case "gettingStarted":
-        EventBus.emit(Events.GETTING_START_PRESS);
-        break;
-      case "delivery":
-        EventBus.emit(Events.START_DELIVERY);
-        break;
-    }
-  }
+	//Handle events for language and input mode 
+	onUpdateLanguage(language){
+		//update view to new language
+		this.view.setLanguage(language);
+	}
 
-  onEnter() {
-    super.onEnter();
-    console.log('Main Menu page initialized');
-    // Run animations, load data, start timers, etc.
-    this.view.setLanguage(appSettings.language);
-    send('DEFAULT');
-  }
+	handleSubpageSwitch(key) {
+		switch (key){
+		case "chat":
+			EventBus.emit(Events.CHATBOT_PRESS);
+			break;
+		case "text2Img":
+			EventBus.emit(Events.TEXT2IMG_PRESS);
+			break;
+		case "text2Vid":
+			EventBus.emit(Events.TEXT2VID_PRESS);
+			break;
+		case "img2Vid":
+			EventBus.emit(Events.GETTING_START_PRESS);
+			break;
+		}
+	}
 
-  onExit() {
-    super.onExit();
-    console.log('Leaving Main Menu page');
-    // Cleanup, stop audio, etc.
-  }
+	onEnter() {
+		super.onEnter();
+		console.log('Main Menu page initialized');
+		// Run animations, load data, start timers, etc.
+		this.view.setLanguage(appSettings.language);
+		send('DEFAULT');
+	}
+
+	onExit() {
+		super.onExit();
+		console.log('Leaving Main Menu page');
+		// Cleanup, stop audio, etc.
+	}
 }

@@ -8,6 +8,8 @@ import { GettingStartedPageController } from "./controller/getting-started-contr
 import { PatientAssessmentPageController } from './controller/patient-assessment-page-controller.js';
 import { DeliverPageController } from './controller/deliver-page-controller.js';
 import { ChatbotPageController } from "./controller/chatbot-page-controller.js";
+import { Text2ImgController } from "./controller/text2img-controller.js";
+import { Text2VidController } from "./controller/text2vid-controller.js";
 
 import { TopMenuView } from './view/top-menu-view.js';
 
@@ -23,6 +25,8 @@ const pages = {
   assessment: new PatientAssessmentPageController("patient-assessment-page"),
   delivery: new DeliverPageController("delivery-page"),
   chatbot: new ChatbotPageController("chatbot-page"),
+  text2img: new Text2ImgController("text2img-page"),
+  text2vid: new Text2VidController("text2vid-page"),
 };
 
 const topMenuView = new TopMenuView('top-bar-container');
@@ -78,6 +82,14 @@ EventBus.on(Events.SETTING_PRESS, () => {
 EventBus.on(Events.CHATBOT_PRESS, () => {
   switchPage("chatbot");
   pages["chatbot"].start();
+});
+EventBus.on(Events.TEXT2IMG_PRESS, () => {
+  switchPage("text2img");
+  pages["text2img"].start();
+});
+EventBus.on(Events.TEXT2VID_PRESS, () => {
+  switchPage("text2vid");
+  pages["text2vid"].start();
 });
 EventBus.on(Events.GETTING_START_PRESS, () => {
   switchPage("gettingStarted");

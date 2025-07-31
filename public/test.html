@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+no<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -46,15 +46,20 @@
           <img class="button-icon" src="./img/icon/talk_icon.png"/>
           <div class="button-text">Chat with AI</div>
         </button>
-        <button id="getting-started-button" class="action-button main-button">
+        <button id="text2img-button" class="action-button main-button">
           <div class="button-bg"></div>
-          <img class="button-icon" src="./img/icon/handshake_icon.png"/>
-          <div class="button-text">Getting Started</div>
+          <img class="button-icon" src="./img/icon/image.png"/>
+          <div class="button-text">Image Generation</div>
         </button>
-        <button id="delivery-button" class="action-button main-button">
+        <button id="text2vid-button" class="action-button main-button">
           <div class="button-bg"></div>
-          <img class="button-icon" src="./img/icon/delivery_icon.png"/>
-          <div class="button-text">Delivery Services</div>
+          <img class="button-icon" src="./img/icon/video-editing.png"/>
+          <div class="button-text">Video Generation</div>
+        </button>
+        <button id="img2vid-button" class="action-button main-button">
+          <div class="button-bg"></div>
+          <img class="button-icon" src="./img/icon/img2vid.png"/>
+          <div class="button-text">Image-To-Video</div>
         </button>
       </div>
     </div>
@@ -96,51 +101,86 @@
       </div>
     </div>
 
-    <div id="setup-page" class="subpage">
-      <div class="language-mode-container">
-        <h2>Language and Mode</h2>
-        <p class="subtitle">
-          Please select the language and input method to be used for the detail gathering.
-        </p>
-      
-        <div class="selection-grid">
-          <div id="lang-selector" class="section">
-            <h3>Language</h3>
-            <button class="action-button settings" data-type="language" data-value="en">
+    <div id="text2img-page" class="subpage">
+      <h2 id="setup-title">Please fill in the details of the image you want to generate</h2>
+      <div id="form-container" class="form-container-class">
+        <form id="image-prompt-form">
+          <div class="form-group">
+            <label for="objects">Objects Present</label>
+            <input type="text" id="objects" name="objects" placeholder="List objects..." />
+          </div>
+          <div class="form-group">
+            <label for="environment">Environment/Setting</label>
+            <input type="text" id="environment" name="environment" placeholder="Describe the environment..." />
+          </div>
+          <div class="form-group">
+            <label for="actions">Actions/Events</label>
+            <input type="text" id="actions" name="actions" placeholder="What’s happening?" />
+          </div>
+          <div class="form-group">
+            <label for="time">Time of Day</label>
+            <input type="text" id="time" name="time" placeholder="e.g., Morning, Sunset, Night..." />
+          </div>
+          <div class="form-group">
+            <label for="mood">Mood/Style</label>
+            <input type="text" id="mood" name="mood" placeholder="e.g., Dark, Bright, Whimsical, Realistic..." />
+          </div>
+          <div class="form-group">
+            <label for="prompt">Prompt</label>
+            <textarea id="prompt" name="prompt" placeholder="Compose your additional prompt here..."></textarea>
+          </div>
+          <div class="button-container">
+            <button id="generate-button" class="action-button">
               <div class="button-bg"></div>
-              <img class="button-icon" src="./img/icon/lang_en.png"/>
-              <div class="button-text">English</div>
-            </button>
-            <button class="action-button settings" data-type="language" data-value="zh">
-              <div class="button-bg"></div>
-              <img class="button-icon" src="./img/icon/lang_zh.png"/>
-              <div class="button-text">中文</div>
-            </button>
-            <button class="action-button-disabled settings">
-              <div class="button-bg"></div>
-              <div class="button-text">To be updated</div>
+              <div class="overlay-progress"></div>
+              <img class="button-icon" src="./img/icon/magic.png"/>
+              <div class="button-text">Generate</div>
             </button>
           </div>
-      
-          <div id="input-selector" class="section">
-            <h3>Mode</h3>
-            <button class="action-button settings" data-type="mode" data-value="touch">
+        </form>
+      </div>
+      <div id="result-container" style="display: none;"></div>
+    </div>
+
+    <div id="text2vid-page" class="subpage">
+      <h2 id="setup-title">Please fill in the details of the video you want to generate</h2>
+      <div id="form-container" class="form-container-class">
+        <form id="video-prompt-form">
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <input type="text" id="subject" name="subjects" placeholder="e.g., A long warrior standing on a cliff..." />
+          </div>
+          <div class="form-group">
+            <label for="movement">Movement</label>
+            <input type="text" id="movement" name="movement" placeholder="e.g., The warrior draws his sword as the wind blows..." />
+          </div>
+          <div class="form-group">
+            <label for="background">Background</label>
+            <input type="text" id="background" name="background" placeholder="e.g., A medieval battlefield covered in mist..." />
+          </div>
+          <div class="form-group">
+            <label for="BGMovement">Background Movement</label>
+            <input type="text" id="BGMovement" name="BGMovement" placeholder="e.g., The mist swirls around the battlefield..." />
+          </div>
+          <div class="form-group">
+            <label for="motion">Camera Motion</label>
+            <input type="text" id="motion" name="motion" placeholder="e.g., Slow zoom in, tracking shot, handheld shaky..." />
+          </div>
+          <div class="form-group">
+            <label for="prompt">Prompt</label>
+            <textarea id="prompt" name="prompt" placeholder="Compose your additional prompt here..."></textarea>
+          </div>
+          <div class="button-container">
+            <button id="generate-button" class="action-button">
               <div class="button-bg"></div>
-              <img class="button-icon" src="./img/icon/tap_icon.png"/>
-              <div class="button-text">Touch</div>
-            </button>
-            <button class="action-button settings" data-type="mode" data-value="voice">
-              <div class="button-bg"></div>
-              <img class="button-icon" src="./img/icon/speaking-icon.png"/>
-              <div class="button-text">Voice</div>
+              <div class="overlay-progress"></div>
+              <img class="button-icon" src="./img/icon/magic.png"/>
+              <div class="button-text">Generate</div>
             </button>
           </div>
-        </div>
-      
-        <p class="confirm-instruction">
-          Press or Say “Confirm” once you’re ready.
-        </p>
-      </div>      
+        </form>
+      </div>
+      <div id="result-container" style="display: none;"></div>
     </div>
 
     <div id="orientation-page" class="subpage">
