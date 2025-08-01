@@ -524,6 +524,7 @@ button:hover {
 
 /* Option buttons */
 .option-button {
+  height: auto;
   width: 50%;
   background-color: #0C4C9A;
   color: white;
