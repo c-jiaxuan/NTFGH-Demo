@@ -191,8 +191,12 @@ no<!DOCTYPE html>
       <div id="content-block"></div>
     </div>
 
-    <div id="patient-assessment-page" class="subpage">
-      <div id="app" class="assessment-wrapper"></div>
+    <div id="generation-form-page" class="subpage">
+      <div id="assessment-container"></div>
+      <div id="loading-page-container">
+        <div id="header" class="general-header"></div>
+        <div id="result-container" style="display: none;"></div>
+      </div>
     </div>
     
     <div id="bottom-action-bar" style="display: none;" class="action-bar">
@@ -206,11 +210,19 @@ no<!DOCTYPE html>
         <!-- <img class="button-icon" src="./img/icon/question_icon.png"/> -->
         <div class="button-text">Try Again</div>
       </button>
-      <button id="acknowledge-button" class="action-button">
-        <div class="button-bg"></div>
-        <div class="overlay-progress"></div>
-        <div class="button-text">Acknowledge</div>
-      </button>
+      <div class="action-button-slot">
+        <button id="acknowledge-button" class="action-button">
+          <div class="button-bg"></div>
+          <div class="overlay-progress"></div>
+          <div class="button-text">Continue</div>
+        </button>
+        <button id="final-generate-button" class="action-button">
+          <div class="button-bg"></div>
+          <img class="button-icon" src="./img/icon/magic.png"/>
+          <div class="overlay-progress"></div>
+          <div class="button-text">Generate!</div>
+        </button>
+      </div>
     </div>
     <div id="delivery-page" class="subpage">
       <h1 id="setup-title">Delivery</h1>

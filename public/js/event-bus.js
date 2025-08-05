@@ -12,6 +12,9 @@ export const Events = {
     CHATBOT_PRESS: 'app:chatbot-pressed',
     TEXT2IMG_PRESS: 'app:tex2img-pressed',
     TEXT2VID_PRESS: 'app:text2vid-pressed',
+    IMG2VID_PRESS: 'app:img2vid-pressed',
+    DOC2VID_PRESS: 'app:doc2vid-pressed',
+    URL2VID_PRESS: 'app:url2vid-pressed'
 };
 
 export const AvatarEvents = {

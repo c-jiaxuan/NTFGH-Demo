@@ -9,7 +9,7 @@ export class MainMenuView extends BaseView {
         this.labels = {
             en: { 
                 title: "Welcome to Panasonic", 
-                guide: "What can i do for you today?", 
+                guide: "What can I do for you today?", 
                 chat: "Chat", 
                 text2Img: "Image Generation", 
                 text2Vid: "Video Generation",

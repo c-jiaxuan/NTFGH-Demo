@@ -1,11 +1,13 @@
+import { Events } from '../event-bus.js';
+
 export class GenerationModel {
     async generate(type, userInput, image = null) {
         switch (type) {
-            case "text2img":
+            case "txt2img":
                 return await this.generateImage_KlingAI(userInput);
-            case "text2video":
+            case "txt2vid":
                 return await this.generateVideo_KlingAI(userInput);
-            case "img2video":
+            case "img2vid":
                 if (!image) throw new Error("Image is required for Img2Video");
                 return await this.generateImg2Video_KlingAI(userInput, image);
             default:

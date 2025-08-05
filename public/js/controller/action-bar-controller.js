@@ -5,32 +5,31 @@ import { ActionBarChatbot } from '../llm/action-bar-chatbot.js';
 import { appSettings } from '../config/appSettings.js';
 
 export class ActionBarController extends BasePageController {
-  constructor(id){
+  constructor(id) {
     const view = new ActionBarView(id);
     super(id, view);
 
-    this.actionChatbot = new ActionBarChatbot(this.view);
-
+    this.actionChatbot = new ActionBarChatbot(view);
     this.countdownTimer = 1;
     this.isReadyForCommand = false;
-    this.isAcknowledgedEmit = false;
 
-    //Listen to view events
-    this.view.bindButtonClick(this.handleActionBarClicked.bind(this));
-    this.view.on("acknowledgeCountdownComplete", (e) => {
-        this.emit("acknowledged", {});
-    });
+    // clicks
+    view.bindButtonClick(this.handleActionBarClicked.bind(this));
 
-    //Listen to global events
-    EventBus.on(Events.UPDATE_LANGUAGE, (e) => { this.onUpdateLanguage(e.detail); })
-    EventBus.on(Events.UPDATE_INPUTMODE, (e) => { this.onUpdateInputMode(e.detail); })
+    // both countdown-complete hooks
+    view.on("acknowledgeCountdownComplete", () => this.emit("acknowledged", {}));
+    view.on("generateCountdownComplete",    () => this.emit("generate",     {}));
+
+    // global settings
+    EventBus.on(Events.UPDATE_LANGUAGE,  e => this.onUpdateLanguage(e.detail));
+    EventBus.on(Events.UPDATE_INPUTMODE, e => this.onUpdateInputMode(e.detail));
   }
 
-  update(hasBackBtn=false, hasHelpBtn=false, hasAcknowledge = true)
-  {
-    this.view.showBackBtn(hasBackBtn);
-    this.view.showHelpBtn(hasHelpBtn);
-    this.view.showAcknowledgeBtn(hasAcknowledge);
+  update(hasBack=false, hasHelp=false, hasAck=true, hasGen=false) {
+    this.view.showBackBtn(hasBack);
+    this.view.showHelpBtn(hasHelp);
+    this.view.showAcknowledgeBtn(hasAck);
+    this.view.showGenerateBtn(hasGen);
   }
 
   enableAcknowledge(enabled){
@@ -40,11 +39,27 @@ export class ActionBarController extends BasePageController {
     //TO-UPDATE-BETTER-LOGIC: Command detection only enable when user can click acknowledge
     this.isReadyForCommand = enabled;
 
-    console.log('action-bar:' + enabled);
+    console.log('[action-bar-controller] action-bar: ' + enabled);
 
     //transcribe for using voice input mode
     if(appSettings.inputMode == 'voice'){
-      console.log('action-bar:' + enabled);
+      console.log('[action-bar-controller] action-bar: ' + enabled);
+      //Start or Stop detecting for keyword
+      this.setupTranscribeForVoiceCommmand(enabled);
+    }
+  }
+
+  enableGenerate(enabled) {
+    this.view.enableGenerateBtn(enabled);
+
+    //TO-UPDATE-BETTER-LOGIC: Command detection only enable when user can click acknowledge
+    this.isReadyForCommand = enabled;
+
+    console.log('[action-bar-controller] action-bar: ' + enabled);
+
+    //transcribe for using voice input mode
+    if(appSettings.inputMode == 'voice'){
+      console.log('[action-bar-controller] action-bar: ' + enabled);
       //Start or Stop detecting for keyword
       this.setupTranscribeForVoiceCommmand(enabled);
     }
@@ -53,7 +68,7 @@ export class ActionBarController extends BasePageController {
   setupTranscribeForVoiceCommmand(enabled){
     if(enabled)
     {
-      console.log("action-bar: start listen for command");
+      console.log("[action-bar-controller] action-bar: start listen for command");
       //Listen to transcribe event
       document.addEventListener("aws-transcribe-update", (e) => this.handleTranscribeEvent(e));
       //Start transcribing
@@ -63,7 +78,7 @@ export class ActionBarController extends BasePageController {
     }
     else
     {
-      console.log("action-bar: stop listen for command");
+      console.log("[action-bar-controller] action-bar: stop listen for command");
       //Remove transcribe listener
       document.removeEventListener("aws-transcribe-update", (e) => this.handleTranscribeEvent(e));
       //Stop transcribing
@@ -80,6 +95,10 @@ export class ActionBarController extends BasePageController {
     this.view.countdownAcknowledgeBtn(this.countdownTimer, isReady);
   }
 
+  countdownGenerateBtn(isReady) {
+    this.view.countdownGenerateBtn(this.countdownTimer, isReady);
+  }
+
   handleActionBarClicked(key){
     //Upon any button clicked, disable the voice command detection
     if(appSettings.inputMode == 'voice') 
@@ -91,7 +110,7 @@ export class ActionBarController extends BasePageController {
   }
 
   handleTranscribeEvent(e){
-    console.log("check action key" + e.detail);
+    console.log("[action-bar-controller] check action key" + e.detail);
     this.actionChatbot.handleTranscript(e.detail);
   }
 

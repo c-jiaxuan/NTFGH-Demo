@@ -5,7 +5,7 @@ import { MainMenuPageController } from './controller/main-menu-controller.js';
 import { SettingsPageController } from './controller/settings-page-controller.js';
 import { OrientationPageController } from './controller/orientation-page-controller.js';
 import { GettingStartedPageController } from "./controller/getting-started-controller.js";
-import { PatientAssessmentPageController } from './controller/patient-assessment-page-controller.js';
+import { GenerationPageController } from './controller/generation-page-controller.js';
 import { DeliverPageController } from './controller/deliver-page-controller.js';
 import { ChatbotPageController } from "./controller/chatbot-page-controller.js";
 import { Text2ImgController } from "./controller/text2img-controller.js";
@@ -22,7 +22,7 @@ const pages = {
   settings: new SettingsPageController("setup-page"),
   gettingStarted : new GettingStartedPageController("getting-started-page"),
   orientation: new OrientationPageController("orientation-page"),
-  assessment: new PatientAssessmentPageController("patient-assessment-page"),
+  generation: new GenerationPageController("generation-form-page"),
   delivery: new DeliverPageController("delivery-page"),
   chatbot: new ChatbotPageController("chatbot-page"),
   text2img: new Text2ImgController("text2img-page"),
@@ -84,12 +84,12 @@ EventBus.on(Events.CHATBOT_PRESS, () => {
   pages["chatbot"].start();
 });
 EventBus.on(Events.TEXT2IMG_PRESS, () => {
-  switchPage("text2img");
-  pages["text2img"].start();
+  switchPage("generation");
+  pages["generation"].start(Events.TEXT2IMG_PRESS);
 });
 EventBus.on(Events.TEXT2VID_PRESS, () => {
-  switchPage("text2vid");
-  pages["text2vid"].start();
+  switchPage("generation");
+  pages["generation"].start(Events.TEXT2VID_PRESS);
 });
 EventBus.on(Events.GETTING_START_PRESS, () => {
   switchPage("gettingStarted");
@@ -99,8 +99,8 @@ EventBus.on(Events.START_ORIENTATION, () => {
   pages["orientation"].start();
 });
 EventBus.on(Events.START_PATIENT_ASSESSMENT, () => {
-  switchPage("assessment");
-  pages["assessment"].start();
+  switchPage("generation");
+  pages["generation"].start();
 });
 EventBus.on(Events.START_DELIVERY, () => {
   switchPage("delivery"); 

@@ -9,7 +9,9 @@ const languageOptions = {
             back: "Back",
             help: "Help",
             acknowledge: "Acknowledge",
-            countdown: (s) => `Continue in ${s}s`
+            countdown: (s) => `Continue in ${s}s`,
+            generate: "Generate!",
+            generateCountdown: (s) => `Generate in ${s}s`
         }
     },
     zh: {
@@ -21,7 +23,9 @@ const languageOptions = {
             back: "返回",
             help: "帮助",
             acknowledge: "确认",
-            countdown: (s) => `${s}秒后继续`
+            countdown: (s) => `${s}秒后继续`,
+            generate: "生成",
+            generateCountdown: (s) => `${s}秒后生成`
         }
     }
 };
@@ -33,16 +37,20 @@ export class ActionBarView extends BaseView {
         super(id);
 
         this.buttons = {
-            back: document.getElementById('back-button'),
-            help: document.getElementById('help-button'),
-            acknowledge: document.getElementById('acknowledge-button')
+            back:        this.element.querySelector('#back-button'),
+            help:        this.element.querySelector('#help-button'),
+            acknowledge: this.element.querySelector('#acknowledge-button'),
+            generate:    this.element.querySelector('#final-generate-button')
         };
 
-        this.acknowledgeBtnTxt = this.buttons['acknowledge'].querySelector('.button-text');
-        this.acknowledgeBtnProgress = this.buttons['acknowledge'].querySelector('.overlay-progress');
+        this.acknowledgeBtnTxt      = this.buttons.acknowledge.querySelector('.button-text');
+        this.acknowledgeBtnProgress = this.buttons.acknowledge.querySelector('.overlay-progress');
+
+        this.generateBtnTxt      = this.buttons.generate.querySelector('.button-text');
+        this.generateBtnProgress = this.buttons.generate.querySelector('.overlay-progress');
 
         this.currentLangLabels = languageOptions.en.actionBarLabels;
-        this.activeInterval = null;
+        this.activeIntervals   = { ack: null, gen: null };
     }
 
     show() {
@@ -71,6 +79,74 @@ export class ActionBarView extends BaseView {
         if (this.buttons['acknowledge']) {
             this.buttons['acknowledge'].className = enabled ? 'action-button' : 'action-button-disabled';
         }
+    }
+
+    // expose show/hide
+    showGenerateBtn(isOn) {
+        if (this.buttons['generate']) {
+            console.log('[action-bar-view] isOn = ' + isOn);
+            this.buttons['generate'].style.visibility = isOn ? 'visible' : 'hidden';
+        } else {
+            console.log('[action-bar-view] no generate button found');
+        }
+    }
+
+    // enable/disable styling
+    enableGenerateBtn(enabled) {
+        if (this.buttons['generate']) {
+            this.buttons['generate'].className = enabled ? 'action-button' : 'action-button-disabled';
+        }
+    }
+
+    countdownGenerateBtn(countdownTime, enabled) {
+        const btn       = this.buttons.generate;
+        const txt       = this.generateBtnTxt;
+        const progress  = this.generateBtnProgress;
+        const labelFn   = this.currentLangLabels.generateCountdown;
+        const finalTxt  = this.currentLangLabels.generate;
+
+        if (this.activeIntervals.gen) {
+        clearInterval(this.activeIntervals.gen);
+            this.activeIntervals.gen = null;
+        }
+
+        if (!enabled) {
+            btn.className = "action-button";
+            txt.innerHTML = finalTxt;
+            progress.style.width = '0%';
+            return;
+        }
+
+        let elapsedMs    = 0;
+        const updateInt  = 50;
+        const totalMs    = countdownTime * 1000;
+        btn.className    = "action-button-selected";
+        txt.innerHTML    = labelFn(countdownTime);
+
+        this.activeIntervals.gen = setInterval(() => {
+            elapsedMs += updateInt;
+            const pct = (elapsedMs / totalMs) * 100;
+            progress.style.width = `${pct}%`;
+
+            const secLeft = Math.ceil((totalMs - elapsedMs) / 1000);
+            if (secLeft > 0) {
+                txt.innerHTML = labelFn(secLeft);
+            } else {
+                clearInterval(this.activeIntervals.gen);
+                this.activeIntervals.gen = null;
+                btn.className    = "action-button";
+                txt.innerHTML    = finalTxt;
+                progress.style.width = '0%';
+                this.emit("generateCountdownComplete", {});
+            }
+        }, updateInt);
+    }
+
+    // wire in generate to click-binding
+    bindButtonClick(callback) {
+        Object.entries(this.buttons).forEach(([key, button]) => {
+        button.addEventListener('click', () => callback(key));
+        });
     }
 
     bindButtonClick(callback) {
@@ -145,6 +221,11 @@ export class ActionBarView extends BaseView {
         if (this.buttons['acknowledge']) {
             const ackText = this.buttons['acknowledge'].querySelector('.button-text');
             if (ackText) ackText.innerHTML = langLabels.acknowledge;
+        }
+
+        if (this.buttons['generate']) {
+            const genText = this.buttons['generate'].querySelector('.button-text');
+            if (genText) genText.innerHTML = langLabels.generate;
         }
     }
 
