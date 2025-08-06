@@ -22,6 +22,7 @@ export class GenerationPageController extends BasePageController {
 		this._handleTranscribeComplete = this.handleTranscribeComplete.bind(this);
 		this._handleAcknowledge = this.handleAcknowledge.bind(this);
     	this._handleGenerate = this.handleGenerate.bind(this);
+		this.handleFileUpload = this.handleFileUpload.bind(this);
 		this.onSubmit = this.onSubmit.bind(this);
 	}
 
@@ -177,10 +178,12 @@ export class GenerationPageController extends BasePageController {
 
 	setupTranscribeForVoiceCommand(enabled, timeout = false) {
 		if (enabled) {
+			console.log('[generation-page-controller] enabling voice commands');
 			document.addEventListener("aws-transcribe-update", this._handleTranscribeEvent);
 			document.dispatchEvent(new CustomEvent('aws-update-timeout', { detail: { timeout } }));
 			this.model.isTranscribeActive = true;
 		} else {
+			console.log('[generation-page-controller] disabling voice commands');
 			document.removeEventListener("aws-transcribe-update", this._handleTranscribeEvent);
 			document.dispatchEvent(new CustomEvent('aws-reset-transcribe', {}));
 			this.model.isTranscribeActive = false;
@@ -237,6 +240,23 @@ export class GenerationPageController extends BasePageController {
 				textarea.dispatchEvent(new Event('input')); // trigger input validation
 				this.setupTranscribeForVoiceCommand(false);
 			}
+		}
+	}
+
+	async handleFileUpload(e) {
+		try {
+			const file = e.detail.file;
+
+			if (!(file instanceof Blob)) {
+				throw new TypeError("Invalid file type passed to handleFileUpload.");
+			}
+
+			const base64Img = await this.model.convertToBase64Img(file);
+			const base64Only = base64Img.replace(/^data:image\/\w+;base64,/, '');
+
+			console.log('[generation-page-controller] Uploaded file in base64 is =', base64Only);
+		} catch (error) {
+			console.error('[generation-page-controller] Failed to convert image to base64:', error);
 		}
 	}
 
@@ -354,7 +374,7 @@ export class GenerationPageController extends BasePageController {
 		console.log('[generation-page-controller] Built and sending prompt: ' + JSON.stringify(data));
 
 		try {
-			const taskId = await this.generationModel.generate(this.model.generationType, data);
+			const taskId = await this.generationModel.generate(this.model.generationType, data, this.model.uploadedFile);
 			if (taskId) {
 				this.view.showLoading();
 				const result = await this.pollKlingAITask(taskId);
@@ -384,6 +404,7 @@ export class GenerationPageController extends BasePageController {
 		this.view.on("readyForAcknowledge", () => this.actionBar.enableAcknowledge(true));
 		this.view.on("notReadyForAcknowledge", () => this.actionBar.enableAcknowledge(false));
 		this.view.on("quizAnswered", e => this.onQuizAnswered(e.detail));
+		this.view.on("fileUploaded", this.handleFileUpload);
 
 		this.actionBar.on("acknowledged", this._handleAcknowledge);
 		this.actionBar.on("generate", this._handleGenerate);
@@ -404,6 +425,7 @@ export class GenerationPageController extends BasePageController {
 		this.view.off("readyForAcknowledge", () => this.actionBar.enableAcknowledge(true));
 		this.view.off("notReadyForAcknowledge", () => this.actionBar.enableAcknowledge(false))
 		this.view.off("quizAnswered", e => this.onQuizAnswered(e.detail));
+		this.view.off("fileUploaded", this.handleFileUpload);
 
 	    this.actionBar.off("acknowledged", this._handleAcknowledge);
 		this.actionBar.off("generate", this._handleGenerate);

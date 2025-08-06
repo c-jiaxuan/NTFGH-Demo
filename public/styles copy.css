@@ -88,7 +88,6 @@ body::before {
   display: flex;
   align-items: center;
   border: none;
-  padding-left: 20px;
   gap: 30px;
 }
 
@@ -104,7 +103,7 @@ body::before {
 
 .options-container {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: auto auto auto;
   justify-items: center;
   padding: 20px;
   gap: 20px;
@@ -157,19 +156,19 @@ body::before {
 }
 
 .main-button {
-  width: 400px;
+  width: 300px;
   height: 300px;
   flex-direction: column;
 }
 
 .main-button .button-icon {
-  width: 35%;
+  width: 50%;
   height: auto;
 }
 
 .main-button .button-text {
-  font-size: 46px;
-  text-align: left;
+  font-size: 35px;
+  text-align: center;
   flex: 1;
 }
 

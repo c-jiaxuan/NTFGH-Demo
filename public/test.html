@@ -61,23 +61,15 @@ no<!DOCTYPE html>
           <img class="button-icon" src="./img/icon/img2vid.png"/>
           <div class="button-text">Image-To-Video</div>
         </button>
-      </div>
-    </div>
-    <div id="getting-started-page" class="subpage">
-      <h1 id="setup-title">Getting Started</h1>
-      <div class="orientation-guide">
-        Services required for onboarding into our User Management System
-      </div>
-      <div class="options-container">
-        <button id="orientation-button" class="action-button main-button">
+        <button id="doc2vid-button" class="action-button main-button">
           <div class="button-bg"></div>
-          <img class="button-icon" src="./img/icon/orientation_icon.png"/>
-          <div class="button-text">Onboarding</div>
+          <img class="button-icon" src="./img/icon/doc2vid.png"/>
+          <div class="button-text">Document-To-Video</div>
         </button>
-        <button id="assessment-button" class="action-button main-button">
+        <button id="url2vid-button" class="action-button main-button">
           <div class="button-bg"></div>
-          <img class="button-icon" src="./img/icon/check-list_icon.png"/>
-          <div class="button-text">Registration</div>
+          <img class="button-icon" src="./img/icon/url2vid.png"/>
+          <div class="button-text">URL-To-Video</div>
         </button>
       </div>
     </div>
@@ -99,96 +91,6 @@ no<!DOCTYPE html>
           <img src="./img/icon/Send.png" alt="Send">
         </button>
       </div>
-    </div>
-
-    <div id="text2img-page" class="subpage">
-      <h2 id="setup-title">Please fill in the details of the image you want to generate</h2>
-      <div id="form-container" class="form-container-class">
-        <form id="image-prompt-form">
-          <div class="form-group">
-            <label for="objects">Objects Present</label>
-            <input type="text" id="objects" name="objects" placeholder="List objects..." />
-          </div>
-          <div class="form-group">
-            <label for="environment">Environment/Setting</label>
-            <input type="text" id="environment" name="environment" placeholder="Describe the environment..." />
-          </div>
-          <div class="form-group">
-            <label for="actions">Actions/Events</label>
-            <input type="text" id="actions" name="actions" placeholder="What’s happening?" />
-          </div>
-          <div class="form-group">
-            <label for="time">Time of Day</label>
-            <input type="text" id="time" name="time" placeholder="e.g., Morning, Sunset, Night..." />
-          </div>
-          <div class="form-group">
-            <label for="mood">Mood/Style</label>
-            <input type="text" id="mood" name="mood" placeholder="e.g., Dark, Bright, Whimsical, Realistic..." />
-          </div>
-          <div class="form-group">
-            <label for="prompt">Prompt</label>
-            <textarea id="prompt" name="prompt" placeholder="Compose your additional prompt here..."></textarea>
-          </div>
-          <div class="button-container">
-            <button id="generate-button" class="action-button">
-              <div class="button-bg"></div>
-              <div class="overlay-progress"></div>
-              <img class="button-icon" src="./img/icon/magic.png"/>
-              <div class="button-text">Generate</div>
-            </button>
-          </div>
-        </form>
-      </div>
-      <div id="result-container" style="display: none;"></div>
-    </div>
-
-    <div id="text2vid-page" class="subpage">
-      <h2 id="setup-title">Please fill in the details of the video you want to generate</h2>
-      <div id="form-container" class="form-container-class">
-        <form id="video-prompt-form">
-          <div class="form-group">
-            <label for="subject">Subject</label>
-            <input type="text" id="subject" name="subjects" placeholder="e.g., A long warrior standing on a cliff..." />
-          </div>
-          <div class="form-group">
-            <label for="movement">Movement</label>
-            <input type="text" id="movement" name="movement" placeholder="e.g., The warrior draws his sword as the wind blows..." />
-          </div>
-          <div class="form-group">
-            <label for="background">Background</label>
-            <input type="text" id="background" name="background" placeholder="e.g., A medieval battlefield covered in mist..." />
-          </div>
-          <div class="form-group">
-            <label for="BGMovement">Background Movement</label>
-            <input type="text" id="BGMovement" name="BGMovement" placeholder="e.g., The mist swirls around the battlefield..." />
-          </div>
-          <div class="form-group">
-            <label for="motion">Camera Motion</label>
-            <input type="text" id="motion" name="motion" placeholder="e.g., Slow zoom in, tracking shot, handheld shaky..." />
-          </div>
-          <div class="form-group">
-            <label for="prompt">Prompt</label>
-            <textarea id="prompt" name="prompt" placeholder="Compose your additional prompt here..."></textarea>
-          </div>
-          <div class="button-container">
-            <button id="generate-button" class="action-button">
-              <div class="button-bg"></div>
-              <div class="overlay-progress"></div>
-              <img class="button-icon" src="./img/icon/magic.png"/>
-              <div class="button-text">Generate</div>
-            </button>
-          </div>
-        </form>
-      </div>
-      <div id="result-container" style="display: none;"></div>
-    </div>
-
-    <div id="orientation-page" class="subpage">
-      <div class="orientation-guide">
-        Please view the following information and acknowledge upon completing them
-      </div>
-      <h1 id="step-title"></h1>
-      <div id="content-block"></div>
     </div>
 
     <div id="generation-form-page" class="subpage">
@@ -224,38 +126,7 @@ no<!DOCTYPE html>
         </button>
       </div>
     </div>
-    <div id="delivery-page" class="subpage">
-      <h1 id="setup-title">Delivery</h1>
-      <div id="delivery-guide" class="orientation-guide">
-        Please select what you require to be delivered.
-      </div>
-      <div class="item-grid">
-        <label class="item">
-          <img src="./img/concierge/blankets.png"/>
-          <div class="item-label">Blankets</div>
-        </label>
-        <label class="item">
-          <img src="./img/concierge/glass.png" alt="Water" />
-          <div class="item-label">Water</div>
-        </label>
-        <label class="item">
-          <img src="./img/concierge/supplies.png" alt="Toiletries & Hygiene" />
-          <div class="item-label">Toiletries & Hygiene</div>
-        </label>
-        <label class="item">
-          <img src="./img/concierge/magazines.png" alt="Entertainment" />
-          <div class="item-label">Entertainment</div>
-        </label>
-      </div>
 
-      <div id='delivering' class="delivery-img">
-        <img src="./img/concierge/delivery.png"></img>
-      </div>
-
-      <div id='delivered' class="delivery-img">
-        <img src="./img/concierge/tick.png"></img>
-      </div>
-    </div>
   </div>
   <div class="chat-container">
       <div class="bubbleWrapper">

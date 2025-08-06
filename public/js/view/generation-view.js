@@ -152,6 +152,7 @@ export class GenerationView extends BaseView {
                         uploadArea.style.display = 'none';
                         deleteButton.style.display = 'inline-block';
                         checkAndToggleSubmit(true);
+                        this.emit('fileUploaded', { file });
                     };
                     reader.readAsDataURL(file);
                 }

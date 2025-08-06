@@ -13,6 +13,7 @@ export class GenerationPageModel {
         this.steps = null;
 
         this.userInput = {};
+        this.uploadedFile = null;
     }
 
     get currentStep() {
@@ -36,6 +37,26 @@ export class GenerationPageModel {
 
     normalize(str) {
         return str.toLowerCase().replace(/\s+/g, '');
+    }
+
+    async convertToBase64Img(image) {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+
+            fileReader.onload = (event) => {
+                const base64Full = event.target.result;
+                // const base64Only = base64Full.replace(/^data:image\/\w+;base64,/, '');
+                this.uploadedFile = base64Full;
+                console.log('[generation-page-model] Set uploaded file to be: ' + this.uploadedFile);
+                resolve(base64Full);
+            };
+
+            fileReader.onerror = (error) => {
+                reject(error);
+            };
+
+            fileReader.readAsDataURL(image);
+        });
     }
 
     buildSpeechListFromSteps() {

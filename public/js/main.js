@@ -3,13 +3,9 @@ import { appSettings } from "./config/appSettings.js";
 import avatar from './avatar.js';
 import { MainMenuPageController } from './controller/main-menu-controller.js';
 import { SettingsPageController } from './controller/settings-page-controller.js';
-import { OrientationPageController } from './controller/orientation-page-controller.js';
-import { GettingStartedPageController } from "./controller/getting-started-controller.js";
 import { GenerationPageController } from './controller/generation-page-controller.js';
-import { DeliverPageController } from './controller/deliver-page-controller.js';
 import { ChatbotPageController } from "./controller/chatbot-page-controller.js";
-import { Text2ImgController } from "./controller/text2img-controller.js";
-import { Text2VidController } from "./controller/text2vid-controller.js";
+
 
 import { TopMenuView } from './view/top-menu-view.js';
 
@@ -20,13 +16,8 @@ import { llm_config } from "./config/llm-config.js";
 const pages = {
   home: new MainMenuPageController("main-page"),
   settings: new SettingsPageController("setup-page"),
-  gettingStarted : new GettingStartedPageController("getting-started-page"),
-  orientation: new OrientationPageController("orientation-page"),
   generation: new GenerationPageController("generation-form-page"),
-  delivery: new DeliverPageController("delivery-page"),
   chatbot: new ChatbotPageController("chatbot-page"),
-  text2img: new Text2ImgController("text2img-page"),
-  text2vid: new Text2VidController("text2vid-page"),
 };
 
 const topMenuView = new TopMenuView('top-bar-container');
@@ -94,20 +85,6 @@ EventBus.on(Events.TXT2VID_PRESS, () => {
 EventBus.on(Events.IMG2VID_PRESS, () => {
   switchPage("generation");
   pages["generation"].start(Events.IMG2VID_PRESS);
-});
-EventBus.on(Events.GETTING_START_PRESS, () => {
-  switchPage("gettingStarted");
-});
-EventBus.on(Events.START_ORIENTATION, () => {
-  switchPage("orientation");
-  pages["orientation"].start();
-});
-EventBus.on(Events.START_PATIENT_ASSESSMENT, () => {
-  switchPage("generation");
-  pages["generation"].start();
-});
-EventBus.on(Events.START_DELIVERY, () => {
-  switchPage("delivery"); 
 });
 EventBus.on(Events.CHAT_UPDATE, (e) => {
   if(e.detail.ownText != null)

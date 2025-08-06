@@ -274,9 +274,232 @@ export const img2Vid_steps = [
 ];
 
 export const doc2vid_steps = [
-
+    {
+        type: "document",
+        question: {
+            en: "Upload your document to generate a video",
+            zh: "上传文档以生成视频"
+        },
+        fields: [
+            {
+                en: "Document Upload",
+                zh: "上传文档"
+            }
+        ],
+        input: "document"
+    },
+    {
+        type: "prompt",
+        question: {
+            en: "What is the language of the video?",
+            zh: "视频的语言是什么？"
+        },
+        fields: [
+            {
+                en: "Language",
+                zh: "语言"
+            }
+        ],
+        input: "language"
+    },
+    {
+        type: "prompt",
+        question: {
+            en: "What is the objective of the video?",
+            zh: "视频的目的是什么？"
+        },
+        fields: [
+            {
+                en: "Objective",
+                zh: "目的"
+            }
+        ],
+        input: "objective"
+    },
+    {
+        type: "prompt",
+        question: {
+            en: "Who is the target audience?",
+            zh: "目标观众是谁？"
+        },
+        fields: [
+            {
+                en: "Audience",
+                zh: "观众"
+            }
+        ],
+        input: "audience"
+    },
+    {
+        type: "prompt",
+        question: {
+            en: "What tone should the video have?",
+            zh: "视频应采用什么语气？"
+        },
+        fields: [
+            {
+                en: "Tone",
+                zh: "语气"
+            }
+        ],
+        input: "tone"
+    },
+    {
+        type: "prompt",
+        question: {
+            en: "What type of media should be used?",
+            zh: "应使用哪种类型的媒体？"
+        },
+        fields: [
+            {
+                en: "Media Type",
+                zh: "媒体类型"
+            }
+        ],
+        input: "media"
+    },
+    {
+        type: "prompt",
+        question: {
+            en: "Enable high-definition AI media (only if media is generative)?",
+            zh: "启用高清AI媒体？（仅限媒体类型为 generative）"
+        },
+        fields: [
+            {
+                en: "Use High Quality Generative Media",
+                zh: "启用高清生成媒体"
+            }
+        ],
+        input: "useGenerativeHighQuality"
+    },
+    {
+        type: "prompt",
+        question: {
+            en: "What is the visual style? (only for generative media)",
+            zh: "视觉风格是什么？（仅适用于生成媒体）"
+        },
+        fields: [
+            {
+                en: "Style",
+                zh: "风格"
+            }
+        ],
+        input: "style"
+    }
 ];
 
+
 export const url2vid_steps = [
-    
+    {
+        type: "prompt",
+        question: {
+            en: "Enter the source URL for the video content",
+            zh: "输入视频内容的来源链接"
+        },
+        fields: [
+            {
+                en: "Source URL",
+                zh: "链接"
+            }
+        ],
+        input: "url"
+    },
+    {
+        type: "prompt",
+        question: {
+            en: "What is the language of the video?",
+            zh: "视频的语言是什么？"
+        },
+        fields: [
+            {
+                en: "Language",
+                zh: "语言"
+            }
+        ],
+        input: "language"
+    },
+    {
+        type: "prompt",
+        question: {
+            en: "What is the objective of the video?",
+            zh: "视频的目的是什么？"
+        },
+        fields: [
+            {
+                en: "Objective",
+                zh: "目的"
+            }
+        ],
+        input: "objective"
+    },
+    {
+        type: "prompt",
+        question: {
+            en: "Who is the target audience?",
+            zh: "目标观众是谁？"
+        },
+        fields: [
+            {
+                en: "Audience",
+                zh: "观众"
+            }
+        ],
+        input: "audience"
+    },
+    {
+        type: "prompt",
+        question: {
+            en: "What tone should the video have?",
+            zh: "视频应采用什么语气？"
+        },
+        fields: [
+            {
+                en: "Tone",
+                zh: "语气"
+            }
+        ],
+        input: "tone"
+    },
+    {
+        type: "prompt",
+        question: {
+            en: "What type of media should be used?",
+            zh: "应使用哪种类型的媒体？"
+        },
+        fields: [
+            {
+                en: "Media Type",
+                zh: "媒体类型"
+            }
+        ],
+        input: "media"
+    },
+    {
+        type: "prompt",
+        question: {
+            en: "Enable high-definition AI media (only if media is generative)?",
+            zh: "启用高清AI媒体？（仅限媒体类型为 generative）"
+        },
+        fields: [
+            {
+                en: "Use High Quality Generative Media",
+                zh: "启用高清生成媒体"
+            }
+        ],
+        input: "useGenerativeHighQuality"
+    },
+    {
+        type: "prompt",
+        question: {
+            en: "What is the visual style? (only for generative media)",
+            zh: "视觉风格是什么？（仅适用于生成媒体）"
+        },
+        fields: [
+            {
+                en: "Style",
+                zh: "风格"
+            }
+        ],
+        input: "style"
+    }
 ];
