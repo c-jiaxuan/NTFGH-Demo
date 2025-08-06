@@ -30,13 +30,13 @@ export class MainMenuPageController extends BasePageController {
 			EventBus.emit(Events.CHATBOT_PRESS);
 			break;
 		case "text2Img":
-			EventBus.emit(Events.TEXT2IMG_PRESS);
+			EventBus.emit(Events.TXT2IMG_PRESS);
 			break;
 		case "text2Vid":
-			EventBus.emit(Events.TEXT2VID_PRESS);
+			EventBus.emit(Events.TXT2VID_PRESS);
 			break;
 		case "img2Vid":
-			EventBus.emit(Events.GETTING_START_PRESS);
+			EventBus.emit(Events.IMG2VID_PRESS);
 			break;
 		}
 	}

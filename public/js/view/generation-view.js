@@ -10,12 +10,18 @@ export class GenerationView extends BaseView {
         this.resultContainer = this.loadingPageContainer.querySelector("#result-container");
 
         this.generationPageHeaders = {
-            TEXT2IMG:   'Text to Image',
-            TEXT2VID:   'Text to Video',
+            TXT2IMG:    'Text to Image',
+            TXT2VID:    'Text to Video',
             IMG2VID:    'Image to Video',
             URL2VID:    'URL to Video',
             DOC2VID:    'Document to Videi'
         }
+
+        this.generationType = null;
+    }
+
+    setGenerationType(type) {
+        this.generationType = type;
     }
 
     renderStep(language, step, isLastStep = false) {
@@ -27,9 +33,9 @@ export class GenerationView extends BaseView {
         // Header
         const header = document.createElement('div');
         header.className = 'general-header';
-        if (step.type === 'prompt') {
+        if (step.type === 'prompt' || step.type === 'media') {
             const title = document.createElement('strong');
-            title.textContent = this.generationPageHeaders.TEXT2IMG;
+            title.textContent = this.generationType;
             header.appendChild(title);
         }
         card.appendChild(header);
@@ -39,7 +45,7 @@ export class GenerationView extends BaseView {
         question.textContent = step.question?.[language] || step.question || '';
         card.appendChild(question);
 
-        if (Array.isArray(step.fields) && step.fields.length > 0) {
+        if (step.type === 'prompt' && Array.isArray(step.fields) && step.fields.length > 0) {
             const inputs = [];
             const fieldLayout = document.createElement('div');
             fieldLayout.className = 'field-layout';
@@ -56,6 +62,7 @@ export class GenerationView extends BaseView {
                 const textarea = document.createElement('textarea');
                 textarea.name = step.input;
                 textarea.rows = 3;
+                textarea.classList.add('transcribe-target');
 
                 inputs.push(textarea);
 
@@ -82,6 +89,88 @@ export class GenerationView extends BaseView {
             inputs.forEach(input => input.addEventListener('input', checkAndToggleSubmit));
 
             card.appendChild(fieldLayout);
+        }
+
+        if (step.type === 'media') {
+            const mediaContainer = document.createElement('div');
+            mediaContainer.className = 'media-upload';
+
+            // Upload area
+            const uploadArea = document.createElement('div');
+            uploadArea.className = 'upload-area';
+
+            const icon = document.createElement('img');
+            icon.className = 'upload-icon';
+            icon.src = './img/icon/upload.png';
+            icon.alt = 'Upload Icon'
+
+            const description = document.createElement('div');
+            description.className = 'upload-description';
+            description.textContent = 'Click to upload an image';
+
+            uploadArea.appendChild(icon);
+            uploadArea.appendChild(description);
+
+            const uploadInput = document.createElement('input');
+            uploadInput.type = 'file';
+            uploadInput.accept = 'image/*';
+            uploadInput.className = 'upload-input';
+
+            const preview = document.createElement('img');
+            preview.className = 'upload-preview';
+            preview.style.display = 'none';
+
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'upload-delete-button';
+            deleteButton.textContent = 'Delete Image';
+            deleteButton.style.display = 'none';
+
+            let isAcknowledged = false;
+
+            const checkAndToggleSubmit = (hasImage) => {
+                if (hasImage && !isAcknowledged) {
+                    this.emit('readyForAcknowledge', {});
+                    isAcknowledged = true;
+                } else if (!hasImage && isAcknowledged) {
+                    this.emit('notReadyForAcknowledge', {});
+                    isAcknowledged = false;
+                }
+            };
+
+            // Open file picker
+            uploadArea.addEventListener('click', () => {
+                uploadInput.click();
+            });
+
+            uploadInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        preview.src = reader.result;
+                        preview.style.display = 'block';
+                        uploadArea.style.display = 'none';
+                        deleteButton.style.display = 'inline-block';
+                        checkAndToggleSubmit(true);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            deleteButton.addEventListener('click', () => {
+                uploadInput.value = '';
+                preview.src = '';
+                preview.style.display = 'none';
+                uploadArea.style.display = 'flex'; // Show upload area again
+                deleteButton.style.display = 'none';
+                checkAndToggleSubmit(false);
+            });
+
+            mediaContainer.appendChild(uploadArea);
+            mediaContainer.appendChild(uploadInput);
+            mediaContainer.appendChild(preview);
+            mediaContainer.appendChild(deleteButton);
+            card.appendChild(mediaContainer);
         }
 
         this.assessmentContainer.appendChild(card);

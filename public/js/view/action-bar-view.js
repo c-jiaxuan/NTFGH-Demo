@@ -145,15 +145,7 @@ export class ActionBarView extends BaseView {
     // wire in generate to click-binding
     bindButtonClick(callback) {
         Object.entries(this.buttons).forEach(([key, button]) => {
-        button.addEventListener('click', () => callback(key));
-        });
-    }
-
-    bindButtonClick(callback) {
-        Object.entries(this.buttons).forEach(([key, button]) => {
-            button.addEventListener('click', () => {
-                callback(key);
-            });
+            button.addEventListener('click', () => callback(key));
         });
     }
 
@@ -189,7 +181,7 @@ export class ActionBarView extends BaseView {
                     this.buttons['acknowledge'].className = "action-button";
                     this.acknowledgeBtnTxt.innerHTML = this.currentLangLabels.acknowledge;
                     this.acknowledgeBtnProgress.style.width = '0%';
-        
+                    console.log('[action-bar-view] emitting event acknowledgeCountdownComplete');
                     this.emit("acknowledgeCountdownComplete", {});
                 }
             }, updateInterval);

@@ -83,13 +83,17 @@ EventBus.on(Events.CHATBOT_PRESS, () => {
   switchPage("chatbot");
   pages["chatbot"].start();
 });
-EventBus.on(Events.TEXT2IMG_PRESS, () => {
+EventBus.on(Events.TXT2IMG_PRESS, () => {
   switchPage("generation");
-  pages["generation"].start(Events.TEXT2IMG_PRESS);
+  pages["generation"].start(Events.TXT2IMG_PRESS);
 });
-EventBus.on(Events.TEXT2VID_PRESS, () => {
+EventBus.on(Events.TXT2VID_PRESS, () => {
   switchPage("generation");
-  pages["generation"].start(Events.TEXT2VID_PRESS);
+  pages["generation"].start(Events.TXT2VID_PRESS);
+});
+EventBus.on(Events.IMG2VID_PRESS, () => {
+  switchPage("generation");
+  pages["generation"].start(Events.IMG2VID_PRESS);
 });
 EventBus.on(Events.GETTING_START_PRESS, () => {
   switchPage("gettingStarted");

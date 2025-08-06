@@ -20,6 +20,8 @@ export class GenerationPageController extends BasePageController {
 
 		this._handleTranscribeEvent = this.handleTranscribeEvent.bind(this);
 		this._handleTranscribeComplete = this.handleTranscribeComplete.bind(this);
+		this._handleAcknowledge = this.handleAcknowledge.bind(this);
+    	this._handleGenerate = this.handleGenerate.bind(this);
 		this.onSubmit = this.onSubmit.bind(this);
 	}
 
@@ -38,21 +40,24 @@ export class GenerationPageController extends BasePageController {
 	// To set the corresponding config steps
 	setSteps(type) {
 		switch (type) {
-			case Events.TEXT2IMG_PRESS:
+			case Events.TXT2IMG_PRESS:
 				console.log('[generation-page-controller] setting steps = ' + type + " : " + text2Img_steps);
 				this.model.steps = text2Img_steps;
 				this.model.generationType = "txt2img";
-			break;
-			case Events.TEXT2VID_PRESS:
+				this.view.setGenerationType(this.view.generationPageHeaders.TXT2IMG);
+				break;
+			case Events.TXT2VID_PRESS:
 				console.log('[generation-page-controller] setting steps = ' + type + " : " + text2Vid_steps);
 				this.model.steps = text2Vid_steps;
 				this.model.generationType = "txt2vid";
-			break;
+				this.view.setGenerationType(this.view.generationPageHeaders.TXT2VID);
+				break;
 			case Events.IMG2VID_PRESS:
-				console.log('[generation-page-controller] setting steps = ' + type + " : " + vid2Img_steps);
+				console.log('[generation-page-controller] setting steps = ' + type + " : " + img2Vid_steps);
 				this.model.steps = img2Vid_steps;
 				this.model.generationType = "img2vid";
-			break;
+				this.view.setGenerationType(this.view.generationPageHeaders.IMG2VID);
+				break;
 		}
 	}
 
@@ -94,11 +99,38 @@ export class GenerationPageController extends BasePageController {
 		}
 	}
 
+	onUpdateLanguage(language){
+		this.model.buildSpeechListFromSteps(this.model.steps);
+		this.currentStepSpeak = false;
+		this.showCurrentStep();
+	}
+
+	onUpdateInputMode(mode) {
+		console.log('[generation-page-controller] switching to mode: ' + mode);
+
+		this.showCurrentStep();
+
+		const currentStep = this.model.steps[this.currentStepIndex];
+
+		if (appSettings.inputMode === "voice" && currentStep.type === "prompt") {
+			this.setupTranscribeForVoiceCommand(true);
+			this.isTranscribeActive = true;
+		} else {
+			if (this.isTranscribeActive) {
+				this.setupTranscribeForVoiceCommand(false);
+				this.isTranscribeActive = false;
+			}
+		}
+	}
+
 	onAvatarSpeakCompleted() {
 		if (!this.model.currentStepSpeak) {
 			this.model.currentStepSpeak = true;
-			if (appSettings.inputMode === 'voice') {
-				this.setupTranscribeForVoiceCommand(true, ['next-of-kin', 'adl'].includes(this.model.currentStep.type));
+
+			const step = this.model.currentStep;
+
+			if (appSettings.inputMode === 'voice' && step.type === "prompt") {
+				this.setupTranscribeForVoiceCommand(true);
 				this.model.isTranscribeActive = true;
 			} else if (this.model.isTranscribeActive) {
 				this.setupTranscribeForVoiceCommand(false);
@@ -109,6 +141,8 @@ export class GenerationPageController extends BasePageController {
 
 	handleActionBarClicked(key) {
 		if (!this.isActive) return;
+
+		const step = this.model.currentStep;
 
 		if (appSettings.inputMode === 'voice' && (key === 'back' || key === 'acknowledge')) {
 			this.setupTranscribeForVoiceCommand(false);
@@ -121,8 +155,8 @@ export class GenerationPageController extends BasePageController {
 				break;
 			case 'help':
 				this.showCurrentStep();
-				if (appSettings.inputMode === 'voice') {
-					this.setupTranscribeForVoiceCommand(true, ['next-of-kin', 'adl'].includes(this.model.currentStep.type));
+				if (appSettings.inputMode === 'voice' && step.type === "prompt") {
+					this.setupTranscribeForVoiceCommand(true);
 					this.model.isTranscribeActive = true;
 				}
 				break;
@@ -151,6 +185,17 @@ export class GenerationPageController extends BasePageController {
 			document.dispatchEvent(new CustomEvent('aws-reset-transcribe', {}));
 			this.model.isTranscribeActive = false;
 		}
+	}
+
+	handleAcknowledge() {
+		EventBus.emit(AvatarEvents.STOP, {});
+		this.onContinue();
+		this.nextStep();
+	}
+
+	handleGenerate() {
+		this.onContinue();
+		this.onSubmit();
 	}
 
 	async handleTranscribeEvent(e) {
@@ -182,51 +227,16 @@ export class GenerationPageController extends BasePageController {
 	// TBD: Change to fit the new types
 	async handleTranscribeComplete(e) {
 		const step = this.model.currentStep;
-		if (!['next-of-kin', 'adl'].includes(step.type)) return;
 		const transcript = this.model.normalize(e.detail);
 		if (!transcript) return;
-
-		if (step.type === 'adl') {
-			const classification = await this.model.classifyAdl(transcript, this.model.currentStepIndex);
-			if (!classification) {
-				EventBus.emit(AvatarEvents.SPEAK, { message: "I am not sure what you have sent, please try again.", gesture: "" });
-				return;
+		if (step.type === 'prompt') {
+			const inputSelector = `textarea[name="${step.input}"]`;
+			const textarea = document.querySelector(inputSelector);
+			if (textarea) {
+				textarea.value = transcript;
+				textarea.dispatchEvent(new Event('input')); // trigger input validation
+				this.setupTranscribeForVoiceCommand(false);
 			}
-			const buttons = document.querySelectorAll('.option-button');
-			for (const btn of buttons) {
-				if (this.model.normalize(btn.textContent) === this.model.normalize(classification.output.choice)) {
-					btn.click();
-					this.setupTranscribeForVoiceCommand(false);
-					break;
-				}
-			}
-			EventBus.emit(AvatarEvents.SPEAK, { message: this.model.formatResponse(classification), gesture: "" });
-		} else if (step.type === 'next-of-kin') {
-			const result = await this.model.callGramanerHandler(transcript);
-			if (!result) {
-				EventBus.emit(AvatarEvents.SPEAK, { message: "I am not sure what you have sent, please try again.", gesture: "" });
-				return;
-			}
-			const fillMap = {
-				name: result.name,
-				relationship: result.relationship,
-				phone: result.phone_number,
-				address: result.address,
-			};
-
-			const inputs = document.querySelectorAll('.field-layout input');
-			inputs.forEach(input => {
-				const label = input.name?.toLowerCase();
-				for (const key in fillMap) {
-					if (label.includes(key)) {
-						input.value = fillMap[key] || '';
-						break;
-					}
-				}
-			});
-
-			inputs.forEach(input => input.dispatchEvent(new Event('keyup')));
-			this.setupTranscribeForVoiceCommand(false);
 		}
 	}
 
@@ -374,16 +384,9 @@ export class GenerationPageController extends BasePageController {
 		this.view.on("readyForAcknowledge", () => this.actionBar.enableAcknowledge(true));
 		this.view.on("notReadyForAcknowledge", () => this.actionBar.enableAcknowledge(false));
 		this.view.on("quizAnswered", e => this.onQuizAnswered(e.detail));
-		this.actionBar.on("acknowledged", () => {
-			EventBus.emit(AvatarEvents.STOP, {});
-			this.onContinue();
-			this.nextStep();
-		});
-		this.actionBar.on("generate", () => {
-			this.onContinue();
-			this.onSubmit();
-		});
 
+		this.actionBar.on("acknowledged", this._handleAcknowledge);
+		this.actionBar.on("generate", this._handleGenerate);
 		this.actionBar.on("action-button-clicked", e => this.handleActionBarClicked(e.detail));
 
 		document.addEventListener("aws-transcribe-update", this._handleTranscribeEvent);
@@ -401,10 +404,9 @@ export class GenerationPageController extends BasePageController {
 		this.view.off("readyForAcknowledge", () => this.actionBar.enableAcknowledge(true));
 		this.view.off("notReadyForAcknowledge", () => this.actionBar.enableAcknowledge(false))
 		this.view.off("quizAnswered", e => this.onQuizAnswered(e.detail));
-		this.actionBar.off("acknowledged", () => this.nextStep());
-		this.actionBar.off("acknowledged", () => this.onContinue());
-		this.actionBar.off("generate", () => this.onContinue());
-		this.actionBar.off("generate", () => this.onSubmit());
+
+	    this.actionBar.off("acknowledged", this._handleAcknowledge);
+		this.actionBar.off("generate", this._handleGenerate);
 		this.actionBar.off("action-button-clicked", e => this.handleActionBarClicked(e.detail));
 
 		document.dispatchEvent(new CustomEvent('aws-stop-transcribe', { detail: { language: 'en-US' } }));
