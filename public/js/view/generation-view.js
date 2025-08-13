@@ -31,11 +31,9 @@ export class GenerationView extends BaseView {
         // Header
         const header = document.createElement('div');
         header.className = 'general-header';
-        if (step.type === 'prompt' || step.type === 'media' || step.type === 'document') {
-            const title = document.createElement('strong');
-            title.textContent = this.generationType;
-            header.appendChild(title);
-        }
+        const title = document.createElement('strong');
+        title.textContent = this.generationType;
+        header.appendChild(title);
         card.appendChild(header);
 
         // Question
@@ -91,6 +89,34 @@ export class GenerationView extends BaseView {
             inputs.forEach(input => input.addEventListener('input', checkAndToggleSubmit));
 
             card.appendChild(fieldLayout);
+        }
+
+        if (step.type === 'selection' && Array.isArray(step.options) && step.options.length > 0) {
+            const langKey = language || 'en';
+
+            // Create hidden input to store selected value
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = step.input; // matches the model field key
+            card.appendChild(hiddenInput);
+
+            step.options.forEach(opt => {
+                const label = typeof opt === 'object' ? opt[langKey] : opt;
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                button.textContent = label;
+                button.dataset.value = typeof opt === 'object' ? opt.en : opt;
+
+                button.onclick = () => {
+                    Array.from(card.querySelectorAll('.option-button')).forEach(b => b.classList.remove('selected'));
+                    button.classList.add('selected');
+
+                    hiddenInput.value = button.dataset.value; // store choice
+                    this.emit("readyForAcknowledge", {});
+                };
+
+                card.appendChild(button);
+            });
         }
 
         // Media upload (images)

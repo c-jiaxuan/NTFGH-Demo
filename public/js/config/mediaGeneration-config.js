@@ -119,7 +119,11 @@ export const txt2vid_steps = [
         fields: [
             {
                 en: "Subject",
-                zh: "主题"
+                zh: "主题",
+                placeholder: {
+                    en: "e.g., a lion, a ballerina, a racing car",
+                    zh: "例如：一只狮子、一位芭蕾舞者、一辆赛车"
+                }
             }
         ],
         input: "subject"
@@ -133,7 +137,11 @@ export const txt2vid_steps = [
         fields: [
             {
                 en: "Movement",
-                zh: "动作"
+                zh: "动作",
+                placeholder: {
+                    en: "e.g., running, spinning, jumping, dancing",
+                    zh: "例如：奔跑、旋转、跳跃、舞蹈"
+                }
             }
         ],
         input: "movement"
@@ -147,7 +155,11 @@ export const txt2vid_steps = [
         fields: [
             {
                 en: "Background",
-                zh: "背景"
+                zh: "背景",
+                placeholder: {
+                    en: "e.g., a city skyline, a snowy mountain, an underwater reef",
+                    zh: "例如：城市天际线、雪山、水下珊瑚礁"
+                }
             }
         ],
         input: "background"
@@ -161,7 +173,11 @@ export const txt2vid_steps = [
         fields: [
             {
                 en: "Background Movement",
-                zh: "背景动作"
+                zh: "背景动作",
+                placeholder: {
+                    en: "e.g., waves crashing, cars passing, leaves blowing",
+                    zh: "例如：海浪拍打、车辆经过、树叶飘动"
+                }
             }
         ],
         input: "BGMovement"
@@ -175,7 +191,11 @@ export const txt2vid_steps = [
         fields: [
             {
                 en: "Camera Motion",
-                zh: "镜头运动"
+                zh: "镜头运动",
+                placeholder: {
+                    en: "e.g., panning left, zooming in, tracking shot",
+                    zh: "例如：向左摇镜、拉近镜头、跟拍"
+                }
             }
         ],
         input: "motion"
@@ -189,7 +209,11 @@ export const txt2vid_steps = [
         fields: [
             {
                 en: "Prompt",
-                zh: "提示语"
+                zh: "提示语",
+                placeholder: {
+                    en: "e.g., cinematic style, slow motion, dramatic lighting",
+                    zh: "例如：电影风格、慢动作、戏剧化灯光"
+                }
             }
         ],
         input: "prompt"
@@ -206,7 +230,7 @@ export const img2vid_steps = [
         fields: [
             {
                 en: "Reference Image",
-                zh: "参考图像"
+                zh: "参考图像",
             }
         ],
         input: "image"
@@ -220,7 +244,11 @@ export const img2vid_steps = [
         fields: [
             {
                 en: "Subject",
-                zh: "主题"
+                zh: "主题",
+                placeholder: {
+                    en: "e.g., a dog, a mountain climber, a spaceship",
+                    zh: "例如：一只狗、一位登山者、一艘宇宙飞船"
+                }
             }
         ],
         input: "subject"
@@ -234,7 +262,11 @@ export const img2vid_steps = [
         fields: [
             {
                 en: "Movement",
-                zh: "动作"
+                zh: "动作",
+                placeholder: {
+                    en: "e.g., walking, waving, swimming, flying",
+                    zh: "例如：行走、挥手、游泳、飞行"
+                }
             }
         ],
         input: "movement"
@@ -248,7 +280,11 @@ export const img2vid_steps = [
         fields: [
             {
                 en: "Background",
-                zh: "背景"
+                zh: "背景",
+                placeholder: {
+                    en: "e.g., a desert landscape, a futuristic city, a coral reef",
+                    zh: "例如：沙漠景观、未来城市、珊瑚礁"
+                }
             }
         ],
         input: "background"
@@ -262,7 +298,11 @@ export const img2vid_steps = [
         fields: [
             {
                 en: "Background Movement",
-                zh: "背景动作"
+                zh: "背景动作",
+                placeholder: {
+                    en: "e.g., birds flying, water flowing, clouds drifting",
+                    zh: "例如：鸟儿飞翔、水流动、云朵飘动"
+                }
             }
         ],
         input: "BGMovement"
@@ -276,7 +316,11 @@ export const img2vid_steps = [
         fields: [
             {
                 en: "Camera Motion",
-                zh: "镜头运动"
+                zh: "镜头运动",
+                placeholder: {
+                    en: "e.g., dolly zoom, tilting up, circling around",
+                    zh: "例如：推拉变焦、向上倾斜、环绕拍摄"
+                }
             }
         ],
         input: "motion"
@@ -290,7 +334,11 @@ export const img2vid_steps = [
         fields: [
             {
                 en: "Prompt",
-                zh: "提示语"
+                zh: "提示语",
+                placeholder: {
+                    en: "e.g., anime style, high frame rate, warm lighting",
+                    zh: "例如：动漫风格、高帧率、暖色灯光"
+                }
             }
         ],
         input: "prompt"
@@ -313,16 +361,15 @@ export const doc2vid_steps = [
         input: "document"
     },
     {
-        type: "prompt",
+        type: "selection",
         question: {
             en: "What is the language of the video?",
             zh: "视频的语言是什么？"
         },
-        fields: [
-            {
-                en: "Language",
-                zh: "语言"
-            }
+        options: [
+            {en: "English (en)", zh: "英语 (en)"},
+            {en: "Chinese (zh)", zh: "中文 (zh)"},
+            {en: "Malay (ms)", zh: "马来语 (ms)"},
         ],
         input: "language"
     },
@@ -335,7 +382,11 @@ export const doc2vid_steps = [
         fields: [
             {
                 en: "Objective",
-                zh: "目的"
+                zh: "目的",
+                placeholder: {
+                    en: "e.g., education, marketing, explanation, entertainment",
+                    zh: "例如：教育、营销、讲解、娱乐"
+                }
             }
         ],
         input: "objective"
@@ -349,7 +400,11 @@ export const doc2vid_steps = [
         fields: [
             {
                 en: "Audience",
-                zh: "观众"
+                zh: "观众",
+                placeholder: {
+                    en: "e.g., students, professionals, general public",
+                    zh: "例如：学生、专业人士、公众"
+                }
             }
         ],
         input: "audience"
@@ -363,36 +418,38 @@ export const doc2vid_steps = [
         fields: [
             {
                 en: "Tone",
-                zh: "语气"
+                zh: "语气",
+                placeholder: {
+                    en: "e.g., formal, casual, cheerful, serious",
+                    zh: "例如：正式、随意、愉快、严肃"
+                }
             }
         ],
         input: "tone"
     },
     {
-        type: "prompt",
+        type: "selection",
         question: {
             en: "What type of media should be used?",
             zh: "应使用哪种类型的媒体？"
         },
-        fields: [
-            {
-                en: "Media Type",
-                zh: "媒体类型"
-            }
+        options: [
+            {en: "Search", zh: "搜索"},
+            {en: "Free", zh: "免费"},
+            {en: "Premium", zh: "付费"},
+            {en: "Generative", zh: "生成性"},
         ],
         input: "media"
     },
     {
-        type: "prompt",
+        type: "selection",
         question: {
             en: "Enable high-definition AI media? (only if media is generative)",
-            zh: "启用高清AI媒体？（仅限媒体类型为 generative）"
+            zh: "启用高清AI媒体? (仅限媒体类型为 generative)"
         },
-        fields: [
-            {
-                en: "Use High Quality Generative Media",
-                zh: "启用高清生成媒体"
-            }
+        options: [
+            {en: "Yes", zh: "是"},
+            {en: "No", zh: "否"}
         ],
         input: "useGenerativeHighQuality"
     },
@@ -405,13 +462,16 @@ export const doc2vid_steps = [
         fields: [
             {
                 en: "Style",
-                zh: "风格"
+                zh: "风格",
+                placeholder: {
+                    en: "e.g., cinematic, watercolor, digital painting, realistic",
+                    zh: "例如：电影风格、水彩、数字绘画、写实"
+                }
             }
         ],
         input: "style"
     }
 ];
-
 
 export const url2vid_steps = [
     {
@@ -502,7 +562,7 @@ export const url2vid_steps = [
         type: "prompt",
         question: {
             en: "Enable high-definition AI media (only if media is generative)?",
-            zh: "启用高清AI媒体？（仅限媒体类型为 generative）"
+            zh: "启用高清AI媒体?（仅限媒体类型为 generative)"
         },
         fields: [
             {

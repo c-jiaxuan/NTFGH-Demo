@@ -31,9 +31,9 @@ export class GenerationPageController extends BasePageController {
 		this.model.currentStepSpeak = false;
 		this.setSteps(type);
 		this.model.buildSpeechListFromSteps();
-		document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
-			detail: { language: appSettings.language, timeout: false }
-		}));
+		// document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
+		// 	detail: { language: appSettings.language, timeout: false }
+		// }));
 		this.view.resetGenerateFormPage();
 		this.showCurrentStep();
 	}
@@ -207,11 +207,15 @@ export class GenerationPageController extends BasePageController {
 		if (enabled) {
 			console.log('[generation-page-controller] enabling voice commands');
 			document.addEventListener("aws-transcribe-update", this._handleTranscribeEvent);
+			document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
+				detail: { language: appSettings.language, timeout: false }
+			}));
 			document.dispatchEvent(new CustomEvent('aws-update-timeout', { detail: { timeout } }));
 			this.model.isTranscribeActive = true;
 		} else {
 			console.log('[generation-page-controller] disabling voice commands');
 			document.removeEventListener("aws-transcribe-update", this._handleTranscribeEvent);
+			document.dispatchEvent(new CustomEvent('aws-stop-transcribe', { detail: { language: 'en-US' } }));
 			document.dispatchEvent(new CustomEvent('aws-reset-transcribe', {}));
 			this.model.isTranscribeActive = false;
 		}
@@ -258,6 +262,7 @@ export class GenerationPageController extends BasePageController {
 	// TBD: Change to fit the new types
 	async handleTranscribeComplete(e) {
 		const step = this.model.currentStep;
+		console.log('[generation-page-controller] Transcribe complete: ' + e.details);
 		const transcript = this.model.normalize(e.detail);
 		if (!transcript) return;
 		if (step.type === 'prompt') {
@@ -267,6 +272,28 @@ export class GenerationPageController extends BasePageController {
 				textarea.value = transcript;
 				textarea.dispatchEvent(new Event('input')); // trigger input validation
 				this.setupTranscribeForVoiceCommand(false);
+			}
+		} else if (step.type === 'selection') {
+			// Find the matching option in current step
+			const matched = step.options.find(option => {
+				const label = typeof option === 'object' ? option[appSettings.language] : option;
+				return transcript.includes(this.normalize(label));
+			});
+
+			if (matched) {
+				const label = typeof matched === 'object' ? matched[appSettings.language] : matched;
+				
+				// Find and click the matching button in DOM
+				const buttons = document.querySelectorAll('.option-button');
+				for (const btn of buttons) {
+					if (this.normalize(btn.textContent) === this.normalize(label)) {
+						btn.click();
+						console.log(`[generation-page-controller] ✅ Matched and selected: ${label}`);
+
+						this.setupTranscribeForVoiceCommmand(false);
+						break;
+					}
+				}
 			}
 		}
 	}
@@ -373,9 +400,10 @@ export class GenerationPageController extends BasePageController {
 
 	// Store the userinput on continuing each step
 	onContinue() {
-		this.view.element.querySelectorAll('textarea').forEach(textarea => {
-        	this.model.storeAnswer(textarea.name, textarea.value.trim());
-      	});
+		// Store prompt answers
+		this.view.element.querySelectorAll('textarea, input[type="hidden"]').forEach(field => {
+			this.model.storeAnswer(field.name, field.value.trim());
+		});
 	}
 
 	getIntent() {

@@ -8,7 +8,7 @@ const languageOptions = {
         actionBarLabels: {
             back: "Back",
             help: "Help",
-            acknowledge: "Acknowledge",
+            acknowledge: "Continue",
             countdown: (s) => `Continue in ${s}s`,
             generate: "Generate!",
             generateCountdown: (s) => `Generate in ${s}s`
@@ -22,7 +22,7 @@ const languageOptions = {
         actionBarLabels: {
             back: "返回",
             help: "帮助",
-            acknowledge: "确认",
+            acknowledge: "继续",
             countdown: (s) => `${s}秒后继续`,
             generate: "生成",
             generateCountdown: (s) => `${s}秒后生成`
