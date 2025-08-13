@@ -3,7 +3,7 @@ import { GenerationView } from '../view/generation-view.js';
 import { GenerationPageModel } from '../model/generation-page-model.js';
 import { GenerationModel } from '../model/generation-model.js';
 import { AvatarEvents, EventBus, Events } from '../event-bus.js';
-import { text2Img_steps, text2Vid_steps, img2Vid_steps } from "../config/mediaGeneration-config.js";
+import { txt2img_steps, txt2vid_steps, img2vid_steps, doc2vid_steps, url2vid_steps } from "../config/mediaGeneration-config.js";
 import { ActionBarController } from './action-bar-controller.js';
 import { appSettings } from '../config/appSettings.js';
 import { messageIntent } from '../config/chatbot-config.js';
@@ -31,9 +31,9 @@ export class GenerationPageController extends BasePageController {
 		this.model.currentStepSpeak = false;
 		this.setSteps(type);
 		this.model.buildSpeechListFromSteps();
-		// document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
-		//   detail: { language: appSettings.language, timeout: false }
-		// }));
+		document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
+			detail: { language: appSettings.language, timeout: false }
+		}));
 		this.view.resetGenerateFormPage();
 		this.showCurrentStep();
 	}
@@ -42,22 +42,34 @@ export class GenerationPageController extends BasePageController {
 	setSteps(type) {
 		switch (type) {
 			case Events.TXT2IMG_PRESS:
-				console.log('[generation-page-controller] setting steps = ' + type + " : " + text2Img_steps);
-				this.model.steps = text2Img_steps;
-				this.model.generationType = "txt2img";
+				console.log('[generation-page-controller] setting steps = ' + type + " : " + txt2img_steps);
+				this.model.steps = txt2img_steps;
+				this.model.generationType = this.model.GENERATION_TYPES.TXT2IMG;
 				this.view.setGenerationType(this.view.generationPageHeaders.TXT2IMG);
 				break;
 			case Events.TXT2VID_PRESS:
-				console.log('[generation-page-controller] setting steps = ' + type + " : " + text2Vid_steps);
-				this.model.steps = text2Vid_steps;
-				this.model.generationType = "txt2vid";
+				console.log('[generation-page-controller] setting steps = ' + type + " : " + txt2vid_steps);
+				this.model.steps = txt2vid_steps;
+				this.model.generationType = this.model.GENERATION_TYPES.TXT2VID;
 				this.view.setGenerationType(this.view.generationPageHeaders.TXT2VID);
 				break;
 			case Events.IMG2VID_PRESS:
-				console.log('[generation-page-controller] setting steps = ' + type + " : " + img2Vid_steps);
-				this.model.steps = img2Vid_steps;
-				this.model.generationType = "img2vid";
+				console.log('[generation-page-controller] setting steps = ' + type + " : " + img2vid_steps);
+				this.model.steps = img2vid_steps;
+				this.model.generationType = this.model.GENERATION_TYPES.IMG2VID;
 				this.view.setGenerationType(this.view.generationPageHeaders.IMG2VID);
+				break;
+			case Events.DOC2VID_PRESS:
+				console.log('[generation-page-controller] setting steps = ' + type + " : " + doc2vid_steps);
+				this.model.steps = doc2vid_steps;
+				this.model.generationType = this.model.GENERATION_TYPES.DOC2VID;
+				this.view.setGenerationType(this.view.generationPageHeaders.DOC2VID);
+				break;
+			case Events.URL2VID_PRESS:
+				console.log('[generation-page-controller] setting steps = ' + type + " : " + url2vid_steps);
+				this.model.steps = url2vid_steps;
+				this.model.generationType = this.model.GENERATION_TYPES.URL2VID;
+				this.view.setGenerationType(this.view.generationPageHeaders.URL2VID);
 				break;
 		}
 	}
@@ -66,6 +78,10 @@ export class GenerationPageController extends BasePageController {
 		if (!this.isActive) return;
 
 		console.log('[generation-page-controller] Current step is = ' + this.model.currentStepIndex);
+
+    	//Clear user bubble to ready for next step
+    	EventBus.emit(Events.CHAT_UPDATE, { otherText: "" });
+    	document.dispatchEvent(new CustomEvent('aws-reset-transcribe', {}));
 
 		const isLastStep = this.model.currentStepIndex === this.model.steps.length - 1;
 
@@ -111,15 +127,18 @@ export class GenerationPageController extends BasePageController {
 
 		this.showCurrentStep();
 
-		const currentStep = this.model.steps[this.currentStepIndex];
+		const currentStep = this.model.steps[this.model.currentStepIndex];
+		console.log('[generation-page-controller] currentStep: ' + JSON.stringify(currentStep));
 
 		if (appSettings.inputMode === "voice" && currentStep.type === "prompt") {
 			this.setupTranscribeForVoiceCommand(true);
 			this.isTranscribeActive = true;
+			console.log('[generation-page-controller] setupTranscribeForVoiceCommand(true)');
 		} else {
 			if (this.isTranscribeActive) {
 				this.setupTranscribeForVoiceCommand(false);
 				this.isTranscribeActive = false;
+				console.log('[generation-page-controller] setupTranscribeForVoiceCommand(false)');
 			}
 		}
 	}
@@ -145,13 +164,12 @@ export class GenerationPageController extends BasePageController {
 
 		const step = this.model.currentStep;
 
-		if (appSettings.inputMode === 'voice' && (key === 'back' || key === 'acknowledge')) {
-			this.setupTranscribeForVoiceCommand(false);
-			this.model.isTranscribeActive = false;
-		}
-
 		switch (key) {
 			case 'back':
+				if(appSettings.inputMode == "voice"){
+					this.setupTranscribeForVoiceCommand(false);
+					this.model.isTranscribeActive = false;
+				}
 				this.previousStep();
 				break;
 			case 'help':
@@ -159,9 +177,18 @@ export class GenerationPageController extends BasePageController {
 				if (appSettings.inputMode === 'voice' && step.type === "prompt") {
 					this.setupTranscribeForVoiceCommand(true);
 					this.model.isTranscribeActive = true;
+				} else {
+					if (this.model.isTranscribeActive) {
+						this.setupTranscribeForVoiceCommand(false);
+						this.model.isTranscribeActive = false;
+					}
 				}
 				break;
 			case 'acknowledge':
+				if(appSettings.inputMode == "voice"){
+					this.setupTranscribeForVoiceCommand(false);
+					this.model.isTranscribeActive = false;
+				}
 				this.actionBar.countdownAcknowledgeBtn(true);
 				break;
 			case 'generate':
@@ -202,8 +229,9 @@ export class GenerationPageController extends BasePageController {
 	}
 
 	async handleTranscribeEvent(e) {
+		console.log('[generation-page-controller] transcribe detail: ' + e.detail);
 		const step = this.model.currentStep;
-		if (step.type !== 'assessment') return;
+		if (step.type !== 'prompt') return;
 
 		const transcript = this.model.normalize(e.detail);
 		if (!step.options) return;
@@ -246,38 +274,57 @@ export class GenerationPageController extends BasePageController {
 	async handleFileUpload(e) {
 		try {
 			const file = e.detail.file;
-
+			console.log('[generation-page-controller] recieved file: ' + file);
 			if (!(file instanceof Blob)) {
 				throw new TypeError("Invalid file type passed to handleFileUpload.");
 			}
 
-			const base64Img = await this.model.convertToBase64Img(file);
-			const base64Only = base64Img.replace(/^data:image\/\w+;base64,/, '');
+			const mime = file.type;
+			let base64Only;
 
-			console.log('[generation-page-controller] Uploaded file in base64 is =', base64Only);
+			// IMAGE → use existing helper
+			if (mime.startsWith("image/")) {
+				const base64Img = await this.model.convertToBase64Img(file);
+				base64Only = base64Img.replace(/^data:image\/\w+;base64,/, "");
+				console.log( "[generation-page-controller] Uploaded image file is: " + base64Only);
+
+			// POWERPOINT → read via FileReader	
+			} else if (
+				mime === "application/pdf" ||
+				mime === "application/vnd.ms-powerpoint" ||
+				mime === "application/vnd.openxmlformats-officedocument.presentationml.presentation") {
+					console.log('[generation-page-controller] Uploaded file is: ' + file);
+					this.model.uploadedFile = file;
+
+			// UNHANDLED TYPE
+			} else {
+				throw new TypeError(`Unsupported file type: ${mime}`);
+			}
 		} catch (error) {
-			console.error('[generation-page-controller] Failed to convert image to base64:', error);
+			console.error("[generation-page-controller] Failed to upload file: " + error);
 		}
 	}
 
 	buildPrompt(userInput) {
 		switch (this.model.generationType) {
 			case 'txt2img':
-				return this.buildPrompt_text2img(userInput);
+				return this.buildPrompt_txt2img(userInput);
 			case 'txt2vid':
-				return this.buildPrompt_text2vid(userInput);
+				return this.buildPrompt_txt2vid(userInput);
 			case 'img2vid':
 
 				break;
 			case 'doc2vid':
+				return userInput
 				break;
 			case 'url2vid':
+
 				break;
 		}
 	}
 
 	// Text to Image
-    buildPrompt_text2img(formData) {
+    buildPrompt_txt2img(formData) {
         const {
             object,
 			environment,
@@ -301,7 +348,7 @@ export class GenerationPageController extends BasePageController {
     }
 
 	// Text to Video
-	buildPrompt_text2vid(formData) {
+	buildPrompt_txt2vid(formData) {
 		const {
 			subject,
 			movement,
@@ -331,6 +378,16 @@ export class GenerationPageController extends BasePageController {
       	});
 	}
 
+	getIntent() {
+		if (this.model.generationType == this.model.GENERATION_TYPES.TXT2IMG) {
+			return messageIntent.TXT2IMG;
+		} else if (this.model.generationType == this.model.GENERATION_TYPES.TXT2VID) {
+			return messageIntent.TXT2VID;
+		} else if (this.model.generationType == this.model.GENERATION_TYPES.IMG2VID) {
+			return messageIntent.IMG2VID;
+		}
+	}
+
     /**
      * Controller function to poll KlingAI task until it's done.
      * Returns image results once task completes.
@@ -339,14 +396,14 @@ export class GenerationPageController extends BasePageController {
 
         console.log('[generation-page-controller] Polling created KlingAI task: ' + taskID);
         const intervalMs = options.intervalMs || 3000;
-        const maxWaitMs = options.maxWaitMs || 5 * 60 * 1000;
+        const maxWaitMs = options.maxWaitMs || 5 * 60 * 10000;
 
         let totalWait = 0;
 
         return new Promise((resolve, reject) => {
             const intervalId = setInterval(async () => {
                 try {
-                    const result = await this.generationModel.queryTask_KlingAI(taskID, messageIntent.TXT2IMG);
+                    const result = await this.generationModel.queryTask_KlingAI(taskID, this.getIntent());
 
                     if (result) {
                         clearInterval(intervalId);
@@ -374,15 +431,15 @@ export class GenerationPageController extends BasePageController {
 		console.log('[generation-page-controller] Built and sending prompt: ' + JSON.stringify(data));
 
 		try {
-			const taskId = await this.generationModel.generate(this.model.generationType, data, this.model.uploadedFile);
+			const taskId = await this.generationModel.generate(this.model.generationType, data, this.model.uploadedImage, this.model.uploadedFile);
 			if (taskId) {
 				this.view.showLoading();
 				const result = await this.pollKlingAITask(taskId);
 				console.log('[generation-page-controller] Recieved Result: ' + JSON.stringify(result));
 				if (result) {
-					this.view.showResult(result.urls);
+					this.view.showResult(result.urls[0]);
 					// Emit event with media to allow UI update/show media
-					EventBus.emit(Events.MEDIA_GENERATED, { mediaUrl: data.mediaUrl });
+					EventBus.emit(Events.MEDIA_GENERATED, { mediaUrl: result.urls[0] });
 				}
 			}
 

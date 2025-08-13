@@ -9,11 +9,21 @@ export class GenerationPageModel {
         this.isTranscribeActive = false;
         this.allStepSpeech = [];
 
+        this.GENERATION_TYPES = {
+            TXT2IMG: 'txt2img',
+            TXT2VID: 'txt2vid',  
+            IMG2VID: 'img2vid',
+            DOC2VID: 'doc2vid',
+            URL2VID: 'url2vid'
+        }
+
         this.generationType = null;
         this.steps = null;
 
         this.userInput = {};
-        this.uploadedFile = null;
+        this.uploadedImage = null;
+        this.uploadedDocument = null;
+        this.uploadedUrl = '';
     }
 
     get currentStep() {
@@ -46,8 +56,8 @@ export class GenerationPageModel {
             fileReader.onload = (event) => {
                 const base64Full = event.target.result;
                 // const base64Only = base64Full.replace(/^data:image\/\w+;base64,/, '');
-                this.uploadedFile = base64Full;
-                console.log('[generation-page-model] Set uploaded file to be: ' + this.uploadedFile);
+                this.uploadedImage = base64Full;
+                console.log('[generation-page-model] Set uploaded file to be: ' + this.uploadedImage);
                 resolve(base64Full);
             };
 

@@ -81,7 +81,7 @@ export class ChatbotPageController extends BasePageController {
     }
 
     getPlaceholder(intent) {
-        if (intent === messageIntent.TXT2IMG) return "../../img/generating.png";
+        if (intent === messageIntent.TXT2IMG) return "../../img/icon/loading.png";
         if (intent === messageIntent.TXT2VID || intent === messageIntent.IMG2VID) return 'video_placeholder';
         return null;
     }

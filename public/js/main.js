@@ -86,10 +86,17 @@ EventBus.on(Events.IMG2VID_PRESS, () => {
   switchPage("generation");
   pages["generation"].start(Events.IMG2VID_PRESS);
 });
+EventBus.on(Events.DOC2VID_PRESS, () => {
+  switchPage("generation");
+  pages["generation"].start(Events.DOC2VID_PRESS);
+});
+EventBus.on(Events.URL2VID_PRESS, () => {
+  switchPage("generation");
+  pages["generation"].start(Events.URL2VID_PRESS);
+});
 EventBus.on(Events.CHAT_UPDATE, (e) => {
   if(e.detail.ownText != null)
     updateOwnBubble(e.detail.ownText);
-
   if(e.detail.otherText != null)
     updateOtherBubble(e.detail.otherText);
 });

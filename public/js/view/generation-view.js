@@ -13,10 +13,9 @@ export class GenerationView extends BaseView {
             TXT2IMG:    'Text to Image',
             TXT2VID:    'Text to Video',
             IMG2VID:    'Image to Video',
-            URL2VID:    'URL to Video',
-            DOC2VID:    'Document to Videi'
+            DOC2VID:    'Document to Video',
+            URL2VID:    'URL to Video'
         }
-
         this.generationType = null;
     }
 
@@ -26,14 +25,13 @@ export class GenerationView extends BaseView {
 
     renderStep(language, step, isLastStep = false) {
         this.assessmentContainer.innerHTML = '';
-
         const card = document.createElement('div');
         card.className = 'assessment-card';
 
         // Header
         const header = document.createElement('div');
         header.className = 'general-header';
-        if (step.type === 'prompt' || step.type === 'media') {
+        if (step.type === 'prompt' || step.type === 'media' || step.type === 'document') {
             const title = document.createElement('strong');
             title.textContent = this.generationType;
             header.appendChild(title);
@@ -45,6 +43,7 @@ export class GenerationView extends BaseView {
         question.textContent = step.question?.[language] || step.question || '';
         card.appendChild(question);
 
+        // Prompt inputs
         if (step.type === 'prompt' && Array.isArray(step.fields) && step.fields.length > 0) {
             const inputs = [];
             const fieldLayout = document.createElement('div');
@@ -52,7 +51,6 @@ export class GenerationView extends BaseView {
 
             step.fields.forEach(field => {
                 const labelText = field[language] || field;
-
                 const fieldContainer = document.createElement('div');
                 fieldContainer.className = 'field-group';
 
@@ -64,20 +62,25 @@ export class GenerationView extends BaseView {
                 textarea.rows = 3;
                 textarea.classList.add('transcribe-target');
 
-                inputs.push(textarea);
+                if (field.placeholder) {
+                    if (typeof field.placeholder === 'string') {
+                        textarea.placeholder = field.placeholder;
+                    } else if (field.placeholder[language]) {
+                        textarea.placeholder = field.placeholder[language];
+                    }
+                }
 
+                inputs.push(textarea);
                 fieldContainer.appendChild(label);
                 fieldContainer.appendChild(textarea);
                 fieldLayout.appendChild(fieldContainer);
             });
 
             let isAcknowledged = false;
-
             const checkAndToggleSubmit = () => {
-                const allFilled = inputs.every(input => input.value.trim() !== '');
-                const anyFilled = inputs.some(input => input.value.trim() !== '');
-
-                if (anyFilled && !isAcknowledged) {
+            const allFilled = inputs.every(i => i.value.trim() !== '');
+            const anyFilled = inputs.some(i => i.value.trim() !== '');
+            if (anyFilled && !isAcknowledged) {
                     this.emit('readyForAcknowledge', {});
                     isAcknowledged = true;
                 } else if (!anyFilled && isAcknowledged) {
@@ -85,12 +88,12 @@ export class GenerationView extends BaseView {
                     isAcknowledged = false;
                 }
             };
-
             inputs.forEach(input => input.addEventListener('input', checkAndToggleSubmit));
 
             card.appendChild(fieldLayout);
         }
 
+        // Media upload (images)
         if (step.type === 'media') {
             const mediaContainer = document.createElement('div');
             mediaContainer.className = 'media-upload';
@@ -98,16 +101,13 @@ export class GenerationView extends BaseView {
             // Upload area
             const uploadArea = document.createElement('div');
             uploadArea.className = 'upload-area';
-
             const icon = document.createElement('img');
             icon.className = 'upload-icon';
             icon.src = './img/icon/upload.png';
-            icon.alt = 'Upload Icon'
-
+            icon.alt = 'Upload Icon';
             const description = document.createElement('div');
             description.className = 'upload-description';
             description.textContent = 'Click to upload an image';
-
             uploadArea.appendChild(icon);
             uploadArea.appendChild(description);
 
@@ -126,8 +126,7 @@ export class GenerationView extends BaseView {
             deleteButton.style.display = 'none';
 
             let isAcknowledged = false;
-
-            const checkAndToggleSubmit = (hasImage) => {
+            const checkAndToggleSubmit = hasImage => {
                 if (hasImage && !isAcknowledged) {
                     this.emit('readyForAcknowledge', {});
                     isAcknowledged = true;
@@ -137,12 +136,9 @@ export class GenerationView extends BaseView {
                 }
             };
 
-            // Open file picker
-            uploadArea.addEventListener('click', () => {
-                uploadInput.click();
-            });
+            uploadArea.addEventListener('click', () => uploadInput.click());
 
-            uploadInput.addEventListener('change', (event) => {
+            uploadInput.addEventListener('change', event => {
                 const file = event.target.files[0];
                 if (file && file.type.startsWith('image/')) {
                     const reader = new FileReader();
@@ -162,7 +158,7 @@ export class GenerationView extends BaseView {
                 uploadInput.value = '';
                 preview.src = '';
                 preview.style.display = 'none';
-                uploadArea.style.display = 'flex'; // Show upload area again
+                uploadArea.style.display = 'flex';
                 deleteButton.style.display = 'none';
                 checkAndToggleSubmit(false);
             });
@@ -174,6 +170,114 @@ export class GenerationView extends BaseView {
             card.appendChild(mediaContainer);
         }
 
+        // Document upload (PDF + PowerPoint)
+        if (step.type === 'document') {
+            const docContainer = document.createElement('div');
+            docContainer.className = 'media-upload'; // reuse same styles
+
+            // Upload area
+            const uploadArea = document.createElement('div');
+            uploadArea.className = 'upload-area';
+            const icon = document.createElement('img');
+            icon.className = 'upload-icon';
+            icon.src = './img/icon/upload.png';
+            icon.alt = 'Upload Icon';
+            const description = document.createElement('div');
+            description.className = 'upload-description';
+            description.textContent = 'Click to upload a PowerPoint or PDF';
+            uploadArea.appendChild(icon);
+            uploadArea.appendChild(description);
+
+            const uploadInput = document.createElement('input');
+            uploadInput.type = 'file';
+            uploadInput.accept = '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt';
+            uploadInput.className = 'upload-input';
+
+            const filenameDisplay = document.createElement('p');
+            filenameDisplay.className = 'pptx-filename';
+            filenameDisplay.style.display = 'none';
+            filenameDisplay.style.fontSize = '35px'
+            filenameDisplay.style.marginTop = '1em';
+            filenameDisplay.style.fontWeight = 'bold';
+
+            const pdfPreview = document.createElement('iframe');
+            pdfPreview.className = 'upload-preview';
+            pdfPreview.style.display = 'none';
+            pdfPreview.style.width = '100%';
+            pdfPreview.style.height = '300px';
+            pdfPreview.style.border = '1px solid #ccc';
+
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'upload-delete-button';
+            deleteButton.textContent = 'Delete Document';
+            deleteButton.style.display = 'none';
+
+            let isAcknowledged = false;
+            const checkAndToggleSubmit = hasDoc => {
+                if (hasDoc && !isAcknowledged) {
+                    this.emit('readyForAcknowledge', {});
+                    isAcknowledged = true;
+                } else if (!hasDoc && isAcknowledged) {
+                    this.emit('notReadyForAcknowledge', {});
+                    isAcknowledged = false;
+                }
+            };
+
+            uploadArea.addEventListener('click', () => uploadInput.click());
+
+            uploadInput.addEventListener('change', event => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const ext = file.name.split('.').pop().toLowerCase();
+                const url = URL.createObjectURL(file);
+
+                // Reset
+                filenameDisplay.style.display = 'none';
+                filenameDisplay.textContent = '';
+                pdfPreview.style.display = 'none';
+                pdfPreview.src = '';
+
+                if (ext === 'pdf') {
+                    // Preview PDF in iframe
+                    pdfPreview.src = url;
+                    pdfPreview.style.display = 'block';
+                } else if (ext === 'ppt' || ext === 'pptx') {
+                    // Display filename only
+                    filenameDisplay.textContent = `Selected file: ${file.name}`;
+                    filenameDisplay.style.display = 'block';
+                } else {
+                    alert('Unsupported file format.');
+                    return;
+                }
+
+                uploadArea.style.display = 'none';
+                deleteButton.style.display = 'inline-block';
+                checkAndToggleSubmit(true);
+
+                console.log('[generation-view] file name: ' + file.name);
+                console.log('[generation-view] file name: ' + file);
+                this.emit('fileUploaded', { file });
+            });
+
+            deleteButton.addEventListener('click', () => {
+                uploadInput.value = '';
+                filenameDisplay.style.display = 'none';
+                filenameDisplay.textContent = '';
+                pdfPreview.style.display = 'none';
+                pdfPreview.src = '';
+                uploadArea.style.display = 'flex';
+                deleteButton.style.display = 'none';
+                checkAndToggleSubmit(false);
+            });
+
+            docContainer.appendChild(uploadArea);
+            docContainer.appendChild(uploadInput);
+            docContainer.appendChild(filenameDisplay);
+            docContainer.appendChild(pdfPreview);
+            docContainer.appendChild(deleteButton);
+            card.appendChild(docContainer);
+        }
         this.assessmentContainer.appendChild(card);
     }
 
@@ -213,14 +317,15 @@ export class GenerationView extends BaseView {
         this.loadingPageTitle.appendChild(title);
 
         // Determine if the URL is a video (by extension)
-        const isVideo = /\.(mp4|webm|ogg)$/i.test(url);
+        const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(url);
+        console.log('[generation-view] isVideo: ' + isVideo);
 
         // Render media + download button
         this.resultContainer.innerHTML = `
             <div class="media-container">
             ${
                 isVideo
-                ? `<video src="${url}" controls class="generated-video"></video>`
+                ? `<video src="${url}" controls alt="Generated Video" class="generated-video"></video>`
                 : `<img src="${url}" alt="Generated Image" class="generated-image" />`
             }
             <div class="button-container">
@@ -238,6 +343,12 @@ export class GenerationView extends BaseView {
             </div>
             </div>
         `;
+        this.showDownloadButton(url);
+    }
+
+    showDownloadButton(url) {
+        // Determine if the URL is a video (by extension)
+        const isVideo = /\.(mp4|webm|ogg)$/i.test(url);
 
         // Force download when user clicks
         const downloadBtn = this.resultContainer.querySelector('#download-button');
@@ -258,18 +369,17 @@ export class GenerationView extends BaseView {
         });
     }
 
-
 	showError(err) {
         // Clear previous screen
         this.assessmentContainer.innerHTML = '';
-        this.loadingPageContainer.innerHTML = '';
+        this.loadingPageTitle.innerHTML = '';
 
         const header = document.createElement('div');
         header.className = 'general-header';
         const title = document.createElement('strong');
         title.textContent = 'My apologies, I could not generate the image.';
         header.appendChild(title);
-        this.loadingPageContainer.append(header);
+        this.loadingPageTitle.append(header);
 
 		this.resultContainer.innerHTML = `<p>Error: ${err.message}</p>`;
 	}

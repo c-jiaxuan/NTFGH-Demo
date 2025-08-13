@@ -1,4 +1,4 @@
-export const text2Img_steps = [
+export const txt2img_steps = [
     {
         type: "prompt",
         question: {
@@ -8,7 +8,11 @@ export const text2Img_steps = [
         fields: [
             {
                 en: "Objects present",
-                zh: "物品"
+                zh: "物品",
+                placeholder: {
+                    en: "e.g., a red apple, a wooden chair, a glass of water",
+                    zh: "例如：一个红苹果、一把木椅子、一杯水"
+                }
             }
         ],
         input: "object"
@@ -22,7 +26,11 @@ export const text2Img_steps = [
         fields: [
             {
                 en: "Environment",
-                zh: "环境"
+                zh: "环境",
+                placeholder: {
+                    en: "e.g., a cozy living room, a sunny beach, a dark forest",
+                    zh: "例如：温馨的客厅、阳光明媚的海滩、幽暗的森林"
+                }
             }
         ],
         input: "environment"
@@ -36,7 +44,11 @@ export const text2Img_steps = [
         fields: [
             {
                 en: "Actions",
-                zh: "动作"
+                zh: "动作",
+                placeholder: {
+                    en: "e.g., a cat sleeping, waves crashing, a person painting",
+                    zh: "例如：猫在睡觉、海浪拍打、一个人在画画"
+                }
             }
         ],
         input: "action"
@@ -50,7 +62,11 @@ export const text2Img_steps = [
         fields: [
             {
                 en: "Time",
-                zh: "时间"
+                zh: "时间",
+                placeholder: {
+                    en: "e.g., sunrise, midday, sunset, midnight",
+                    zh: "例如：日出、正午、日落、午夜"
+                }
             }
         ],
         input: "time"
@@ -58,13 +74,17 @@ export const text2Img_steps = [
     {
         type: "prompt",
         question: {
-            en: "What is the mood / atmosphere?",
+            en: "What is the mood and atmosphere?",
             zh: "气氛"
         },
         fields: [
             {
                 en: "Mood",
-                zh: "情绪"
+                zh: "情绪",
+                placeholder: {
+                    en: "e.g., peaceful, mysterious, cheerful, tense",
+                    zh: "例如：宁静、神秘、愉快、紧张"
+                }
             }
         ],
         input: "mood"
@@ -78,14 +98,18 @@ export const text2Img_steps = [
         fields: [
             {
                 en: "Additional prompt",
-                zh: "附加提示"
+                zh: "附加提示",
+                placeholder: {
+                    en: "e.g., in watercolor style, highly detailed, cinematic lighting",
+                    zh: "例如：水彩风格、高度细节化、电影感灯光"
+                }
             }
         ],
         input: "additional"
     }
 ];
 
-export const text2Vid_steps = [
+export const txt2vid_steps = [
     {
         type: "prompt",
         question: {
@@ -172,7 +196,7 @@ export const text2Vid_steps = [
     }
 ];
 
-export const img2Vid_steps = [
+export const img2vid_steps = [
     {
         type: "media",
         question: {
@@ -361,7 +385,7 @@ export const doc2vid_steps = [
     {
         type: "prompt",
         question: {
-            en: "Enable high-definition AI media (only if media is generative)?",
+            en: "Enable high-definition AI media? (only if media is generative)",
             zh: "启用高清AI媒体？（仅限媒体类型为 generative）"
         },
         fields: [

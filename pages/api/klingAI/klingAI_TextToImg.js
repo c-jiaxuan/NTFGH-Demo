@@ -85,5 +85,6 @@ async function createTextToImgTask(userInput) {
         return data;
     } catch (error) {
         console.error('Error:', error);
+        return data;
     }
 };

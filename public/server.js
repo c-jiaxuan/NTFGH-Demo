@@ -10,6 +10,7 @@ import klingAI_TextToImage from '../pages/api/klingAI/klingAI_TextToImg.js';
 import klingAI_TextToVideo from '../pages/api/klingAI/klingAI_TextToVideo.js';
 import klingAI_ImgToVideo from '../pages/api/klingAI/klingAI_ImgToVideo.js';
 import klingAI_queryTask from '../pages/api/klingAI/klingAI_queryTask.js';
+import deepbrain_doc2Vid from '../pages/api/deepbrain/doc2vid.js';
 import crypto from 'crypto';
 
 // import dotenv from 'dotenv';
@@ -43,6 +44,8 @@ const server = http.createServer(async (req, res) => {
       return await gramanerSummarize(req, res);
     } else if (req.url === '/api/gramanerClassify') {
       // Gramaner classify function call
+    } else if (req.url === '/api/generateDoc2Vid') {
+      return await deepbrain_doc2Vid(req, res);
     } else {
       serveStaticFile(req, res);
     }

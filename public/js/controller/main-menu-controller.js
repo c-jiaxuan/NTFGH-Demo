@@ -29,14 +29,20 @@ export class MainMenuPageController extends BasePageController {
 		case "chat":
 			EventBus.emit(Events.CHATBOT_PRESS);
 			break;
-		case "text2Img":
+		case "txt2Img":
 			EventBus.emit(Events.TXT2IMG_PRESS);
 			break;
-		case "text2Vid":
+		case "txt2Vid":
 			EventBus.emit(Events.TXT2VID_PRESS);
 			break;
 		case "img2Vid":
 			EventBus.emit(Events.IMG2VID_PRESS);
+			break;
+		case "doc2Vid":
+			EventBus.emit(Events.DOC2VID_PRESS);
+			break;
+		case "url2Vid":
+			EventBus.emit(Events.URL2VID_PRESS);
 			break;
 		}
 	}

@@ -413,8 +413,8 @@ export class ChatModel {
                 return { type: 'video', urls };
             }
 
-                console.warn("Task succeeded but no media found.");
-                return null;
+            console.warn("Task succeeded but no media found.");
+            return null;
 
             default:
                 console.warn(`Unhandled task status: ${task_status}`);
