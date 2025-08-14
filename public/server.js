@@ -5,7 +5,6 @@ import { fileURLToPath } from 'url';
 import gramanerHandler from '../pages/api/gramaner/extract.js';
 import gramanerSimilarity from '../pages/api/gramaner/similarity.js';
 import gramanerSummarize from '../pages/api/gramaner/summarize.js';
-import stabilityAI_generateImage from '../pages/api/stability-ai.js';
 import klingAI_TextToImage from '../pages/api/klingAI/klingAI_TextToImg.js';
 import klingAI_TextToVideo from '../pages/api/klingAI/klingAI_TextToVideo.js';
 import klingAI_ImgToVideo from '../pages/api/klingAI/klingAI_ImgToVideo.js';
@@ -29,7 +28,6 @@ const server = http.createServer(async (req, res) => {
       return await handler(req, res);
     } else if (req.url === '/api/generateImg') {
       return await klingAI_TextToImage(req, res);
-      //return await stabilityAI_generateImage(req, res);
     } else if (req.url === '/api/generateVid') {
       return await klingAI_TextToVideo(req, res);
     } else if (req.url === '/api/generateImg2Vid') {
@@ -46,7 +44,9 @@ const server = http.createServer(async (req, res) => {
       // Gramaner classify function call
     } else if (req.url === '/api/generateDoc2Vid') {
       return await deepbrain_doc2Vid(req, res);
-    } else {
+    } else if (req.url === '/api/generateURL2Vid') {
+      return await deepbrain_doc2Vid(req, res);
+    }else {
       serveStaticFile(req, res);
     }
 });

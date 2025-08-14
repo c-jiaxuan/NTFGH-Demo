@@ -536,6 +536,12 @@ button:hover {
   margin: 15px;
 }
 
+.select-options-container {
+  height: 65%;
+  width: 100%;
+  overflow: auto;
+}
+
 /* Option buttons */
 .option-button {
   height: auto;

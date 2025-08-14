@@ -9,11 +9,12 @@ import { WebSocketServer } from 'ws';
 import gramanerHandler from '../pages/api/gramaner/extract.js';
 import gramanerSimilarity from '../pages/api/gramaner/similarity.js';
 import gramanerSummarize from '../pages/api/gramaner/summarize.js';
-import stabilityAI_generateImage from '../pages/api/stability-ai.js';
 import klingAI_TextToImage from '../pages/api/klingAI/klingAI_TextToImg.js';
 import klingAI_TextToVideo from '../pages/api/klingAI/klingAI_TextToVideo.js';
 import klingAI_ImgToVideo from '../pages/api/klingAI/klingAI_ImgToVideo.js';
 import klingAI_queryTask from '../pages/api/klingAI/klingAI_queryTask.js';
+import deepbrain_doc2Vid from '../pages/api/deepbrain/doc2vid.js';
+import deepbrain_url2Vid from '../pages/api/deepbrain/url2vid.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,6 +46,8 @@ app.post('/api/queryTask', klingAI_queryTask);
 app.post('/api/gramanerExtract', gramanerHandler);
 app.post('/api/gramanerSimilarity', gramanerSimilarity);
 app.post('/api/gramanerSummarize', gramanerSummarize);
+app.post('/api/generateDoc2Vid', deepbrain_doc2Vid);
+app.post('/api/generateURL2Vid', deepbrain_url2Vid)
 app.post('/api/gramanerClassify', (req, res) => {
   res.status(501).send('Not implemented');
 });

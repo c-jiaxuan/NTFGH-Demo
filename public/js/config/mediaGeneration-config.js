@@ -367,9 +367,9 @@ export const doc2vid_steps = [
             zh: "视频的语言是什么？"
         },
         options: [
-            {en: "English (en)", zh: "英语 (en)"},
-            {en: "Chinese (zh)", zh: "中文 (zh)"},
-            {en: "Malay (ms)", zh: "马来语 (ms)"},
+            {en: "English", zh: "英语", value: 'en'},
+            {en: "Chinese", zh: "中文", value: 'zh'},
+            {en: "Malay", zh: "马来语", value: 'ms'},
         ],
         input: "language"
     },
@@ -434,10 +434,10 @@ export const doc2vid_steps = [
             zh: "应使用哪种类型的媒体？"
         },
         options: [
-            {en: "Search", zh: "搜索"},
-            {en: "Free", zh: "免费"},
-            {en: "Premium", zh: "付费"},
-            {en: "Generative", zh: "生成性"},
+            {en: "Search", zh: "搜索", value: 'search'},
+            {en: "Free", zh: "免费", value: 'free'},
+            {en: "Premium", zh: "付费", value: 'premium'},
+            {en: "Generative", zh: "生成性", value: 'generative'},
         ],
         input: "media"
     },
@@ -448,26 +448,30 @@ export const doc2vid_steps = [
             zh: "启用高清AI媒体? (仅限媒体类型为 generative)"
         },
         options: [
-            {en: "Yes", zh: "是"},
-            {en: "No", zh: "否"}
+            {en: "Yes", zh: "是", value: true},
+            {en: "No", zh: "否", value: false},
+            {en: "Skip", zh: "跳过", value: null}
         ],
         input: "useGenerativeHighQuality"
     },
     {
-        type: "prompt",
+        type: "selection",
         question: {
             en: "What is the visual style? (only for generative media)",
             zh: "视觉风格是什么？（仅适用于生成媒体）"
         },
-        fields: [
-            {
-                en: "Style",
-                zh: "风格",
-                placeholder: {
-                    en: "e.g., cinematic, watercolor, digital painting, realistic",
-                    zh: "例如：电影风格、水彩、数字绘画、写实"
-                }
-            }
+        options: [
+            {en: "Realistic", zh: "写实风格", value: 'realistic'},
+            {en: "Digital Painting", zh: "数字绘画", value: 'digitalPainting'},
+            {en: "Sketch", zh: "素描画风", value: 'sketch'},
+            {en: "Oil Painting", zh: "油画风格", value: 'oilPainting'},
+            {en: "Pixel Art", zh: "像素艺术", value: 'pixelArt'},
+            {en: "Water Color", zh: "水彩画风", value: 'watercolor'},
+            {en: "Low Poly", zh: "低多边形艺术", value: 'lowPoly'},
+            {en: "Cyberpunk", zh: "赛博朋克风", value: 'cyberpunk'},
+            {en: "Fantasy", zh: "奇幻风格", value: 'fantasy'},
+            {en: "Anime", zh: "日系动漫风", value: 'anime'},
+            {en: "Skip", zh: "跳过", value: null}
         ],
         input: "style"
     }
@@ -489,16 +493,15 @@ export const url2vid_steps = [
         input: "url"
     },
     {
-        type: "prompt",
+        type: "selection",
         question: {
             en: "What is the language of the video?",
             zh: "视频的语言是什么？"
         },
-        fields: [
-            {
-                en: "Language",
-                zh: "语言"
-            }
+        options: [
+            {en: "English", zh: "英语", value: 'en'},
+            {en: "Chinese", zh: "中文", value: 'zh'},
+            {en: "Malay", zh: "马来语", value: 'ms'},
         ],
         input: "language"
     },
@@ -511,7 +514,11 @@ export const url2vid_steps = [
         fields: [
             {
                 en: "Objective",
-                zh: "目的"
+                zh: "目的",
+                placeholder: {
+                    en: "e.g., education, marketing, explanation, entertainment",
+                    zh: "例如：教育、营销、讲解、娱乐"
+                }
             }
         ],
         input: "objective"
@@ -525,7 +532,11 @@ export const url2vid_steps = [
         fields: [
             {
                 en: "Audience",
-                zh: "观众"
+                zh: "观众",
+                placeholder: {
+                    en: "e.g., students, professionals, general public",
+                    zh: "例如：学生、专业人士、公众"
+                }
             }
         ],
         input: "audience"
@@ -539,50 +550,60 @@ export const url2vid_steps = [
         fields: [
             {
                 en: "Tone",
-                zh: "语气"
+                zh: "语气",
+                placeholder: {
+                    en: "e.g., formal, casual, cheerful, serious",
+                    zh: "例如：正式、随意、愉快、严肃"
+                }
             }
         ],
         input: "tone"
     },
     {
-        type: "prompt",
+        type: "selection",
         question: {
             en: "What type of media should be used?",
             zh: "应使用哪种类型的媒体？"
         },
-        fields: [
-            {
-                en: "Media Type",
-                zh: "媒体类型"
-            }
+        options: [
+            {en: "Search", zh: "搜索", value: 'search'},
+            {en: "Free", zh: "免费", value: 'free'},
+            {en: "Premium", zh: "付费", value: 'premium'},
+            {en: "Generative", zh: "生成性", value: 'generative'},
         ],
         input: "media"
     },
     {
-        type: "prompt",
+        type: "selection",
         question: {
-            en: "Enable high-definition AI media (only if media is generative)?",
-            zh: "启用高清AI媒体?（仅限媒体类型为 generative)"
+            en: "Enable high-definition AI media? (only if media is generative)",
+            zh: "启用高清AI媒体? (仅限媒体类型为 generative)"
         },
-        fields: [
-            {
-                en: "Use High Quality Generative Media",
-                zh: "启用高清生成媒体"
-            }
+        options: [
+            {en: "Yes", zh: "是", value: true},
+            {en: "No", zh: "否", value: false},
+            {en: "Skip", zh: "跳过", value: null}
         ],
         input: "useGenerativeHighQuality"
     },
     {
-        type: "prompt",
+        type: "selection",
         question: {
             en: "What is the visual style? (only for generative media)",
             zh: "视觉风格是什么？（仅适用于生成媒体）"
         },
-        fields: [
-            {
-                en: "Style",
-                zh: "风格"
-            }
+        options: [
+            {en: "Realistic", zh: "写实风格", value: 'realistic'},
+            {en: "Digital Painting", zh: "数字绘画", value: 'digitalPainting'},
+            {en: "Sketch", zh: "素描画风", value: 'sketch'},
+            {en: "Oil Painting", zh: "油画风格", value: 'oilPainting'},
+            {en: "Pixel Art", zh: "像素艺术", value: 'pixelArt'},
+            {en: "Water Color", zh: "水彩画风", value: 'watercolor'},
+            {en: "Low Poly", zh: "低多边形艺术", value: 'lowPoly'},
+            {en: "Cyberpunk", zh: "赛博朋克风", value: 'cyberpunk'},
+            {en: "Fantasy", zh: "奇幻风格", value: 'fantasy'},
+            {en: "Anime", zh: "日系动漫风", value: 'anime'},
+            {en: "Skip", zh: "跳过", value: null}
         ],
         input: "style"
     }

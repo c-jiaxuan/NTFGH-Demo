@@ -34,23 +34,33 @@ export default async function deepbrain_doc2Vid(req, res) {
         }
 
         try {
-            console.log('[doc2vid] files: ' + JSON.stringify(files));
+            console.log('[doc2vid] files: ' + JSON.stringify(files, null, '\t'));
             const file = files.files[0]; // ✅ Get the first file
             const filePath = file.filepath; 
             const originalFilename = file.originalFilename;
-            const options = JSON.parse(fields.options);
-            const { appId, userKey } = deepbrain_KEYS;
+            const user_options = JSON.parse(fields.options);
+            let options = {
+                speed: deepbrain_config.speed,
+                model: deepbrain_config.model,
+                voiceOnly: deepbrain_config.voiceOnly,
+                // Add user options, filtering out null/undefined/"null"
+                ...Object.fromEntries(
+                    Object.entries(user_options).filter(([key, value]) => 
+                        value != null && value !== "null"
+                    )
+                )
+            };
+            console.log('[doc2vid] options: ' + JSON.stringify(options, null, '\t'));
 
+            const { appId, userKey } = deepbrain_KEYS;
             const token = await authenticate(appId, userKey);
             await testAPIKeyValidiity(token);
-            await testVideoGeneration(token);
-
             const uploadResults = await uploadFile(token, filePath, originalFilename);
-            // const projectId = await createProject(token, uploadResults, options);
-            // await waitForCreation(token, projectId);
-            // await triggerExport(token, projectId);
-            // const videoUrl = await waitForExport(token, projectId);
-            // console.log('[doc2vid] returning videoUrl: ' + videoUrl);
+            const projectId = await createProject(token, uploadResults, options);
+            await waitForCreation(token, projectId);
+            await triggerExport(token, projectId);
+            const videoUrl = await waitForExport(token, projectId);
+            console.log('[doc2vid] returning videoUrl: ' + videoUrl);
 
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ uploadResults }));
@@ -68,7 +78,7 @@ async function authenticate(appId, userKey) {
     console.log('[doc2vid] ==== AUTHENTICATING ====');
     console.log('[doc2vid] URL:     ' + `${API_HOST}${GET_TOKEN_API_PATH}`);
     console.log('[doc2vid] METHOD:  POST');
-    console.log('[doc2vid] HEADERS: ' + JSON.stringify(header));
+    console.log('[doc2vid] HEADERS: ' + JSON.stringify(header, null, '\t'));
     console.log('[doc2vid] body:    ' + body);
     const resp = await fetch(`${API_HOST}${GET_TOKEN_API_PATH}`, {
         method: 'POST',
@@ -135,7 +145,7 @@ async function uploadFile(token, filePath, originalFilename) {
         });
         
         console.log('[doc2vid] Upload successful:   ', response.data);
-        console.log('[doc2vid] Upload results:      ', JSON.stringify(response.data.data.uploadResults));
+        console.log('[doc2vid] Upload results:      ', JSON.stringify(response.data.data.uploadResults, null, '\t'));
         return response.data.data.uploadResults;
         
     } catch (error) {
@@ -170,16 +180,16 @@ async function createProject(token, uploadResults, options) {
             'Content-Type': 'application/json',
             Authorization: token
     };
-    const body = JSON.stringify({ files: uploadResults });
+    const body = { files: uploadResults, options };
     console.log('[doc2vid] ==== CREATING PROJECT ====');
     console.log('[doc2vid] URL:     ' + `${API_HOST}${CREATE_API_PATH}`);
     console.log('[doc2vid] METHOD:  POST');
-    console.log('[doc2vid] HEADERS: ' + JSON.stringify(header));
-    console.log('[doc2vid] body:    ' + body);
+    console.log('[doc2vid] HEADERS: ' + JSON.stringify(header, null, '\t'));
+    console.log('[doc2vid] body:    ' + JSON.stringify(body, null, '\t'));
     const resp = await fetch(`${API_HOST}${CREATE_API_PATH}`, {
         method: 'POST',
         headers: header,
-        body: body
+        body: JSON.stringify(body)
     })
     if (!resp.ok) {
         throw new Error(`Create project failed [${resp.status}]`)
@@ -199,7 +209,7 @@ async function waitForCreation(token, projectId) {
         const url = `${API_HOST}${CREATE_PROGRESS_API_PATH}/?projectId=${projectId}`;
         console.log('[doc2vid] ==== WAIT FOR CREATION ====');
         console.log('[doc2vid] URL:     ' + url);
-        console.log('[doc2vid] HEADERS: ' + JSON.stringify(header));
+        console.log('[doc2vid] HEADERS: ' + JSON.stringify(header, null, '\t'));
         const resp = await fetch(url, {
             headers: header
         })
@@ -229,14 +239,11 @@ async function triggerExport(token, projectId) {
     console.log('[doc2vid] ==== TRIGGER EXPORT ====');
     console.log('[doc2vid] URL:     ' + `${API_HOST}${EXPORT_API_PATH}`);
     console.log('[doc2vid] METHOD:  POST');
-    console.log('[doc2vid] HEADERS: ' + JSON.stringify(header));
+    console.log('[doc2vid] HEADERS: ' + JSON.stringify(header, null, '\t'));
     console.log('[doc2vid] body:    ' + body);
     const resp = await fetch(`${API_HOST}${EXPORT_API_PATH}`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: token
-        },
+        headers: header,
         body: body
     })
     if (!resp.ok) {

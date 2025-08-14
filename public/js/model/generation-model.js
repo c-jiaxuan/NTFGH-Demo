@@ -190,35 +190,44 @@ export class GenerationModel {
     }
 
     async generateDoc2Video_DeepBrain(userInput, doc) {
-        userInput = {
-            language: "en",                        // English (ISO 639-1)
-            objective: "education",               // Educational content
-            audience: "students",                 // Target audience
-            tone: "clearly",                      // Speaking tone
-            speed: 1.0,                           // Normal speed
-            media: "generative",                        // Use generative AI media
-            useGenerativeHighQuality: true,       // Enable high-definition for generative media
-            style: "digitalPainting",             // Style of AI-generated media
-            // model: "model_xyz456",                // (Optional) Model for avatar/video generation
-            // voiceOnly: false                      // Include avatar (not just voice)
-        };
         const formData = new FormData();
         formData.append("files", doc, doc.name); // assuming fileInput is an <input type="file">
         formData.append("options", JSON.stringify(userInput));
         // Display the key/value pairs
         for (var pair of formData.entries()) {
-            console.log('[generation-model] formData: ' + pair[0] + ', ' + JSON.stringify(pair[1])); 
+            console.log('[generation-model] formData: ' + pair[0] + ', ' + JSON.stringify(pair[1], null, '\t')); 
         }
         try {
             const res = await fetch('/api/generateDoc2Vid', {
                 method: "POST",
                 body: formData
             });
-
-            const response = await res.json();
-            return this.processResponse_DeepBrain(response);
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(`[generation-model] Response not ok: \nStatus: ${res.status}\nData: ${JSON.stringify(data, null, '\t')}`);
+            }
+            return this.processResponse_DeepBrain(data);
         } catch (err) {
-            console.error('❌ Error while creating Doc2Video task: ' + err);
+            console.error(err);
+            return null;
+        }
+    }
+
+    async generateURL2Video_DeepBrain(userInput) {
+        console.log('[generation-model] url2video userInput: ' + JSON.stringify(userInput, null, '\t'));
+
+        try {
+            const res = await fetch('/api/generateURL2Vid', {
+                method: "POST",
+                body: JSON.stringify(url, options)
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(`[generation-model] Response not ok: \nStatus: ${res.status}\nData: ${JSON.stringify(data, null, '\t')}`);
+            }
+            return this.processResponse_DeepBrain(data);
+        } catch (err) {
+            console.error(err);
             return null;
         }
     }

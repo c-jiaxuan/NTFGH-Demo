@@ -336,17 +336,13 @@ export class GenerationPageController extends BasePageController {
 		switch (this.model.generationType) {
 			case 'txt2img':
 				return this.buildPrompt_txt2img(userInput);
+			case 'img2vid':
 			case 'txt2vid':
 				return this.buildPrompt_txt2vid(userInput);
-			case 'img2vid':
-
-				break;
 			case 'doc2vid':
-				return userInput
-				break;
+				return userInput;
 			case 'url2vid':
-
-				break;
+				return userInput;
 		}
 	}
 
@@ -454,21 +450,23 @@ export class GenerationPageController extends BasePageController {
 
 	// Called on 'submit' event from view's submit button on last step
 	async onSubmit() {
-		console.log('[generation-page-controller] Collected data: ' + JSON.stringify(this.model.userInput));
+		console.log('[generation-page-controller] Collected data: ' + JSON.stringify(this.model.userInput, null, '\t'));
 		const data = this.buildPrompt(this.model.userInput);
-		console.log('[generation-page-controller] Built and sending prompt: ' + JSON.stringify(data));
+		console.log('[generation-page-controller] Built and sending prompt: ' + JSON.stringify(data, null, '\t'));
 
 		try {
 			const taskId = await this.generationModel.generate(this.model.generationType, data, this.model.uploadedImage, this.model.uploadedFile);
 			if (taskId) {
 				this.view.showLoading();
 				const result = await this.pollKlingAITask(taskId);
-				console.log('[generation-page-controller] Recieved Result: ' + JSON.stringify(result));
+				console.log('[generation-page-controller] Recieved Result: ' + JSON.stringify(result, null, '\t'));
 				if (result) {
 					this.view.showResult(result.urls[0]);
 					// Emit event with media to allow UI update/show media
 					EventBus.emit(Events.MEDIA_GENERATED, { mediaUrl: result.urls[0] });
 				}
+			} else {
+				throw new Error('Failed [generation-model] generate() call');
 			}
 
 			// Optionally reset questionnaire or navigate elsewhere
@@ -477,7 +475,7 @@ export class GenerationPageController extends BasePageController {
 
 		} catch (err) {
 			this.view.showError(err);
-			console.error('Error generating media:', err);
+			console.error(err);
 			EventBus.emit(AvatarEvents.SPEAK, { message: 'Failed to generate media, please try again.', gesture: '' });
 		}
 	}

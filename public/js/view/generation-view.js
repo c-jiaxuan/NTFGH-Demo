@@ -100,12 +100,14 @@ export class GenerationView extends BaseView {
             hiddenInput.name = step.input; // matches the model field key
             card.appendChild(hiddenInput);
 
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'select-options-container';
             step.options.forEach(opt => {
                 const label = typeof opt === 'object' ? opt[langKey] : opt;
                 const button = document.createElement('button');
                 button.className = 'option-button';
                 button.textContent = label;
-                button.dataset.value = typeof opt === 'object' ? opt.en : opt;
+                button.dataset.value = typeof opt === 'object' ? opt.value : opt;
 
                 button.onclick = () => {
                     Array.from(card.querySelectorAll('.option-button')).forEach(b => b.classList.remove('selected'));
@@ -115,8 +117,9 @@ export class GenerationView extends BaseView {
                     this.emit("readyForAcknowledge", {});
                 };
 
-                card.appendChild(button);
+                optionsDiv.appendChild(button);
             });
+            card.appendChild(optionsDiv);
         }
 
         // Media upload (images)
