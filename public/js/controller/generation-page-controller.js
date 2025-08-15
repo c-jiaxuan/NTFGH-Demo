@@ -357,7 +357,7 @@ export class GenerationPageController extends BasePageController {
 			action,
 			time,
 			mood,
-			prompt
+			additional,
         } = formData;
 
         const parts = [];
@@ -368,7 +368,7 @@ export class GenerationPageController extends BasePageController {
         if (time) parts.push(`during ${time}`);
         if (mood) parts.push(`with a ${mood} style`);
 
-        const extraPrompt = prompt ? ` ${prompt}` : "";
+        const extraPrompt = additional ? ` ${additional}` : "";
 
         return `An image ${parts.join(", ")} ${extraPrompt}`.trim();
     }
@@ -381,7 +381,7 @@ export class GenerationPageController extends BasePageController {
 			background,
 			BGMovement,
 			motion,
-			prompt
+			additional
 		} = formData;
 
 		const parts = [];
@@ -392,7 +392,7 @@ export class GenerationPageController extends BasePageController {
 		if (BGMovement) parts.push(`where ${BGMovement}`);
 		if (motion) parts.push(`captured with ${motion} camera motion`);
 
-		const extraPrompt = prompt ? ` ${prompt}` : "";
+		const extraPrompt = additional ? ` ${additional}` : "";
 
 		return `A video of ${parts.join(", ")}${extraPrompt}`.trim();
 	}

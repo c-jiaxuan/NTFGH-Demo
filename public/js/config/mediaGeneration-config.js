@@ -10,8 +10,8 @@ export const txt2img_steps = [
                 en: "Objects present",
                 zh: "物品",
                 placeholder: {
-                    en: "e.g., a red apple, a wooden chair, a glass of water",
-                    zh: "例如：一个红苹果、一把木椅子、一杯水"
+                    en: "e.g., red umbrella, old book, glass lantern",
+                    zh: "例如：红伞、旧书、玻璃灯笼"
                 }
             }
         ],
@@ -28,8 +28,8 @@ export const txt2img_steps = [
                 en: "Environment",
                 zh: "环境",
                 placeholder: {
-                    en: "e.g., a cozy living room, a sunny beach, a dark forest",
-                    zh: "例如：温馨的客厅、阳光明媚的海滩、幽暗的森林"
+                    en: "e.g., quiet library, foggy street, sunny meadow",
+                    zh: "例如：安静的图书馆、雾蒙蒙的街道、阳光草地"
                 }
             }
         ],
@@ -46,8 +46,8 @@ export const txt2img_steps = [
                 en: "Actions",
                 zh: "动作",
                 placeholder: {
-                    en: "e.g., a cat sleeping, waves crashing, a person painting",
-                    zh: "例如：猫在睡觉、海浪拍打、一个人在画画"
+                    en: "e.g., dog barking, leaves falling, child reading",
+                    zh: "例如：狗叫、落叶、孩子在看书"
                 }
             }
         ],
@@ -216,7 +216,7 @@ export const txt2vid_steps = [
                 }
             }
         ],
-        input: "prompt"
+        input: "additional"
     }
 ];
 
