@@ -324,7 +324,7 @@ export class GenerationView extends BaseView {
 
         // Header
         const title = document.createElement('strong');
-        title.textContent = 'Please wait while I generate the image.';
+        title.textContent = 'Please wait while I generate the media.';
         this.loadingPageTitle.appendChild(title);
 
 		this.resultContainer.style.display = "flex";
@@ -349,6 +349,10 @@ export class GenerationView extends BaseView {
         const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(url);
         console.log('[generation-view] isVideo: ' + isVideo);
 
+        // Extract the actual file extension from the URL
+        const extension = url.match(/\.(mp4|webm|ogg|png|jpg|jpeg|gif)(\?.*)?$/i)?.[1] || (isVideo ? 'mp4' : 'png');
+        console.log('[generation-view] extension: ' + extension);
+
         // Render media + download button
         this.resultContainer.innerHTML = `
             <div class="media-container">
@@ -358,36 +362,36 @@ export class GenerationView extends BaseView {
                 : `<img src="${url}" alt="Generated Image" class="generated-image" />`
             }
             <div class="button-container">
-                <a
-                href="${url}"
-                download="generated.${isVideo ? 'mp4' : 'png'}"
-                id="download-button"
-                class="action-button"
-                >
-                <div class="button-bg"></div>
-                <div class="overlay-progress"></div>
-                <img class="button-icon" src="./img/icon/down-arrow.png" />
-                <div class="button-text">Download</div>
-                </a>
+                <button id="download-button" class="action-button">
+                    <div class="button-bg"></div>
+                    <div class="overlay-progress"></div>
+                    <img class="button-icon" src="./img/icon/down-arrow.png" />
+                    <div class="button-text">Download</div>
+                </button>
             </div>
             </div>
         `;
-        this.showDownloadButton(url);
+        this.showDownloadButton(url, extension);
     }
 
-    showDownloadButton(url) {
-        // Determine if the URL is a video (by extension)
-        const isVideo = /\.(mp4|webm|ogg)$/i.test(url);
-
+    showDownloadButton(url, extension) {
         // Force download when user clicks
         const downloadBtn = this.resultContainer.querySelector('#download-button');
         downloadBtn.addEventListener('click', async (event) => {
             event.preventDefault();
             try {
+
+                // Generate timestamp for filename
+                const now = new Date();
+                const timeStamp = now.toISOString()
+                    .replace(/:/g, '-')  // Replace colons with dashes
+                    .replace(/\./g, '-') // Replace dots with dashes
+                    .slice(0, -1);       // Remove the trailing 'Z'
+
                 const blob = await fetch(url).then(res => res.blob());
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
-                a.download = `generated.${isVideo ? 'mp4' : 'png'}`;
+                a.download = `generated_${timeStamp}.${extension}`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
