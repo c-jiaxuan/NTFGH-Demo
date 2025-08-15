@@ -8,12 +8,14 @@ export class ActionBarChatbot {
       en: {
         back: ['go back', 'previous', 'return'],
         help: ['try again'],
-        acknowledge: ['continue', 'next', 'proceed', 'acknowledge', 'done']
+        acknowledge: ['continue', 'next', 'proceed', 'acknowledge', 'done'],
+        generate: ['generate, finish'],
       },
       zh: {
         back: ['返回', '上一步', '退回'],
         help: ['帮忙', '帮助', '再试一次', '我需要帮助'],
-        acknowledge: ['继续', '下一步', '确认', '完成']
+        acknowledge: ['继续', '下一步', '确认', '完成'],
+        generate: ['生成', '完成'],
       }
     };
   }

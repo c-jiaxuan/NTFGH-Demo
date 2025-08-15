@@ -254,18 +254,13 @@ export class ChatbotPageController extends BasePageController {
     }
 
     async handleTranscribeEvent(e) {
-        console.log("[chat-controller] transcribe" + e.detail);
+        console.log("[chat-controller] Transcribing: " + e.detail);
     }
 
     async handleTranscribeComplete(e) {
-        const transcript = this.normalize(e.detail);
-        if(transcript == "") {
-            return;
-        }
-        
-        console.log("[chat-controller] transcribe complete = " + transcript);
-        
-        this.view.setTranscribeInput(transcript);
+        console.log('[chat-controller] Transcribe complete: ' + e.detail);
+
+        this.view.setTranscribeInput(e.detail);
 
         document.dispatchEvent(new CustomEvent('aws-reset-transcribe', {
             detail: { }

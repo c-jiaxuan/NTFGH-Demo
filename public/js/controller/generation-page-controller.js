@@ -131,7 +131,7 @@ export class GenerationPageController extends BasePageController {
 		console.log('[generation-page-controller] currentStep: ' + JSON.stringify(currentStep));
 
 		if (appSettings.inputMode === "voice" && currentStep.type === "prompt") {
-			this.setupTranscribeForVoiceCommand(true);
+			this.setupTranscribeForVoiceCommand(true, true);
 			this.isTranscribeActive = true;
 			console.log('[generation-page-controller] setupTranscribeForVoiceCommand(true)');
 		} else {
@@ -150,7 +150,7 @@ export class GenerationPageController extends BasePageController {
 			const step = this.model.currentStep;
 
 			if (appSettings.inputMode === 'voice' && step.type === "prompt") {
-				this.setupTranscribeForVoiceCommand(true);
+				this.setupTranscribeForVoiceCommand(true, true);
 				this.model.isTranscribeActive = true;
 			} else if (this.model.isTranscribeActive) {
 				this.setupTranscribeForVoiceCommand(false);
@@ -174,8 +174,8 @@ export class GenerationPageController extends BasePageController {
 				break;
 			case 'help':
 				this.showCurrentStep();
-				if (appSettings.inputMode === 'voice' && step.type === "prompt") {
-					this.setupTranscribeForVoiceCommand(true);
+				if (appSettings.inputMode === 'voice') {
+					this.setupTranscribeForVoiceCommand(true, true);
 					this.model.isTranscribeActive = true;
 				} else {
 					if (this.model.isTranscribeActive) {
@@ -208,7 +208,7 @@ export class GenerationPageController extends BasePageController {
 			console.log('[generation-page-controller] enabling voice commands');
 			document.addEventListener("aws-transcribe-update", this._handleTranscribeEvent);
 			document.dispatchEvent(new CustomEvent('aws-start-transcribe', {
-				detail: { language: appSettings.language, timeout: false }
+				detail: { language: appSettings.language, timeout: timeout }
 			}));
 			document.dispatchEvent(new CustomEvent('aws-update-timeout', { detail: { timeout } }));
 			this.model.isTranscribeActive = true;
@@ -232,6 +232,7 @@ export class GenerationPageController extends BasePageController {
 		this.onSubmit();
 	}
 
+	// Handles ongoing/partial voice input, only used for selection of options
 	async handleTranscribeEvent(e) {
 		console.log('[generation-page-controller] transcribe detail: ' + e.detail);
 		const step = this.model.currentStep;
@@ -260,10 +261,11 @@ export class GenerationPageController extends BasePageController {
 	}
 
 	// TBD: Change to fit the new types
+	// Handles complete transcription, used for both prompts and selection
 	async handleTranscribeComplete(e) {
 		const step = this.model.currentStep;
 		console.log('[generation-page-controller] Transcribe complete: ' + e.details);
-		const transcript = this.model.normalize(e.detail);
+		const transcript = e.detail;
 		if (!transcript) return;
 		if (step.type === 'prompt') {
 			const inputSelector = `textarea[name="${step.input}"]`;
@@ -271,13 +273,14 @@ export class GenerationPageController extends BasePageController {
 			if (textarea) {
 				textarea.value = transcript;
 				textarea.dispatchEvent(new Event('input')); // trigger input validation
-				this.setupTranscribeForVoiceCommand(false);
+				// this.setupTranscribeForVoiceCommand(false);
 			}
 		} else if (step.type === 'selection') {
 			// Find the matching option in current step
+			const normalizedTranscript = this.model.normalize(transcript);
 			const matched = step.options.find(option => {
 				const label = typeof option === 'object' ? option[appSettings.language] : option;
-				return transcript.includes(this.normalize(label));
+				return normalizedTranscript.includes(this.normalize(label));
 			});
 
 			if (matched) {
@@ -286,11 +289,11 @@ export class GenerationPageController extends BasePageController {
 				// Find and click the matching button in DOM
 				const buttons = document.querySelectorAll('.option-button');
 				for (const btn of buttons) {
-					if (this.normalize(btn.textContent) === this.normalize(label)) {
+					if (this.model.normalize(btn.textContent) === this.model.normalize(label)) {
 						btn.click();
 						console.log(`[generation-page-controller] ✅ Matched and selected: ${label}`);
 
-						this.setupTranscribeForVoiceCommmand(false);
+						// this.setupTranscribeForVoiceCommand(false);
 						break;
 					}
 				}
